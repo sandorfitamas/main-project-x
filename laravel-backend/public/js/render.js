@@ -1,9 +1,12 @@
+function parseTags(tags) {
+  const list = Array.isArray(tags) ? tags : (tags ? tags.split(',') : []);
+  return list.map(t => t.trim()).filter(Boolean);
+}
+
 function renderEventCard(event, { isMine = false, isFav = false, currentUser = null } = {}) {
   const imgSrc = event.imageUrl || PLACEHOLDER_IMAGE;
-  const tags = Array.isArray(event.tags) ? event.tags : (event.tags ? event.tags.split(',') : []);
-  const cleanTags = tags.map(t => t.trim()).filter(Boolean).slice(0, 3);
+  const cleanTags = parseTags(event.tags).slice(0, 3);
   const rating = parseFloat(event.rating) || 0;
-  const iconClass = CATEGORY_ICONS[event.category] || 'bi-tag';
 
   const favActive = isFav ? 'active' : '';
   const favIcon  = isFav ? 'bi-heart-fill' : 'bi-heart';

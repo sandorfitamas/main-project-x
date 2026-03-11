@@ -21,3 +21,8 @@ const CATEGORY_ICONS = {
 };
 
 const PLACEHOLDER_IMAGE = 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=800&auto=format&q=80';
+
+const STORAGE_KEYS = {
+  AUTH_TOKEN:   'auth_token',
+  CURRENT_USER: 'current_user',
+};

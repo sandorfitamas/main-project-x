@@ -4,10 +4,10 @@ let favoriteEventIds = new Set();
 function setCurrentUser(user) {
   currentUser = user;
   if (user) {
-    localStorage.setItem('current_user', JSON.stringify(user));
+    localStorage.setItem(STORAGE_KEYS.CURRENT_USER, JSON.stringify(user));
   } else {
-    localStorage.removeItem('current_user');
-    localStorage.removeItem('auth_token');
+    localStorage.removeItem(STORAGE_KEYS.CURRENT_USER);
+    localStorage.removeItem(STORAGE_KEYS.AUTH_TOKEN);
   }
   updateAuthUI();
 }

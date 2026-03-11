@@ -231,8 +231,7 @@ function openEventDetails(ev) {
   document.getElementById('detail-event-contact').textContent  = ev.contact_phone || 'Nincs megadva';
   document.getElementById('detail-event-description').textContent = ev.description || 'Nincs leírás.';
 
-  const tags = Array.isArray(ev.tags) ? ev.tags : (ev.tags ? ev.tags.split(',') : []);
-  const cleanTags = tags.map(t => t.trim()).filter(Boolean);
+  const cleanTags = parseTags(ev.tags);
   const tagsContainer = document.getElementById('detail-tags-container');
   const tagsEl = document.getElementById('detail-event-tags');
   if (cleanTags.length && tagsEl && tagsContainer) {
@@ -253,13 +252,12 @@ function openEventDetails(ev) {
 
 // ─── Create Event ─────────────────────────────────────────────────────────────
 
-function initCreateEventForm() {
-  const form    = document.getElementById('create-event-form');
-  const imgInput  = document.getElementById('event-image');
-  const preview   = document.getElementById('image-preview');
-  const previewC  = document.getElementById('image-preview-container');
-  const uploadLbl = document.getElementById('image-upload-label');
-  const removeBtn = document.getElementById('remove-image-btn');
+function setupImageUploadPreview(inputId, previewId, previewContainerId, uploadLabelId, removeBtnId) {
+  const imgInput  = document.getElementById(inputId);
+  const preview   = document.getElementById(previewId);
+  const previewC  = document.getElementById(previewContainerId);
+  const uploadLbl = document.getElementById(uploadLabelId);
+  const removeBtn = document.getElementById(removeBtnId);
 
   imgInput.addEventListener('change', () => {
     const file = imgInput.files[0];
@@ -279,6 +277,16 @@ function initCreateEventForm() {
     previewC.classList.add('hidden');
     uploadLbl.classList.remove('hidden');
   });
+
+  return { imgInput, preview, previewC, uploadLbl };
+}
+
+function initCreateEventForm() {
+  const form = document.getElementById('create-event-form');
+  const { imgInput, preview, previewC, uploadLbl } = setupImageUploadPreview(
+    'event-image', 'image-preview', 'image-preview-container',
+    'image-upload-label', 'remove-image-btn'
+  );
 
   form.addEventListener('submit', async e => {
     e.preventDefault();
@@ -345,31 +353,11 @@ function openEditModal(ev) {
 }
 
 function initEditEventForm() {
-  const form      = document.getElementById('edit-event-form');
-  const imgInput  = document.getElementById('edit-event-image');
-  const preview   = document.getElementById('edit-image-preview');
-  const previewC  = document.getElementById('edit-image-preview-container');
-  const uploadLbl = document.getElementById('edit-image-upload-label');
-  const removeBtn = document.getElementById('edit-remove-image-btn');
-
-  imgInput.addEventListener('change', () => {
-    const file = imgInput.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = e => {
-      preview.src = e.target.result;
-      previewC.classList.remove('hidden');
-      uploadLbl.classList.add('hidden');
-    };
-    reader.readAsDataURL(file);
-  });
-
-  removeBtn.addEventListener('click', () => {
-    imgInput.value = '';
-    preview.src = '';
-    previewC.classList.add('hidden');
-    uploadLbl.classList.remove('hidden');
-  });
+  const form = document.getElementById('edit-event-form');
+  const { imgInput } = setupImageUploadPreview(
+    'edit-event-image', 'edit-image-preview', 'edit-image-preview-container',
+    'edit-image-upload-label', 'edit-remove-image-btn'
+  );
 
   form.addEventListener('submit', async e => {
     e.preventDefault();
@@ -443,7 +431,7 @@ function initAuthForms() {
     const pass  = document.getElementById('login-password').value;
     const result = await apiLogin(email, pass);
     if (result.success) {
-      localStorage.setItem('auth_token', result.token);
+      localStorage.setItem(STORAGE_KEYS.AUTH_TOKEN, result.token);
       setCurrentUser(result.user);
       toggleAuthModal(false);
       showToast(`Üdv, ${result.user.name}!`, 'success');
@@ -462,7 +450,7 @@ function initAuthForms() {
     if (pass !== pass2) { showToast('A jelszavak nem egyeznek meg', 'error'); return; }
     const result = await apiRegister(name, email, pass);
     if (result.success) {
-      localStorage.setItem('auth_token', result.token);
+      localStorage.setItem(STORAGE_KEYS.AUTH_TOKEN, result.token);
       setCurrentUser(result.user);
       toggleAuthModal(false);
       showToast('Regisztráció sikeres!', 'success');
