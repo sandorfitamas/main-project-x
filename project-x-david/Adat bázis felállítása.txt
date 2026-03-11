@@ -1,9 +1,0 @@
-1. A fájlt tedd be ide C:\xampp\htdocs\project-x-david
-2. Lépj be a XAMPP Control Panel-ba
-3. Indítsd el az Apache és MySQL szervereket
-4. Nyomj rá a MySQL melletti Admin gombra, ez bedob a phpMyAdmin-ba
-5. Nyomj rá, hogy Importálásra
-6. Illeszd be az events.sql fájlt és aztán alul nyomj rá, hogy importálás
-7. Ugyan ezt csináld meg a users.sql fájllal és a favorites.sql fájllal
-8. Ezután nyiss böngészőt írd be, hogy localhost
-9. Válaszd ki a fájlt (project-x-david) és már müködik is
