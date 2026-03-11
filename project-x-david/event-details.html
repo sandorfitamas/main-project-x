@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="hu">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Esemény részletei - Project X</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body class="bg-slate-900 text-slate-100 flex flex-col min-h-screen">
+    
+    <!-- Navbar -->
+    <nav class="sticky top-0 z-40 w-full backdrop-blur-lg bg-slate-900/80 border-b border-white/10">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center h-16">
+          <a href="index.html" class="flex items-center gap-2">
+            <div class="bg-gradient-to-tr from-violet-600 to-fuchsia-600 p-2 rounded-lg">
+              <svg xmlns="http://www.w3.org/2000/svg" class="text-white w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+            </div>
+            <span class="text-2xl font-black tracking-tighter bg-clip-text text-transparent bg-gradient-to-r from-violet-400 to-fuchsia-400">
+              PROJECT X
+            </span>
+          </a>
+          <a href="index.html" class="inline-flex items-center justify-center rounded-lg font-semibold transition-all duration-200 text-slate-400 hover:text-white px-4 py-2 text-base">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+            Vissza
+          </a>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Event Details Content -->
+    <main class="flex-1 w-full">
+      
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        
+        <!-- Back Button Mobile -->
+        <a href="index.html" class="inline-flex items-center text-slate-400 hover:text-white mb-6 transition-colors md:hidden">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+          Vissza az eseményekhez
+        </a>
+
+        <div class="grid grid-cols-1 lg:grid-cols-5 gap-8 mb-8 lg:items-stretch">
+          
+          <!-- Left Column - Image -->
+          <div class="lg:col-span-3 flex flex-col">
+            <div class="relative rounded-2xl overflow-hidden border border-slate-700 shadow-2xl flex-1">
+              <img id="detail-event-image" src="" alt="Event" class="w-full h-full object-cover" />
+              <div class="absolute top-4 right-4">
+                <span id="detail-category-badge" class="inline-flex items-center px-4 py-2 rounded-full text-sm font-semibold bg-slate-900/90 backdrop-blur-sm border border-slate-700 text-white shadow-lg">
+                  <!-- Category -->
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right Column - Main Info -->
+          <div class="lg:col-span-2 flex flex-col justify-between">
+            <div class="mb-4">
+              <h1 id="detail-event-title" class="text-2xl md:text-3xl font-bold text-white mb-2 leading-tight">
+                <!-- Title -->
+              </h1>
+              <div id="detail-event-organizer" class="flex items-center gap-2 text-slate-300 text-sm">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-fuchsia-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                <span>Szervező: <span class="text-white font-semibold"></span></span>
+              </div>
+            </div>
+
+            <!-- Info Cards -->
+            <div class="space-y-3 flex flex-col">
+              <div class="bg-gradient-to-br from-violet-600/20 to-violet-600/5 border border-violet-500/30 rounded-lg p-4">
+                <div class="flex items-center gap-3">
+                  <div class="bg-violet-600/30 p-2 rounded-lg flex-shrink-0">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-violet-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                  </div>
+                  <div>
+                    <p class="text-slate-500 text-xs font-medium">Dátum</p>
+                    <p id="detail-event-date" class="text-white font-bold"><!-- Date --></p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="bg-gradient-to-br from-fuchsia-600/20 to-fuchsia-600/5 border border-fuchsia-500/30 rounded-lg p-4">
+                <div class="flex items-center gap-3">
+                  <div class="bg-fuchsia-600/30 p-2 rounded-lg flex-shrink-0">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-fuchsia-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                  </div>
+                  <div>
+                    <p class="text-slate-500 text-xs font-medium">Időpont</p>
+                    <p id="detail-event-time" class="text-white font-bold"><!-- Time --></p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="bg-gradient-to-br from-pink-600/20 to-pink-600/5 border border-pink-500/30 rounded-lg p-4">
+                <div class="flex items-center gap-3">
+                  <div class="bg-pink-600/30 p-2 rounded-lg flex-shrink-0">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-pink-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                  </div>
+                  <div class="flex-1 min-w-0">
+                    <p class="text-slate-500 text-xs font-medium">Helyszín</p>
+                    <p id="detail-event-location" class="text-white font-bold truncate"><!-- Location --></p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="bg-gradient-to-br from-emerald-600/20 to-emerald-600/5 border border-emerald-500/30 rounded-lg p-4">
+                <div class="flex items-center gap-3">
+                  <div class="bg-emerald-600/30 p-2 rounded-lg flex-shrink-0">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                  </div>
+                  <div>
+                    <p class="text-slate-500 text-xs font-medium">Résztvevők</p>
+                    <p id="detail-event-attendees" class="text-white font-bold">Nyitott</p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="bg-gradient-to-br from-amber-600/20 to-amber-600/5 border border-amber-500/30 rounded-lg p-4">
+                <div class="flex items-center gap-3">
+                  <div class="bg-amber-600/30 p-2 rounded-lg flex-shrink-0">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-amber-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+                  </div>
+                  <div>
+                    <p class="text-slate-500 text-xs font-medium">Belépő</p>
+                    <p id="detail-event-price" class="text-white font-bold">Ingyenes</p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="bg-gradient-to-br from-cyan-600/20 to-cyan-600/5 border border-cyan-500/30 rounded-lg p-4">
+                <div class="flex items-center gap-3">
+                  <div class="bg-cyan-600/30 p-2 rounded-lg flex-shrink-0">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-cyan-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+                  </div>
+                  <div class="flex-1 min-w-0">
+                    <p class="text-slate-500 text-xs font-medium">Kapcsolat</p>
+                    <p id="detail-event-contact" class="text-white font-bold text-sm truncate">Nincs megadva</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Description Section -->
+        <div id="detail-description-container" class="bg-slate-800/50 border border-slate-700 rounded-2xl p-8 mb-6">
+          <h2 class="text-2xl font-bold text-white mb-4 flex items-center gap-3">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-fuchsia-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+            Leírás
+          </h2>
+          <p id="detail-event-description" class="text-slate-300 text-lg leading-relaxed">
+            <!-- Description -->
+          </p>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex flex-col sm:flex-row gap-4 max-w-2xl mx-auto">
+          <button type="button" id="share-event-btn" class="flex-1 inline-flex items-center justify-center rounded-xl font-semibold px-6 py-4 bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500 text-white shadow-lg shadow-violet-900/30 transition-all">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
+            Megosztás
+          </button>
+          <a href="index.html" class="flex-1 inline-flex items-center justify-center rounded-xl font-semibold px-6 py-4 text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700 border border-slate-700 transition-all">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+            Vissza
+          </a>
+        </div>
+
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-900 border-t border-slate-800 py-12">
+      <div class="max-w-7xl mx-auto px-4 text-center">
+        <div class="flex items-center justify-center gap-2 mb-4">
+           <svg xmlns="http://www.w3.org/2000/svg" class="text-fuchsia-500 w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+           <span class="font-bold text-xl text-white">PROJECT X</span>
+        </div>
+        <p class="text-slate-500 text-sm">
+          © 2024 Project X. Minden jog fenntartva. Powered by Gemini AI.
+        </p>
+      </div>
+    </footer>
+
+    <script src="js/api-events.js"></script>
+    <script>
+      function escapeHtml(text) {
+        const map = {
+          '&': '&amp;',
+          '<': '&lt;',
+          '>': '&gt;',
+          '"': '&quot;',
+          "'": '&#039;'
+        };
+        return String(text).replace(/[&<>"']/g, m => map[m]);
+      }
+
+      function formatDate(dateString) {
+        const date = new Date(dateString);
+        const months = ['jan', 'feb', 'már', 'ápr', 'máj', 'jún', 'júl', 'aug', 'szep', 'okt', 'nov', 'dec'];
+        return `${date.getFullYear()}. ${months[date.getMonth()]}. ${date.getDate()}.`;
+      }
+
+      async function loadEventDetails() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const eventId = urlParams.get('id');
+
+        if (!eventId) {
+          alert('Nincs esemény azonosító!');
+          window.location.href = 'index.html';
+          return;
+        }
+
+        const events = await loadEventsFromDB();
+        const event = events.find(e => e.id == eventId);
+
+        if (!event) {
+          alert('Az esemény nem található!');
+          window.location.href = 'index.html';
+          return;
+        }
+
+        // Fill page with event data
+        document.getElementById('detail-event-image').src = event.imageUrl;
+        document.getElementById('detail-category-badge').textContent = event.category;
+        document.getElementById('detail-event-title').textContent = event.title;
+        document.getElementById('detail-event-organizer').querySelector('span span').textContent = event.organizer || 'Ismeretlen';
+        document.getElementById('detail-event-date').textContent = formatDate(event.date);
+        document.getElementById('detail-event-time').textContent = event.time;
+        document.getElementById('detail-event-location').textContent = event.location;
+        document.getElementById('detail-event-description').textContent = event.description || 'Nincs leírás megadva.';
+        
+        // Additional info (these could be extended in the database)
+        document.getElementById('detail-event-attendees').textContent = 'Nyitott';
+        document.getElementById('detail-event-price').textContent = event.price || 'Ingyenes';
+        document.getElementById('detail-event-contact').textContent = event.contact_phone || 'Nincs megadva';
+        
+        document.title = event.title + ' - Project X';
+
+        // Share button
+        document.getElementById('share-event-btn').addEventListener('click', () => {
+          const url = window.location.href;
+          navigator.clipboard.writeText(url).then(() => {
+            alert('Link másolva a vágólapra!');
+          }).catch(() => {
+            alert('Nem sikerült másolni a linket.');
+          });
+        });
+      }
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', loadEventDetails);
+      } else {
+        loadEventDetails();
+      }
+    </script>
+    
+  </body>
+</html>

@@ -1,0 +1,854 @@
+<!DOCTYPE html>
+<html lang="hu">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Project X - Találd meg a legjobb bulit</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body class="bg-slate-900 text-slate-100 flex flex-col min-h-screen">
+    
+    <!-- Navbar -->
+    <nav class="sticky top-0 z-40 w-full backdrop-blur-lg bg-slate-900/80 border-b border-white/10">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center h-16">
+          <div class="flex items-center gap-2">
+            <div class="bg-gradient-to-tr from-violet-600 to-fuchsia-600 p-2 rounded-lg">
+              <!-- Zap Icon -->
+              <svg xmlns="http://www.w3.org/2000/svg" class="text-white w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+            </div>
+            <span class="text-2xl font-black tracking-tighter bg-clip-text text-transparent bg-gradient-to-r from-violet-400 to-fuchsia-400">
+              PROJECT X
+            </span>
+          </div>
+          <div class="hidden md:flex items-center space-x-8">
+            <a href="#" onclick="location.reload()" class="text-sm font-medium text-slate-300 hover:text-white transition-colors">Kezdőlap</a>
+            <a href="#events" onclick="location.reload()" class="text-sm font-medium text-slate-300 hover:text-white transition-colors">Események</a>
+            <a href="#community" onclick="showCommunity()" class="text-sm font-medium text-slate-300 hover:text-white transition-colors">Közösség</a>
+          </div>
+          <div>
+            <button id="auth-btn" class="inline-flex items-center justify-center rounded-lg font-semibold transition-all duration-200 bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500 text-white shadow-lg shadow-violet-900/20 px-4 py-2 text-base">
+              <!-- User Icon -->
+              <span class="mr-2"><svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg></span>
+              Bejelentkezés
+            </button>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <div class="relative overflow-hidden">
+      <div class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1514525253161-7a46d19cd819?ixlib=rb-4.0.3&auto=format&fit=crop&w=2074&q=80')] bg-cover bg-center opacity-20"></div>
+      <div class="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/50 to-transparent"></div>
+      
+      <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-24 text-center">
+        <h1 class="text-5xl md:text-7xl font-black tracking-tight mb-6 text-white drop-shadow-2xl">
+          Találd meg a ma esti <br/>
+          <span class="text-transparent bg-clip-text bg-gradient-to-r from-violet-500 via-fuchsia-500 to-pink-500 animate-pulse">
+            VIBE-ot
+          </span>
+        </h1>
+        <p class="mt-4 text-xl text-slate-300 max-w-2xl mx-auto mb-10">
+          A Project X a legjobb hely, hogy megtaláld a környék legvadabb bulijait, vagy megszervezd a sajátodat az AI segítségével.
+        </p>
+        
+        <div class="flex flex-col sm:flex-row gap-4 justify-center max-w-3xl mx-auto">
+          <div class="relative flex-1 group">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <!-- Search Icon -->
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-slate-400 group-focus-within:text-fuchsia-400 transition-colors" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            </div>
+            <input
+              type="text"
+              id="search-input"
+              class="block w-full pl-10 pr-3 py-4 border border-slate-700 rounded-xl leading-5 bg-slate-800/80 text-slate-100 placeholder-slate-400 focus:outline-none focus:bg-slate-800 focus:ring-2 focus:ring-fuchsia-500 focus:border-fuchsia-500 sm:text-sm transition-all"
+              placeholder="Keress eseményt, helyszínt vagy hangulatot..."
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 w-full" id="events">
+      
+      <!-- Filters -->
+      <div class="flex flex-wrap items-center justify-between gap-4 mb-8">
+        <h2 class="text-2xl font-bold flex items-center gap-2">
+          <!-- Filter Icon -->
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-fuchsia-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>
+          Közelgő Események
+        </h2>
+        
+        <div class="flex gap-2 overflow-x-auto pb-2 scrollbar-hide" id="category-filters">
+          <!-- Filter buttons will be injected here -->
+        </div>
+      </div>
+
+      <!-- Event Grid -->
+      <div id="events-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+        <!-- Event cards will be injected here -->
+      </div>
+      
+      <!-- Empty State (Hidden by default) -->
+      <div id="empty-state" class="hidden text-center py-20 bg-slate-800/30 rounded-3xl border border-slate-700 border-dashed">
+        <p class="text-slate-400 text-lg">Nem találtunk ilyen bulit...</p>
+        <p class="text-slate-500 text-sm mt-2">Próbálj más keresőszót, vagy szervezz te egyet!</p>
+      </div>
+
+    </main>
+
+    <!-- Events Section (Full List) -->
+    <section id="events-section" class="hidden flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 w-full">
+      
+      <!-- Filters -->
+      <div class="flex flex-wrap items-center justify-between gap-4 mb-8">
+        <h2 class="text-2xl font-bold flex items-center gap-2">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-fuchsia-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>
+          Összes esemény
+        </h2>
+        
+        <div class="flex gap-2 overflow-x-auto pb-2 scrollbar-hide" id="category-filters">
+          <!-- Filter buttons will be injected here -->
+        </div>
+      </div>
+
+      <!-- Event Grid -->
+      <div id="events-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+        <!-- Event cards will be injected here -->
+      </div>
+      
+      <!-- Empty State (Hidden by default) -->
+      <div id="empty-state" class="hidden text-center py-20 bg-slate-800/30 rounded-3xl border border-slate-700 border-dashed">
+        <p class="text-slate-400 text-lg">Nem találtunk ilyen bulit...</p>
+        <p class="text-slate-500 text-sm mt-2">Próbálj más keresőszót, vagy szervezz te egyet!</p>
+      </div>
+
+    </section>
+
+    <!-- My Events Section -->
+    <section id="my-events-section" class="hidden flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 w-full">
+      <div class="mb-8">
+        <h2 class="text-3xl font-bold flex items-center gap-2 mb-2">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 text-fuchsia-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+          Saját események
+        </h2>
+        <p class="text-slate-400">Itt láthatod és szerkesztheted a te általad létrehozott eseményeket</p>
+      </div>
+
+      <!-- My Events Grid -->
+      <div id="my-events-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+        <!-- My event cards will be injected here -->
+      </div>
+
+      <!-- Empty State for My Events -->
+      <div id="my-events-empty" class="hidden text-center py-20 bg-slate-800/30 rounded-3xl border border-slate-700 border-dashed">
+        <p class="text-slate-400 text-lg">Még nincs eseményed</p>
+        <p class="text-slate-500 text-sm mt-2">Hozz létre az első bulidat!</p>
+        <button onclick="toggleModal(true)" class="mt-6 inline-flex items-center justify-center rounded-lg font-semibold transition-all duration-200 bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500 text-white shadow-lg shadow-violet-900/20 px-6 py-3">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+          Új buli létrehozása
+        </button>
+      </div>
+    </section>
+
+    <!-- Favorites Section -->
+    <section id="favorites-section" class="hidden flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 w-full">
+      <div class="mb-8">
+        <h2 class="text-3xl font-bold flex items-center gap-2 mb-2">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 text-red-500" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+          </svg>
+          Kedvenc események
+        </h2>
+        <p class="text-slate-400">A kedvenceid közé mentett események</p>
+      </div>
+
+      <!-- Favorites Grid -->
+      <div id="favorites-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+        <!-- Favorite event cards will be injected here -->
+      </div>
+
+      <!-- Empty State for Favorites -->
+      <div id="favorites-empty" class="hidden text-center py-20 bg-slate-800/30 rounded-3xl border border-slate-700 border-dashed">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-16 h-16 text-slate-600 mx-auto mb-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+        </svg>
+        <p class="text-slate-400 text-lg">Még nincs kedvenc eseményed</p>
+        <p class="text-slate-500 text-sm mt-2">Az események melletti szív ikonra kattintva adhatsz hozzá kedvenceket</p>
+        <button onclick="showAllEvents()" class="mt-6 inline-flex items-center justify-center rounded-lg font-semibold transition-all duration-200 bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500 text-white shadow-lg shadow-violet-900/20 px-6 py-3">
+          Események böngészése
+        </button>
+      </div>
+    </section>
+
+    <!-- Community Section -->
+    <section id="community-section" class="hidden flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 w-full">
+      <div class="mb-8">
+        <h2 class="text-3xl font-bold flex items-center gap-2 mb-2">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 text-fuchsia-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+          Közösség
+        </h2>
+        <p class="text-slate-400">Fedezd fel a buliközösség tagjait és aktivitását</p>
+      </div>
+
+      <!-- Community Stats -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div class="bg-gradient-to-br from-violet-600/20 to-violet-600/5 border border-violet-500/30 rounded-2xl p-6">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-slate-400 text-sm mb-1">Aktív tagok</p>
+              <p class="text-3xl font-bold text-white" id="total-users">0</p>
+            </div>
+            <div class="bg-violet-600/30 p-3 rounded-xl">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 text-violet-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-gradient-to-br from-fuchsia-600/20 to-fuchsia-600/5 border border-fuchsia-500/30 rounded-2xl p-6">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-slate-400 text-sm mb-1">Összes esemény</p>
+              <p class="text-3xl font-bold text-white" id="total-events">0</p>
+            </div>
+            <div class="bg-fuchsia-600/30 p-3 rounded-xl">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 text-fuchsia-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-gradient-to-br from-pink-600/20 to-pink-600/5 border border-pink-500/30 rounded-2xl p-6">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-slate-400 text-sm mb-1">Közösségi aktivitás</p>
+              <p class="text-3xl font-bold text-white">🔥</p>
+            </div>
+            <div class="bg-pink-600/30 p-3 rounded-xl">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 text-pink-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Top Organizers -->
+      <div class="mb-8">
+        <h3 class="text-xl font-bold mb-4 flex items-center gap-2">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-yellow-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+          Legjobb szervezők
+        </h3>
+        
+        <div id="top-organizers-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <!-- Organizer cards will be injected here -->
+        </div>
+
+        <!-- Empty State for Organizers -->
+        <div id="organizers-empty" class="hidden text-center py-12 bg-slate-800/30 rounded-2xl border border-slate-700 border-dashed">
+          <p class="text-slate-400">Még nincs szervező a közösségben</p>
+          <p class="text-slate-500 text-sm mt-2">Légy te az első!</p>
+        </div>
+      </div>
+
+      <!-- Recent Activity Feed -->
+      <div>
+        <h3 class="text-xl font-bold mb-4 flex items-center gap-2">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-fuchsia-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+          Közösségi aktivitás
+        </h3>
+
+        <div id="activity-feed" class="space-y-4">
+          <!-- Activity items will be injected here -->
+        </div>
+
+        <!-- Empty State for Activity -->
+        <div id="activity-empty" class="hidden text-center py-12 bg-slate-800/30 rounded-2xl border border-slate-700 border-dashed">
+          <p class="text-slate-400">Még nincs aktivitás</p>
+          <p class="text-slate-500 text-sm mt-2">A közösség aktivitása itt fog megjelenni</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-slate-900 border-t border-slate-800 py-12">
+      <div class="max-w-7xl mx-auto px-4 text-center">
+        <div class="flex items-center justify-center gap-2 mb-4">
+           <!-- Zap Icon -->
+           <svg xmlns="http://www.w3.org/2000/svg" class="text-fuchsia-500 w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+           <span class="font-bold text-xl text-white">PROJECT X</span>
+        </div>
+        <p class="text-slate-500 text-sm">
+          © 2024 Project X. Minden jog fenntartva. Powered by Gemini AI.
+        </p>
+      </div>
+    </footer>
+
+    <!-- Auth Modal (Login/Register) -->
+    <div id="auth-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4">
+      <div class="absolute inset-0 bg-slate-900/80 backdrop-blur-sm" id="auth-modal-backdrop"></div>
+      
+      <div class="relative w-full max-w-md bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl overflow-hidden">
+        <!-- Header -->
+        <div class="flex items-center justify-between p-6 border-b border-slate-800 bg-slate-900/50">
+          <h2 class="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-fuchsia-400" id="auth-modal-title">
+            Bejelentkezés
+          </h2>
+          <button id="close-auth-modal-btn" class="text-slate-400 hover:text-white transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+          </button>
+        </div>
+
+        <!-- Content -->
+        <div class="p-6">
+          <!-- Login Form -->
+          <form id="login-form" class="space-y-4">
+            <div>
+              <label class="block text-sm font-medium text-slate-400 mb-1">Email</label>
+              <input
+                type="email"
+                id="login-email"
+                class="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-white focus:ring-2 focus:ring-violet-500 focus:border-transparent outline-none"
+                placeholder="pelda@email.com"
+                required
+              />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-slate-400 mb-1">Jelszó</label>
+              <input
+                type="password"
+                id="login-password"
+                class="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-white focus:ring-2 focus:ring-violet-500 focus:border-transparent outline-none"
+                placeholder="••••••••"
+                required
+              />
+            </div>
+            <button type="submit" class="w-full inline-flex items-center justify-center rounded-lg font-semibold px-4 py-3 bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500 text-white shadow-lg shadow-violet-900/20">
+              Bejelentkezés
+            </button>
+          </form>
+
+          <!-- Register Form (Hidden by default) -->
+          <form id="register-form" class="space-y-4 hidden">
+            <div>
+              <label class="block text-sm font-medium text-slate-400 mb-1">Név</label>
+              <input
+                type="text"
+                id="register-name"
+                class="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-white focus:ring-2 focus:ring-violet-500 focus:border-transparent outline-none"
+                placeholder="Teljes neved"
+                required
+              />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-slate-400 mb-1">Email</label>
+              <input
+                type="email"
+                id="register-email"
+                class="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-white focus:ring-2 focus:ring-violet-500 focus:border-transparent outline-none"
+                placeholder="pelda@email.com"
+                required
+              />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-slate-400 mb-1">Jelszó</label>
+              <input
+                type="password"
+                id="register-password"
+                class="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-white focus:ring-2 focus:ring-violet-500 focus:border-transparent outline-none"
+                placeholder="••••••••"
+                required
+              />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-slate-400 mb-1">Jelszó megerősítése</label>
+              <input
+                type="password"
+                id="register-password-confirm"
+                class="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-white focus:ring-2 focus:ring-violet-500 focus:border-transparent outline-none"
+                placeholder="••••••••"
+                required
+              />
+            </div>
+            <button type="submit" class="w-full inline-flex items-center justify-center rounded-lg font-semibold px-4 py-3 bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500 text-white shadow-lg shadow-violet-900/20">
+              Fiók létrehozása
+            </button>
+          </form>
+
+          <!-- Toggle between Login/Register -->
+          <div class="mt-6 text-center">
+            <p class="text-slate-400 text-sm">
+              <span id="auth-toggle-text">Nincs még fiókod?</span>
+              <button type="button" id="auth-toggle-btn" class="text-fuchsia-400 hover:text-fuchsia-300 font-semibold ml-1">
+                Regisztrálj most
+              </button>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Create Event Modal -->
+    <div id="create-event-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4">
+      <div class="absolute inset-0 bg-slate-900/80 backdrop-blur-sm" id="modal-backdrop"></div>
+      
+      <div class="relative w-full max-w-3xl bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl overflow-hidden max-h-[90vh] flex flex-col">
+        <!-- Header -->
+        <div class="flex items-center justify-between p-6 border-b border-slate-800 bg-slate-900/50">
+          <h2 class="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-fuchsia-400">
+            Új Buli Létrehozása
+          </h2>
+          <button id="close-modal-btn" class="text-slate-400 hover:text-white transition-colors">
+            <!-- X Icon -->
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+          </button>
+        </div>
+
+        <!-- Scrollable Content -->
+        <div class="flex-1 overflow-y-auto p-6 scrollbar-thin scrollbar-thumb-slate-700 scrollbar-track-transparent">
+          <form id="create-event-form" class="space-y-4">
+            
+            <div>
+              <label class="block text-sm font-medium text-slate-400 mb-1">Esemény Címe *</label>
+              <input
+                type="text"
+                name="title"
+                id="event-title"
+                class="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-white focus:ring-2 focus:ring-violet-500 focus:border-transparent outline-none"
+                placeholder="pl. Tetőterasz Nyitó"
+                required
+              />
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label class="block text-sm font-medium text-slate-400 mb-1">Dátum *</label>
+                <input
+                  type="date"
+                  name="date"
+                  id="event-date"
+                  class="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-white focus:ring-2 focus:ring-violet-500 outline-none"
+                  required
+                />
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-slate-400 mb-1">Idő *</label>
+                <input
+                  type="time"
+                  name="time"
+                  id="event-time"
+                  class="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-white focus:ring-2 focus:ring-violet-500 outline-none"
+                  required
+                />
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-slate-400 mb-1">Helyszín *</label>
+              <input
+                type="text"
+                name="location"
+                id="event-location"
+                class="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-white focus:ring-2 focus:ring-violet-500 outline-none"
+                placeholder="pl. Budapest, Deák tér"
+                required
+              />
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-slate-400 mb-1">Szervező</label>
+              <input
+                type="text"
+                name="organizer"
+                id="event-organizer"
+                class="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-white focus:ring-2 focus:ring-violet-500 outline-none"
+                placeholder="A te neved"
+              />
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-slate-400 mb-1">Értékelés (1-5 csillag)</label>
+              <select
+                name="rating"
+                id="event-rating"
+                class="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-white focus:ring-2 focus:ring-violet-500 outline-none"
+              >
+                <option value="0">Nincs értékelés</option>
+                <option value="1">⭐ 1 csillag</option>
+                <option value="1.5">⭐ 1.5 csillag</option>
+                <option value="2">⭐⭐ 2 csillag</option>
+                <option value="2.5">⭐⭐ 2.5 csillag</option>
+                <option value="3">⭐⭐⭐ 3 csillag</option>
+                <option value="3.5">⭐⭐⭐ 3.5 csillag</option>
+                <option value="4">⭐⭐⭐⭐ 4 csillag</option>
+                <option value="4.5">⭐⭐⭐⭐ 4.5 csillag</option>
+                <option value="5">⭐⭐⭐⭐⭐ 5 csillag</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-slate-400 mb-1">Kategória</label>
+              <select
+                name="category"
+                id="event-category"
+                class="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-white focus:ring-2 focus:ring-violet-500 outline-none"
+              >
+                <option value="Házibuli">Házibuli</option>
+                <option value="Klub">Klub</option>
+                <option value="Fesztivál">Fesztivál</option>
+                <option value="Rave">Rave</option>
+                <option value="Chill">Chill</option>
+                <option value="Egyéb">Egyéb</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-slate-400 mb-1">Leírás</label>
+              <textarea
+                name="description"
+                id="event-description"
+                rows="4"
+                class="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-white focus:ring-2 focus:ring-violet-500 outline-none resize-none"
+                placeholder="Írd le az esemény részleteit..."
+              ></textarea>
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-slate-400 mb-2">Esemény képe</label>
+              <div class="flex items-center justify-center w-full">
+                <label for="event-image" class="flex flex-col items-center justify-center w-full h-32 border-2 border-slate-700 border-dashed rounded-lg cursor-pointer bg-slate-800/50 hover:bg-slate-800 transition-colors">
+                  <div class="flex flex-col items-center justify-center pt-5 pb-6" id="image-upload-label">
+                    <svg class="w-10 h-10 mb-3 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                    </svg>
+                    <p class="mb-2 text-sm text-slate-400"><span class="font-semibold">Kattints a feltöltéshez</span> vagy húzd ide</p>
+                    <p class="text-xs text-slate-500">PNG, JPG, GIF (MAX. 5MB)</p>
+                  </div>
+                  <input id="event-image" type="file" name="image" accept="image/*" class="hidden" />
+                </label>
+              </div>
+              <div id="image-preview-container" class="hidden mt-3 relative rounded-lg overflow-hidden border border-slate-600">
+                <img id="image-preview" src="" alt="Preview" class="w-full h-48 object-cover" />
+                <button type="button" id="remove-image-btn" class="absolute top-2 right-2 bg-red-600 hover:bg-red-700 text-white rounded-full p-2 transition-colors">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+
+        <!-- Footer -->
+        <div class="p-6 border-t border-slate-800 bg-slate-900/50 flex justify-end gap-3">
+          <button type="button" id="cancel-modal-btn" class="inline-flex items-center justify-center rounded-lg font-semibold px-4 py-2 text-slate-400 hover:text-white hover:bg-slate-800 transition-colors">Mégse</button>
+          <button type="submit" form="create-event-form" class="inline-flex items-center justify-center rounded-lg font-semibold px-4 py-2 bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500 text-white shadow-lg shadow-violet-900/20">Buli Közzététele</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Edit Event Modal -->
+    <div id="edit-event-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4">
+      <div class="absolute inset-0 bg-slate-900/80 backdrop-blur-sm" id="edit-modal-backdrop"></div>
+      
+      <div class="relative w-full max-w-3xl bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+        <!-- Header -->
+        <div class="flex items-center justify-between p-6 border-b border-slate-800 bg-slate-900/50">
+          <h2 class="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-fuchsia-400">
+            Esemény szerkesztése
+          </h2>
+          <button id="close-edit-modal-btn" class="text-slate-400 hover:text-white transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+          </button>
+        </div>
+
+        <!-- Scrollable Content -->
+        <div class="flex-1 overflow-y-auto p-6 scrollbar-thin scrollbar-thumb-slate-700 scrollbar-track-transparent">
+          <form id="edit-event-form" class="space-y-4">
+            <input type="hidden" id="edit-event-id" name="id" />
+            
+            <div>
+              <label class="block text-sm font-medium text-slate-400 mb-1">Esemény Címe *</label>
+              <input
+                type="text"
+                name="title"
+                id="edit-event-title"
+                class="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-white focus:ring-2 focus:ring-violet-500 focus:border-transparent outline-none"
+                placeholder="pl. Tetőterasz Nyitó"
+                required
+              />
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label class="block text-sm font-medium text-slate-400 mb-1">Dátum *</label>
+                <input
+                  type="date"
+                  name="date"
+                  id="edit-event-date"
+                  class="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-white focus:ring-2 focus:ring-violet-500 outline-none"
+                  required
+                />
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-slate-400 mb-1">Idő *</label>
+                <input
+                  type="time"
+                  name="time"
+                  id="edit-event-time"
+                  class="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-white focus:ring-2 focus:ring-violet-500 outline-none"
+                  required
+                />
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-slate-400 mb-1">Helyszín *</label>
+              <input
+                type="text"
+                name="location"
+                id="edit-event-location"
+                class="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-white focus:ring-2 focus:ring-violet-500 outline-none"
+                placeholder="pl. Budapest, Deák tér"
+                required
+              />
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-slate-400 mb-1">Szervező</label>
+              <input
+                type="text"
+                name="organizer"
+                id="edit-event-organizer"
+                class="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-white focus:ring-2 focus:ring-violet-500 outline-none"
+                placeholder="A te neved"
+              />
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-slate-400 mb-1">Értékelés (1-5 csillag)</label>
+              <select
+                name="rating"
+                id="edit-event-rating"
+                class="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-white focus:ring-2 focus:ring-violet-500 outline-none"
+              >
+                <option value="0">Nincs értékelés</option>
+                <option value="1">⭐ 1 csillag</option>
+                <option value="1.5">⭐ 1.5 csillag</option>
+                <option value="2">⭐⭐ 2 csillag</option>
+                <option value="2.5">⭐⭐ 2.5 csillag</option>
+                <option value="3">⭐⭐⭐ 3 csillag</option>
+                <option value="3.5">⭐⭐⭐ 3.5 csillag</option>
+                <option value="4">⭐⭐⭐⭐ 4 csillag</option>
+                <option value="4.5">⭐⭐⭐⭐ 4.5 csillag</option>
+                <option value="5">⭐⭐⭐⭐⭐ 5 csillag</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-slate-400 mb-1">Kategória</label>
+              <select
+                name="category"
+                id="edit-event-category"
+                class="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-white focus:ring-2 focus:ring-violet-500 outline-none"
+              >
+                <option value="Házibuli">Házibuli</option>
+                <option value="Klub">Klub</option>
+                <option value="Fesztivál">Fesztivál</option>
+                <option value="Rave">Rave</option>
+                <option value="Chill">Chill</option>
+                <option value="Egyéb">Egyéb</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-slate-400 mb-1">Leírás</label>
+              <textarea
+                name="description"
+                id="edit-event-description"
+                rows="4"
+                class="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-white focus:ring-2 focus:ring-violet-500 outline-none resize-none"
+                placeholder="Írd le az esemény részleteit..."
+              ></textarea>
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-slate-400 mb-2">Esemény képe</label>
+              <div id="edit-current-image" class="mb-3 hidden">
+                <p class="text-sm text-slate-400 mb-2">Jelenlegi kép:</p>
+                <img id="edit-current-image-preview" src="" alt="Current" class="w-full h-48 object-cover rounded-lg border border-slate-600" />
+              </div>
+              <div class="flex items-center justify-center w-full">
+                <label for="edit-event-image" class="flex flex-col items-center justify-center w-full h-32 border-2 border-slate-700 border-dashed rounded-lg cursor-pointer bg-slate-800/50 hover:bg-slate-800 transition-colors">
+                  <div class="flex flex-col items-center justify-center pt-5 pb-6" id="edit-image-upload-label">
+                    <svg class="w-10 h-10 mb-3 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                    </svg>
+                    <p class="mb-2 text-sm text-slate-400"><span class="font-semibold">Új kép feltöltése</span></p>
+                    <p class="text-xs text-slate-500">PNG, JPG, GIF (MAX. 5MB)</p>
+                  </div>
+                  <input id="edit-event-image" type="file" name="image" accept="image/*" class="hidden" />
+                </label>
+              </div>
+              <div id="edit-image-preview-container" class="hidden mt-3 relative rounded-lg overflow-hidden border border-slate-600">
+                <img id="edit-image-preview" src="" alt="Preview" class="w-full h-48 object-cover" />
+                <button type="button" id="edit-remove-image-btn" class="absolute top-2 right-2 bg-red-600 hover:bg-red-700 text-white rounded-full p-2 transition-colors">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+
+        <!-- Footer -->
+        <div class="p-6 border-t border-slate-800 bg-slate-900/50 flex justify-between">
+          <button type="button" id="delete-event-btn" class="inline-flex items-center justify-center rounded-lg font-semibold px-4 py-2 bg-red-600 hover:bg-red-700 text-white transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+            Törlés
+          </button>
+          <div class="flex gap-3">
+            <button type="button" id="cancel-edit-modal-btn" class="inline-flex items-center justify-center rounded-lg font-semibold px-4 py-2 text-slate-400 hover:text-white hover:bg-slate-800 transition-colors">Mégse</button>
+            <button type="submit" form="edit-event-form" class="inline-flex items-center justify-center rounded-lg font-semibold px-4 py-2 bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500 text-white shadow-lg shadow-violet-900/20">Mentés</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Event Details Modal -->
+    <div id="event-details-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4">
+      <div class="absolute inset-0 bg-slate-900/80 backdrop-blur-sm" id="event-details-backdrop"></div>
+      
+      <div class="relative w-full max-w-4xl bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+        <!-- Header -->
+        <div class="flex items-center justify-between p-6 border-b border-slate-800 bg-slate-900/50">
+          <h2 class="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-fuchsia-400">
+            Esemény részletei
+          </h2>
+          <button id="close-event-details-btn" class="text-slate-400 hover:text-white transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+          </button>
+        </div>
+
+        <!-- Scrollable Content -->
+        <div class="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-slate-700 scrollbar-track-transparent">
+          <!-- Event Image -->
+          <div id="detail-image-container" class="w-full h-80 bg-slate-800 relative overflow-hidden">
+            <img id="detail-event-image" src="" alt="Event" class="w-full h-full object-cover" />
+            <div class="absolute inset-0 bg-gradient-to-t from-slate-900 via-transparent to-transparent"></div>
+            
+            <!-- Category Badge -->
+            <div class="absolute top-4 right-4">
+              <span id="detail-category-badge" class="inline-flex items-center px-4 py-2 rounded-full text-sm font-semibold bg-slate-900/80 backdrop-blur-sm border border-slate-700 text-white">
+                <!-- Category will be inserted here -->
+              </span>
+            </div>
+          </div>
+
+          <!-- Event Info -->
+          <div class="p-6 space-y-6">
+            <!-- Title -->
+            <div>
+              <h3 id="detail-event-title" class="text-3xl font-bold text-white mb-2">
+                <!-- Title will be inserted here -->
+              </h3>
+              <p id="detail-event-organizer" class="text-slate-400 text-lg flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                <span>Szervező: <span class="text-fuchsia-400 font-semibold"></span></span>
+              </p>
+            </div>
+
+            <!-- Date & Time & Location Info Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div class="bg-gradient-to-br from-violet-600/20 to-violet-600/5 border border-violet-500/30 rounded-xl p-4">
+                <div class="flex items-center gap-3">
+                  <div class="bg-violet-600/30 p-2 rounded-lg">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-violet-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                  </div>
+                  <div>
+                    <p class="text-slate-500 text-xs font-medium">Dátum</p>
+                    <p id="detail-event-date" class="text-white font-bold"><!-- Date --></p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="bg-gradient-to-br from-fuchsia-600/20 to-fuchsia-600/5 border border-fuchsia-500/30 rounded-xl p-4">
+                <div class="flex items-center gap-3">
+                  <div class="bg-fuchsia-600/30 p-2 rounded-lg">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-fuchsia-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                  </div>
+                  <div>
+                    <p class="text-slate-500 text-xs font-medium">Időpont</p>
+                    <p id="detail-event-time" class="text-white font-bold"><!-- Time --></p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="bg-gradient-to-br from-pink-600/20 to-pink-600/5 border border-pink-500/30 rounded-xl p-4">
+                <div class="flex items-center gap-3">
+                  <div class="bg-pink-600/30 p-2 rounded-lg">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-pink-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                  </div>
+                  <div>
+                    <p class="text-slate-500 text-xs font-medium">Helyszín</p>
+                    <p id="detail-event-location" class="text-white font-bold text-sm"><!-- Location --></p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Description -->
+            <div id="detail-description-container" class="bg-slate-800/50 border border-slate-700 rounded-xl p-6">
+              <h4 class="text-lg font-bold text-white mb-3 flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-fuchsia-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                Leírás
+              </h4>
+              <p id="detail-event-description" class="text-slate-300 leading-relaxed">
+                <!-- Description will be inserted here -->
+              </p>
+            </div>
+
+            <!-- Tags -->
+            <div id="detail-tags-container" class="hidden">
+              <h4 class="text-lg font-bold text-white mb-3 flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-fuchsia-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg>
+                Címkék
+              </h4>
+              <div id="detail-event-tags" class="flex flex-wrap gap-2">
+                <!-- Tags will be inserted here -->
+              </div>
+            </div>
+
+            <!-- Additional Info -->
+            <div class="bg-gradient-to-r from-violet-600/10 to-fuchsia-600/10 border border-violet-500/20 rounded-xl p-4">
+              <div class="flex items-center justify-between text-sm">
+                <span class="text-slate-400">Esemény azonosító:</span>
+                <span id="detail-event-id" class="text-slate-300 font-mono">#0000</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="p-6 border-t border-slate-800 bg-slate-900/50 flex justify-end gap-3">
+          <button type="button" id="close-event-details-btn-2" class="inline-flex items-center justify-center rounded-lg font-semibold px-6 py-3 text-slate-400 hover:text-white hover:bg-slate-800 transition-colors">
+            Bezárás
+          </button>
+          <button type="button" id="share-event-btn" class="inline-flex items-center justify-center rounded-lg font-semibold px-6 py-3 bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500 text-white shadow-lg shadow-violet-900/20">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
+            Megosztás
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script src="js/api-auth.js"></script>
+    <script src="js/api-events.js"></script>
+    <script src="js/app.js"></script>
+    <script src="js/auth-ui.js"></script>
+    <script src="js/constants.js"></script>
+    <script src="js/modals.js"></script>
+    <script src="js/render.js"></script>
+    
+  </body>
+</html>
