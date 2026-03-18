@@ -1,5 +1,5 @@
 import { reactive, toRefs } from 'vue';
-import { apiLogin, apiRegister, apiLogout, apiGetCurrentUser, STORAGE_KEYS } from '../services/api.js';
+import { apiLogin, apiRegister, apiLogout, apiGetCurrentUser, apiUpdateProfile, STORAGE_KEYS } from '../services/api.js';
 
 const state = reactive({
   currentUser: null,
@@ -39,11 +39,21 @@ export function useAuth() {
     return user;
   }
 
+  async function updateProfile(data) {
+    const result = await apiUpdateProfile(data);
+    if (result.success) {
+      state.currentUser = result.user;
+      localStorage.setItem(STORAGE_KEYS.CURRENT_USER, JSON.stringify(result.user));
+    }
+    return result;
+  }
+
   return {
     ...toRefs(state),
     login,
     register,
     logout,
     restoreSession,
+    updateProfile,
   };
 }

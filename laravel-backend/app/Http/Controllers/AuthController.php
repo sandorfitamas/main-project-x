@@ -95,4 +95,29 @@ class AuthController extends Controller
             ],
         ]);
     }
+
+    public function updateProfile(Request $request)
+    {
+        $user = $request->user();
+
+        $request->validate([
+            'name'     => 'required|string|max:100',
+            'password' => 'nullable|string|min:6',
+        ]);
+
+        $user->name = $request->name;
+        if ($request->filled('password')) {
+            $user->password = \Illuminate\Support\Facades\Hash::make($request->password);
+        }
+        $user->save();
+
+        return response()->json([
+            'success' => true,
+            'user'    => [
+                'id'    => $user->id,
+                'name'  => $user->name,
+                'email' => $user->email,
+            ],
+        ]);
+    }
 }

@@ -16,7 +16,12 @@
       <div class="event-card-body">
         <div class="d-flex align-items-start justify-content-between gap-2 mb-2">
           <h5 class="text-white fw-bold mb-0 lh-sm" style="font-size:1.05rem">{{ event.title || '' }}</h5>
-          <span v-if="rating > 0" class="text-warning fw-bold small flex-shrink-0">⭐ {{ rating.toFixed(1) }}</span>
+          <div v-if="rating > 0" class="d-flex align-items-center text-warning fs-6 gap-1 flex-shrink-0">
+            <div class="d-flex">
+              <i v-for="i in 5" :key="i" class="bi" :class="getStarClass(i, rating)" style="font-size: 0.8rem"></i>
+            </div>
+            <span class="small fw-bold">{{ rating.toFixed(1) }}</span>
+          </div>
         </div>
         <div class="d-flex align-items-center gap-1 text-secondary mb-1" style="font-size:.8rem">
           <i class="bi bi-geo-alt-fill" style="color:#d946ef"></i>
@@ -89,6 +94,12 @@ const formattedTime = computed(() => {
 
 function onImgError(e) {
   e.target.src = PLACEHOLDER_IMAGE;
+}
+
+function getStarClass(index, rating) {
+  if (rating >= index) return 'bi-star-fill';
+  if (rating >= index - 0.5) return 'bi-star-half';
+  return 'bi-star';
 }
 
 async function onFavoriteClick() {

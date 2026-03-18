@@ -34,15 +34,20 @@
           <div class="sticky-top" style="top:5rem">
             <div class="d-flex align-items-start justify-content-between gap-2 mb-3">
               <h1 class="h2 text-white fw-bold mb-0">{{ ev.title }}</h1>
-              <div v-if="ratingNum > 0" class="text-warning fw-bold white-space-nowrap">⭐ {{ ratingNum.toFixed(1) }}</div>
+              <div v-if="ratingNum > 0" class="text-warning fw-bold white-space-nowrap d-flex align-items-center gap-1">
+                <div class="d-flex text-warning fs-5">
+                  <i v-for="i in 5" :key="i" class="bi" :class="getStarClass(i, ratingNum)"></i>
+                </div>
+                <span class="ms-1 pt-1">{{ ratingNum.toFixed(1) }}</span>
+              </div>
             </div>
             <p class="text-secondary mb-4"><i class="bi bi-person me-1" style="color:#d946ef"></i>Szervező: <span class="text-white fw-semibold">{{ ev.organizer || 'Ismeretlen' }}</span></p>
             <div class="d-flex flex-column gap-3 mb-4">
-              <div class="d-flex align-items-center gap-3 p-3 rounded-3" style="background:rgba(124,58,237,.15);border:1px solid rgba(124,58,237,.3)"><i class="bi bi-calendar3 fs-5 flex-shrink-0" style="color:#a78bfa"></i><div><div class="text-muted small">Dátum</div><div class="text-white fw-bold">{{ fmtDate }}</div></div></div>
-              <div class="d-flex align-items-center gap-3 p-3 rounded-3" style="background:rgba(217,70,239,.15);border:1px solid rgba(217,70,239,.3)"><i class="bi bi-clock fs-5 flex-shrink-0" style="color:#e879f9"></i><div><div class="text-muted small">Időpont</div><div class="text-white fw-bold">{{ fmtTime }}</div></div></div>
-              <div class="d-flex align-items-center gap-3 p-3 rounded-3" style="background:rgba(236,72,153,.15);border:1px solid rgba(236,72,153,.3)"><i class="bi bi-geo-alt fs-5 flex-shrink-0" style="color:#f9a8d4"></i><div><div class="text-muted small">Helyszín</div><div class="text-white fw-bold">{{ ev.location || 'Helyszín TBD' }}</div></div></div>
-              <div class="d-flex align-items-center gap-3 p-3 rounded-3" style="background:rgba(16,185,129,.15);border:1px solid rgba(16,185,129,.3)"><i class="bi bi-ticket-perforated fs-5 flex-shrink-0" style="color:#6ee7b7"></i><div><div class="text-muted small">Belépő</div><div class="text-white fw-bold">{{ ev.price || 'Ingyenes' }}</div></div></div>
-              <div v-if="ev.contact_phone" class="d-flex align-items-center gap-3 p-3 rounded-3" style="background:rgba(6,182,212,.15);border:1px solid rgba(6,182,212,.3)"><i class="bi bi-telephone fs-5 flex-shrink-0" style="color:#67e8f9"></i><div><div class="text-muted small">Kapcsolat</div><div class="text-white fw-bold">{{ ev.contact_phone }}</div></div></div>
+              <div class="d-flex align-items-center gap-3 p-3 rounded-3" style="background:rgba(124,58,237,.15);border:1px solid rgba(124,58,237,.3)"><i class="bi bi-calendar3 fs-5 flex-shrink-0" style="color:#a78bfa"></i><div><div class="text-light opacity-75 small">Dátum</div><div class="text-white fw-bold fs-5">{{ fmtDate }}</div></div></div>
+              <div class="d-flex align-items-center gap-3 p-3 rounded-3" style="background:rgba(217,70,239,.15);border:1px solid rgba(217,70,239,.3)"><i class="bi bi-clock fs-5 flex-shrink-0" style="color:#e879f9"></i><div><div class="text-light opacity-75 small">Időpont</div><div class="text-white fw-bold fs-5">{{ fmtTime }}</div></div></div>
+              <div class="d-flex align-items-center gap-3 p-3 rounded-3" style="background:rgba(236,72,153,.15);border:1px solid rgba(236,72,153,.3)"><i class="bi bi-geo-alt fs-5 flex-shrink-0" style="color:#f9a8d4"></i><div><div class="text-light opacity-75 small">Helyszín</div><div class="text-white fw-bold fs-5">{{ ev.location || 'Helyszín TBD' }}</div></div></div>
+              <div class="d-flex align-items-center gap-3 p-3 rounded-3" style="background:rgba(16,185,129,.15);border:1px solid rgba(16,185,129,.3)"><i class="bi bi-ticket-perforated fs-5 flex-shrink-0" style="color:#6ee7b7"></i><div><div class="text-light opacity-75 small">Belépő</div><div class="text-white fw-bold fs-5">{{ ev.price || 'Ingyenes' }}</div></div></div>
+              <div v-if="ev.contact_phone" class="d-flex align-items-center gap-3 p-3 rounded-3" style="background:rgba(6,182,212,.15);border:1px solid rgba(6,182,212,.3)"><i class="bi bi-telephone fs-5 flex-shrink-0" style="color:#67e8f9"></i><div><div class="text-light opacity-75 small">Kapcsolat</div><div class="text-white fw-bold fs-5">{{ ev.contact_phone }}</div></div></div>
             </div>
             <button class="btn btn-gradient w-100 py-3 fw-semibold" @click="shareEvent"><i class="bi bi-share me-2"></i> Esemény Megosztása</button>
           </div>
@@ -80,6 +85,12 @@ function shareEvent() {
   const url = window.location.href;
   if (navigator.share) { navigator.share({ title: ev.value.title, url }); }
   else { navigator.clipboard.writeText(url).then(() => showToast('Link másolva!', 'success')); }
+}
+
+function getStarClass(index, rating) {
+  if (rating >= index) return 'bi-star-fill';
+  if (rating >= index - 0.5) return 'bi-star-half';
+  return 'bi-star';
 }
 
 onMounted(async () => {

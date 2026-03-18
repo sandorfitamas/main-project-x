@@ -4,10 +4,12 @@
     <NavBar
       :current-user="currentUser"
       @show-auth="showAuthModal = true"
+      @show-home="navigateSection('home')"
       @show-all-events="navigateSection('events')"
       @show-my-events="navigateSection('my-events')"
       @show-favorites="navigateSection('favorites')"
       @show-community="navigateSection('community')"
+      @show-profile="router.push('/profile')"
       @logout="handleLogout"
       @create-event="showCreateModal = true"
     />
@@ -77,7 +79,7 @@ const { loadAllEvents } = useEvents();
 const { loadFavoriteIds } = useFavorites();
 const { showToast } = useToast();
 
-const activeSection = ref('events');
+const activeSection = ref(localStorage.getItem('activeSection') || 'home');
 const showAuthModal = ref(false);
 const showCreateModal = ref(false);
 const showEditModal = ref(false);
@@ -89,6 +91,7 @@ const router = useRouter();
 
 function navigateSection(section) {
   activeSection.value = section;
+  localStorage.setItem('activeSection', section);
   router.push('/');
 }
 

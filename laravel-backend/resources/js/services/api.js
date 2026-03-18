@@ -89,6 +89,25 @@ export async function apiGetCurrentUser() {
   }
 }
 
+export async function apiUpdateProfile(data) {
+  const token = localStorage.getItem(STORAGE_KEYS.AUTH_TOKEN);
+  if (!token) return { success: false, message: 'Nem vagy bejelentkezve' };
+  try {
+    const res = await fetch(`${AUTH_BASE}/profile`, {
+      method: 'PUT',
+      headers: { 
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify(data),
+    });
+    return res.json();
+  } catch {
+    return { success: false, message: 'Hálózati hiba' };
+  }
+}
+
 // --- EVENTS ---
 export async function apiFetchEvents() {
   try {
@@ -167,7 +186,7 @@ export async function apiFetchFavorites() {
       headers: { ...getAuthHeaders(), 'Accept': 'application/json' },
     });
     const data = await res.json();
-    return data.success ? data.favorites : [];
+    return data.success ? data.events : [];
   } catch {
     return [];
   }

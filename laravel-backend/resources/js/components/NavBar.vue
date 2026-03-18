@@ -6,12 +6,11 @@
         <span class="logo-text">PROJECT X</span>
       </div>
       <div class="d-none d-md-flex align-items-center gap-4">
-        <a class="nav-link-dark" @click.prevent="$emit('show-all-events')">Kezdőlap</a>
-        <a class="nav-link-dark" @click.prevent="$emit('show-all-events')">Események</a>
-        <a class="nav-link-dark" @click.prevent="$emit('show-community')">Közösség</a>
-        <a v-if="currentUser" class="nav-link-dark" @click.prevent="$emit('show-my-events')">Saját eseményeim</a>
-        <a v-if="currentUser" class="nav-link-dark" @click.prevent="$emit('show-favorites')">
-          <i class="bi bi-heart-fill text-danger me-1"></i>Kedvencek
+        <a href="#" class="nav-link-dark" @click.prevent="$emit('show-home')">Kezdőlap</a>
+        <a href="#" class="nav-link-dark" @click.prevent="$emit('show-all-events')">Események</a>
+        <a href="#" class="nav-link-dark" @click.prevent="$emit('show-community')">Közösség</a>
+        <a href="#" v-if="currentUser" class="nav-link-dark" @click.prevent="$emit('show-favorites')">
+          Kedvencek
         </a>
       </div>
       <div class="position-relative">
@@ -24,11 +23,14 @@
                  style="width:32px;height:32px;background:linear-gradient(135deg,#7c3aed,#d946ef);font-size:.75rem">
               {{ initials }}
             </div>
-            <span class="d-none d-md-inline" style="font-size:.85rem">{{ currentUser.name }}</span>
+            <span class="d-none d-md-inline" style="font-size:.85rem">{{ currentUser?.name }}</span>
             <i class="bi bi-chevron-down" style="font-size:.7rem"></i>
           </div>
         </button>
         <div v-if="dropdownOpen" class="user-dropdown">
+          <button class="user-dropdown-btn" @click="dropdownOpen = false; $emit('show-profile')">
+            <i class="bi bi-person-lines-fill"></i> Profil
+          </button>
           <button class="user-dropdown-btn" @click="dropdownOpen = false; $emit('show-my-events')">
             <i class="bi bi-person-circle"></i> Saját eseményeim
           </button>
@@ -52,13 +54,13 @@ const props = defineProps({
   currentUser: { type: Object, default: null },
 });
 
-defineEmits(['show-auth', 'show-all-events', 'show-my-events', 'show-favorites', 'show-community', 'logout', 'create-event']);
+defineEmits(['show-auth', 'show-all-events', 'show-my-events', 'show-favorites', 'show-community', 'logout', 'create-event', 'show-profile']);
 
 const dropdownOpen = ref(false);
 const authBtnRef = ref(null);
 
 const initials = computed(() => {
-  return props.currentUser ? (props.currentUser.name || '?').substring(0, 2).toUpperCase() : '';
+  return props.currentUser?.name ? String(props.currentUser.name).substring(0, 2).toUpperCase() : '?';
 });
 
 function toggleDropdown() {

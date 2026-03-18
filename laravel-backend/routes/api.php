@@ -13,6 +13,7 @@ Route::post('/auth/login',    [AuthController::class, 'login']);
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/auth/logout',   [AuthController::class, 'logout']);
     Route::get('/auth/current',   [AuthController::class, 'current']);
+    Route::put('/auth/profile',   [AuthController::class, 'updateProfile']);
 });
 
 // --- EVENTS (public list) ---
