@@ -243,3 +243,60 @@ export async function apiFetchUsers() {
     return [];
   }
 }
+
+// --- REVIEWS ---
+export async function apiFetchReviews(eventId) {
+  try {
+    const res = await fetch(`${API_BASE}/events/${eventId}/reviews`, { headers: { 'Accept': 'application/json' } });
+    return await res.json();
+  } catch {
+    return [];
+  }
+}
+
+export async function apiSubmitReview(eventId, rating, comment) {
+  try {
+    const res = await fetch(`${API_BASE}/events/${eventId}/reviews`, {
+      method: 'POST',
+      headers: { ...getAuthHeaders(), 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify({ rating, comment }),
+    });
+    return await res.json();
+  } catch {
+    return { success: false, message: 'Hálózati hiba' };
+  }
+}
+
+export async function apiToggleAttendance(eventId) {
+  try {
+    const res = await fetch(`/api/events/${eventId}/attend`, {
+      method: 'POST',
+      headers: { ...getAuthHeaders(), 'Accept': 'application/json' }
+    });
+    return await res.json();
+  } catch {
+    return { success: false };
+  }
+}
+
+export async function apiCheckAttendance(eventId) {
+  try {
+    const res = await fetch(`/api/events/${eventId}/attend`, {
+      headers: { ...getAuthHeaders(), 'Accept': 'application/json' }
+    });
+    return await res.json();
+  } catch {
+    return { attending: false };
+  }
+}
+
+export async function apiFetchRecentAttendances() {
+  try {
+    const res = await fetch('/api/attendances/recent', {
+      headers: { 'Accept': 'application/json' }
+    });
+    return await res.json();
+  } catch {
+    return { attendances: [] };
+  }
+}

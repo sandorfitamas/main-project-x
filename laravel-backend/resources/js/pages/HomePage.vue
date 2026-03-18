@@ -93,7 +93,7 @@
                 <div class="rounded-circle d-flex align-items-center justify-content-center fw-bold text-white shadow" :style="{ width: '40px', height: '40px', background: t.color }">{{ t.initial }}</div>
                 <div>
                   <h6 class="text-white mb-0">{{ t.name }}</h6>
-                  <small class="text-muted">{{ t.location }}</small>
+                  <small class="text-light opacity-50">{{ t.location }}</small>
                 </div>
               </div>
             </div>
@@ -215,7 +215,7 @@ import EventCard from '../components/EventCard.vue';
 import { useEvents } from '../stores/events.js';
 import { useFavorites } from '../stores/favorites.js';
 import { useAuth } from '../stores/auth.js';
-import { apiFetchUsers, apiFetchEvents } from '../services/api.js';
+import { apiFetchUsers, apiFetchEvents, apiFetchRecentAttendances } from '../services/api.js';
 
 const props = defineProps({
   activeSection: { type: String, default: 'events' },
@@ -279,10 +279,10 @@ watch(() => props.activeSection, async (sec) => {
   } else if (sec === 'community') {
     await loadCommunityData();
   }
-});
+}, { immediate: true });
 
 async function loadCommunityData() {
-  const [users, events] = await Promise.all([apiFetchUsers(), apiFetchEvents()]);
+  const [users, events, attendances] = await Promise.all([apiFetchUsers(), apiFetchEvents(), apiFetchRecentAttendances()]);
   communityUsers.value = users;
   communityEventCount.value = events.length;
   const byUser = {};
@@ -292,20 +292,31 @@ async function loadCommunityData() {
     .sort((a,b) => (byUser[b.id]||0) - (byUser[a.id]||0))
     .slice(0, 8)
     .map(u => ({ user: u, count: byUser[u.id]||0 }));
-  const recent = [...events].sort((a,b) => new Date(b.created_at||0) - new Date(a.created_at||0)).slice(0, 10);
-  recentActivity.value = recent.map(ev =>
-    `Új esemény: <strong class="text-white">${escapeHtml(ev.title)}</strong> — ${escapeHtml(ev.location||'')}`
-  );
+
+  const activityList = [];
+
+  const rawAttendances = attendances.attendances || attendances;
+  if (Array.isArray(rawAttendances)) {
+    rawAttendances.forEach(att => {
+      activityList.push({
+        time: new Date(att.created_at || 0),
+        html: `<strong class="text-info">${escapeHtml(att.user_name)}</strong> jelezte, hogy ott lesz: <strong class="text-white">${escapeHtml(att.event_title)}</strong>`
+      });
+    });
+  }
+
+  activityList.sort((a, b) => b.time - a.time);
+  recentActivity.value = activityList.slice(0, 10).map(a => a.html);
 }
 
 const testimonials = [
   { text: "A legjobb bulikat itt találtam! Végre nem kell 5 különböző Facebook csoportot bújnom, ha hétvégén csinálnék valamit.", name: "Bence", location: "Budapest", stars: 5, initial: "B", color: "linear-gradient(135deg, #3b82f6, #2dd4bf)" },
   { text: "A házibuli funkció zseniális. Így sokkal könnyebb volt embereket hívni egyetemi buliba, és a szervezés is rögtön átláthatóbb lett!", name: "Anna", location: "Szeged", stars: 5, initial: "A", color: "linear-gradient(135deg, #ec4899, #f43f5e)" },
-  { text: "Nagyon király a dizájn, könnyű használni és rögtön értem mi hol van. Életmentő app a péntek estékhez.", name: "Dávid", location: "Debrecen", stars: 4.5, initial: "D", color: "linear-gradient(135deg, #8b5cf6, #c084fc)" },
+  { text: "Nagyon király a dizájn, könnyű használni és rögtön értem mi hol van. Életmentő app a péntek estékhez.", name: "Dávid", location: "Debrecen", stars: 4, initial: "D", color: "linear-gradient(135deg, #8b5cf6, #c084fc)" },
   { text: "Sosem tudtam, merre induljak szombat este. A Project X feldobta a legközelebbi underground bulikat is!", name: "Péter", location: "Győr", stars: 5, initial: "P", color: "linear-gradient(135deg, #10b981, #34d399)" },
   { text: "Egyszerűen imádom! A kedvenc funkciómmal egy helyen gyűjthetem a fesztiválokat.", name: "Lilla", location: "Budapest", stars: 5, initial: "L", color: "linear-gradient(135deg, #f59e0b, #fbbf24)" },
   { text: "Végre egy olyan oldal ami nem néz ki úgy mint a 2010-es évek elején. Modern, gyors, szexi.", name: "Karesz", location: "Miskolc", stars: 5, initial: "K", color: "linear-gradient(135deg, #6366f1, #818cf8)" },
-  { text: "Én leginkább csak chill eseményeket kerestem, de még úgy is szuper kávéházi akusztikus koncerteket dobott fel.", name: "Eszter", location: "Pécs", stars: 4.5, initial: "E", color: "linear-gradient(135deg, #14b8a6, #2dd4bf)" },
+  { text: "Én leginkább csak chill eseményeket kerestem, de még úgy is szuper kávéházi akusztikus koncerteket dobott fel.", name: "Eszter", location: "Pécs", stars: 4, initial: "E", color: "linear-gradient(135deg, #14b8a6, #2dd4bf)" },
   { text: "Egy saját DJ szettet szerveztem be és kb 50-en eljöttek innen. Nagyon adja a közösség!", name: "Zsolti", location: "Szombathely", stars: 5, initial: "Z", color: "linear-gradient(135deg, #ef4444, #f87171)" },
   { text: "Brutális amit az applikáció tud. Egyszer mindenkinek ki kell próbálnia!", name: "Réka", location: "Budapest", stars: 5, initial: "R", color: "linear-gradient(135deg, #d946ef, #e879f9)" },
 ];

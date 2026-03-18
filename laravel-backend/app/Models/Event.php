@@ -37,6 +37,11 @@ class Event extends Model
         return $this->hasMany(Favorite::class);
     }
 
+    public function attendees()
+    {
+        return $this->belongsToMany(User::class, 'attendances')->withTimestamps();
+    }
+
     public function toApiArray(): array
     {
         return [

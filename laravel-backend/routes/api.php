@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\FavoriteController;
+use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\UploadController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
@@ -25,10 +26,21 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/events',           [EventController::class, 'store']);
     Route::put('/events/{id}',       [EventController::class, 'update']);
     Route::delete('/events/{id}',    [EventController::class, 'destroy']);
+    
+    // Attendance routes
+    Route::post('/events/{id}/attend', [EventController::class, 'toggleAttendance']);
+    Route::get('/events/{id}/attend',  [EventController::class, 'checkAttendance']);
 });
+
+// --- COMMUNITY ---
+Route::get('/attendances/recent', [EventController::class, 'recentAttendances']);
 
 // --- EVENTS (public detail) — wildcard last so specific routes match first ---
 Route::get('/events/{id}', [EventController::class, 'show']);
+
+// --- REVIEWS ---
+Route::get('/events/{id}/reviews', [ReviewController::class, 'index']);
+Route::middleware('auth:sanctum')->post('/events/{id}/reviews', [ReviewController::class, 'store']);
 
 // --- FAVORITES (protected) ---
 Route::middleware('auth:sanctum')->group(function () {

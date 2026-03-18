@@ -137,4 +137,43 @@ class EventController extends Controller
 
         return response()->json(['success' => true]);
     }
+
+    public function toggleAttendance(Request $request, $id)
+    {
+        $event = Event::findOrFail($id);
+        $user = $request->user();
+
+        $event->attendees()->toggle($user->id);
+
+        return response()->json([
+            'success' => true,
+            'attending' => $event->attendees()->where('user_id', $user->id)->exists(),
+            'attendees_count' => $event->attendees()->count(),
+            'message' => 'Részvételi szándék frissítve.'
+        ]);
+    }
+
+    public function checkAttendance(Request $request, $id)
+    {
+        $event = Event::findOrFail($id);
+        $user = $request->user();
+
+        return response()->json([
+            'success' => true,
+            'attending' => $event->attendees()->where('user_id', $user->id)->exists()
+        ]);
+    }
+
+    public function recentAttendances()
+    {
+        $attendances = \Illuminate\Support\Facades\DB::table('attendances')
+            ->join('users', 'attendances.user_id', '=', 'users.id')
+            ->join('events', 'attendances.event_id', '=', 'events.id')
+            ->select('attendances.created_at', 'users.name as user_name', 'events.title as event_title')
+            ->orderByDesc('attendances.created_at')
+            ->limit(10)
+            ->get();
+            
+        return response()->json(['success' => true, 'attendances' => $attendances]);
+    }
 }
