@@ -32,7 +32,7 @@ function getAuthHeaders() {
   return token ? { 'Authorization': `Bearer ${token}` } : {};
 }
 
-// --- AUTH ---
+// Regisztráció/Bejelentkezés
 export async function apiRegister(name, email, password) {
   try {
     const res = await fetch(`${AUTH_BASE}/register`, {
@@ -108,7 +108,7 @@ export async function apiUpdateProfile(data) {
   }
 }
 
-// --- EVENTS ---
+// Események
 export async function apiFetchEvents() {
   try {
     const res = await fetch(`${API_BASE}/events`, { headers: { 'Accept': 'application/json' } });
@@ -179,7 +179,7 @@ export async function apiDeleteEvent(id) {
   }
 }
 
-// --- FAVORITES ---
+// Kedvencek
 export async function apiFetchFavorites() {
   try {
     const res = await fetch(`${API_BASE}/favorites`, {
@@ -217,7 +217,7 @@ export async function apiRemoveFavorite(eventId) {
   }
 }
 
-// --- UPLOAD ---
+// Feltöltés
 export async function apiUploadImage(file) {
   try {
     const formData = new FormData();
@@ -233,7 +233,7 @@ export async function apiUploadImage(file) {
   }
 }
 
-// --- USERS ---
+// Felhasználók
 export async function apiFetchUsers() {
   try {
     const res = await fetch(`${API_BASE}/users`, { headers: { 'Accept': 'application/json' } });
@@ -244,7 +244,7 @@ export async function apiFetchUsers() {
   }
 }
 
-// --- REVIEWS ---
+// Vélemények
 export async function apiFetchReviews(eventId) {
   try {
     const res = await fetch(`${API_BASE}/events/${eventId}/reviews`, { headers: { 'Accept': 'application/json' } });
@@ -264,39 +264,5 @@ export async function apiSubmitReview(eventId, rating, comment) {
     return await res.json();
   } catch {
     return { success: false, message: 'Hálózati hiba' };
-  }
-}
-
-export async function apiToggleAttendance(eventId) {
-  try {
-    const res = await fetch(`/api/events/${eventId}/attend`, {
-      method: 'POST',
-      headers: { ...getAuthHeaders(), 'Accept': 'application/json' }
-    });
-    return await res.json();
-  } catch {
-    return { success: false };
-  }
-}
-
-export async function apiCheckAttendance(eventId) {
-  try {
-    const res = await fetch(`/api/events/${eventId}/attend`, {
-      headers: { ...getAuthHeaders(), 'Accept': 'application/json' }
-    });
-    return await res.json();
-  } catch {
-    return { attending: false };
-  }
-}
-
-export async function apiFetchRecentAttendances() {
-  try {
-    const res = await fetch('/api/attendances/recent', {
-      headers: { 'Accept': 'application/json' }
-    });
-    return await res.json();
-  } catch {
-    return { attendances: [] };
   }
 }

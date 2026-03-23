@@ -30,7 +30,7 @@ function updateAuthUI() {
     myEventsLink && myEventsLink.classList.remove('hidden');
     favNavLink   && favNavLink.classList.remove('hidden');
 
-    // FAB create button
+    // Buli létrehozás gomb
     let fab = document.getElementById('create-event-fab');
     if (!fab) {
       fab = document.createElement('button');

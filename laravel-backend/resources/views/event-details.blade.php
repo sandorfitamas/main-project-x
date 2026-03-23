@@ -34,7 +34,7 @@
   </div>
 </nav>
 
-<!-- Loading -->
+<!-- Betöltés -->
 <div id="loading-state" class="flex-grow-1 d-flex align-items-center justify-content-center">
   <div class="text-center">
     <div class="spinner-border mb-3" style="color:#d946ef;width:3rem;height:3rem" role="status"></div>
@@ -42,7 +42,7 @@
   </div>
 </div>
 
-<!-- Error-->
+<!-- Hiba -->
 <div id="error-state" class="hidden flex-grow-1 d-flex align-items-center justify-content-center">
   <div class="text-center">
     <i class="bi bi-exclamation-triangle display-3 text-secondary d-block mb-3"></i>
@@ -52,7 +52,7 @@
   </div>
 </div>
 
-<!-- Content -->
+<!-- Tartalom -->
 <main id="event-content" class="hidden flex-grow-1 container-xl px-3 px-md-4 py-5">
   <div class="row g-5">
     <div class="col-lg-7">

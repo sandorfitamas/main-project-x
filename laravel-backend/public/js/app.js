@@ -2,7 +2,7 @@ let allEvents = [];
 let activeCategory = 'all';
 let editingImageUrl = null;
 
-// ─── Section visibility ────────────────────────────────────────────────────────
+// Szekció láthatóságának kezelése
 
 function showSection(id) {
   ['events-section', 'my-events-section', 'favorites-section', 'community-section'].forEach(s => {
@@ -18,7 +18,7 @@ function showMyEvents()   { showSection('my-events-section'); loadMyEvents(); }
 function showFavorites()  { showSection('favorites-section'); loadFavorites(); }
 function showCommunity()  { showSection('community-section'); loadCommunity(); }
 
-// ─── All Events ───────────────────────────────────────────────────────────────
+// Összes esemény betöltése
 
 async function loadAllEvents() {
   allEvents = await apiFetchEvents();
@@ -75,7 +75,7 @@ function renderFilteredEvents() {
   });
 }
 
-// ─── My Events ────────────────────────────────────────────────────────────────
+// Saját események betöltése
 
 async function loadMyEvents() {
   if (!currentUser) { showAuthReminder(); return; }
@@ -98,7 +98,7 @@ async function loadMyEvents() {
   });
 }
 
-// ─── Favorites ────────────────────────────────────────────────────────────────
+// Kedvencek betöltése
 
 async function loadFavorites() {
   if (!currentUser) { showAuthReminder(); return; }
@@ -121,7 +121,7 @@ async function loadFavorites() {
   });
 }
 
-// ─── Community ────────────────────────────────────────────────────────────────
+// Közösség betöltése
 
 async function loadCommunity() {
   const [users, events] = await Promise.all([apiFetchUsers(), apiFetchEvents()]);
@@ -129,7 +129,7 @@ async function loadCommunity() {
   document.getElementById('total-users').textContent  = users.length;
   document.getElementById('total-events').textContent = events.length;
 
-  // Group events by user
+  // Csoportosítás felhasználó szerint a rendezők listájához
   const byUser = {};
   events.forEach(ev => {
     if (ev.user_id) byUser[ev.user_id] = (byUser[ev.user_id] || 0) + 1;
@@ -170,7 +170,7 @@ async function loadCommunity() {
   }
 }
 
-// ─── Card listeners ───────────────────────────────────────────────────────────
+// Eseménykártyákhoz eseménykezelők
 
 function attachCardListeners(cardEl, ev) {
   cardEl.querySelector('.details-btn')?.addEventListener('click', e => {
@@ -204,7 +204,7 @@ function attachCardListeners(cardEl, ev) {
   });
 }
 
-// ─── Event Details Modal ──────────────────────────────────────────────────────
+// Esemény részletek megnyitása
 
 function openEventDetails(ev) {
   document.getElementById('detail-event-title-modal').textContent = ev.title || '';
@@ -250,7 +250,7 @@ function openEventDetails(ev) {
   toggleEventDetailsModal(true);
 }
 
-// ─── Create Event ─────────────────────────────────────────────────────────────
+// Felhasználói állapot kezelése
 
 function setupImageUploadPreview(inputId, previewId, previewContainerId, uploadLabelId, removeBtnId) {
   const imgInput  = document.getElementById(inputId);
@@ -292,7 +292,7 @@ function initCreateEventForm() {
     e.preventDefault();
     const data = new FormData(form);
 
-    // Upload image first if provided
+    // Kép feltöltése, ha van
     const imgFile = imgInput.files[0];
     if (imgFile) {
       const up = await apiUploadImage(imgFile);
@@ -319,7 +319,7 @@ function initCreateEventForm() {
   document.getElementById('cancel-modal-btn').addEventListener('click', () => toggleModal(false));
 }
 
-// ─── Edit Event ───────────────────────────────────────────────────────────────
+// Esemény szerkesztése
 
 function openEditModal(ev) {
   document.getElementById('edit-event-id').value          = ev.id;
@@ -403,7 +403,7 @@ function initEditEventForm() {
   document.getElementById('cancel-edit-modal-btn').addEventListener('click', () => toggleEditModal(false));
 }
 
-// ─── Auth forms ───────────────────────────────────────────────────────────────
+// Hitelesítés állapotának kezelése
 
 function initAuthForms() {
   const loginForm     = document.getElementById('login-form');
@@ -462,7 +462,7 @@ function initAuthForms() {
   });
 }
 
-// ─── Favorites loader (IDs only) ──────────────────────────────────────────────
+// Kedvencek ID-jainak betöltése
 
 async function loadFavoritesIds() {
   if (!currentUser) { favoriteEventIds.clear(); return; }
@@ -470,14 +470,14 @@ async function loadFavoritesIds() {
   favoriteEventIds = new Set(favs.map(f => f.id));
 }
 
-// ─── Auth reminder ────────────────────────────────────────────────────────────
+//Hitelesítés szükségességének jelzése
 
 function showAuthReminder() {
   showToast('Kérjük, jelentkezz be a folytatáshoz!', 'warning');
   toggleAuthModal(true);
 }
 
-// ─── Init ─────────────────────────────────────────────────────────────────────
+// Esemény részletek megnyitása 
 
 document.addEventListener('DOMContentLoaded', async () => {
   initModals();
@@ -495,7 +495,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   document.getElementById('search-input')?.addEventListener('input', () => renderFilteredEvents());
 
-  // Restore session
+  // Jelenlegi felhasználó lekérése és állapot frissítése
   const user = await apiGetCurrentUser();
   setCurrentUser(user);
   if (user) await loadFavoritesIds();
