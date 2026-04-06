@@ -52,7 +52,7 @@ class Event extends Model
             'date'          => $this->date ? $this->date->format('Y-m-d') : '',
             'time'          => $this->time ?? '',
             'location'      => $this->location,
-            'imageUrl'      => $this->image_url ?? '',
+            'imageUrl'      => $this->image_url ? (str_starts_with($this->image_url, '/') ? url($this->image_url) : $this->image_url) : '',
             'category'      => $this->category ?? 'Egyéb',
             'organizer'     => $this->organizer ?? '',
             'user_id'       => $this->user_id,
