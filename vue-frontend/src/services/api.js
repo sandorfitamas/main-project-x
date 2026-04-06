@@ -254,6 +254,15 @@ export async function apiFetchReviews(eventId) {
   }
 }
 
+export async function apiFetchRecentReviews() {
+  try {
+    const res = await fetch(`${API_BASE}/reviews/recent`, { headers: { 'Accept': 'application/json' } });
+    return await res.json();
+  } catch {
+    return [];
+  }
+}
+
 export async function apiSubmitReview(eventId, rating, comment) {
   try {
     const res = await fetch(`${API_BASE}/events/${eventId}/reviews`, {
@@ -261,10 +270,15 @@ export async function apiSubmitReview(eventId, rating, comment) {
       headers: { ...getAuthHeaders(), 'Content-Type': 'application/json', 'Accept': 'application/json' },
       body: JSON.stringify({ rating, comment }),
     });
-    return await res.json();
+    const data = await res.json();
+    if (!res.ok) {
+        return { success: false, ...data, message: data.message || 'Hiba történt a mentés során' };
+    }
+    return data;
   } catch {
     return { success: false, message: 'Hálózati hiba' };
   }
 }
 
-﻿export async function apiFetchRecentAttendances() { try { const res = await fetch(API_BASE + '/attendances/recent', { headers: { 'Accept': 'application/json' } }); const data = await res.json(); return data.success ? data.attendances : []; } catch { return []; } } export async function apiCheckAttendance(eventId) { try { const res = await fetch(API_BASE + '/events/' + eventId + '/attendance', { headers: { ...getAuthHeaders(), 'Accept': 'application/json' } }); return await res.json(); } catch { return { success: false }; } } export async function apiToggleAttendance(eventId, status) { try { const res = await fetch(API_BASE + '/events/' + eventId + '/attendance', { method: 'POST', headers: { ...getAuthHeaders(), 'Content-Type': 'application/json', 'Accept': 'application/json' }, body: JSON.stringify({ status }) }); return await res.json(); } catch { return { success: false, message: 'Halozati hiba' }; } }
+export async function apiFetchRecentAttendances() { try { const res = await fetch(API_BASE + '/attendances/recent', { headers: { 'Accept': 'application/json' } }); const data = await res.json(); return data.success ? data.attendances : []; } catch { return []; } } export async function apiCheckAttendance(eventId) { try { const res = await fetch(API_BASE + '/events/' + eventId + '/attendance', { headers: { ...getAuthHeaders(), 'Accept': 'application/json' } }); return await res.json(); } catch { return { success: false }; } } export async function apiToggleAttendance(eventId, status) { try { const res = await fetch(API_BASE + '/events/' + eventId + '/attendance', { method: 'POST', headers: { ...getAuthHeaders(), 'Content-Type': 'application/json', 'Accept': 'application/json' }, body: JSON.stringify({ status }) }); return await res.json(); } catch { return { success: false, message: 'Halozati hiba' }; } }
+

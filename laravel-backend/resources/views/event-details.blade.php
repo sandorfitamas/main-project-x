@@ -62,7 +62,7 @@
       </div>
       <div class="p-4 rounded-4 border border-secondary border-opacity-25 mb-4" style="background:rgba(30,41,59,.5)">
         <h5 class="text-white fw-bold mb-3"><i class="bi bi-file-text me-2" style="color:#d946ef"></i>Leírás</h5>
-        <p id="detail-description" class="text-secondary lh-lg mb-0"></p>
+        <p id="detail-description" class="text-light lh-lg mb-0"></p>
       </div>
       <div id="tags-container" class="hidden mb-4">
         <h6 class="text-secondary mb-2"><i class="bi bi-tags me-1" style="color:#d946ef"></i>Címkék</h6>

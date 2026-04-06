@@ -18,11 +18,11 @@
               <div class="row mb-3">
                 <div class="col-6">
                   <label class="form-label text-secondary small">Dátum *</label>
-                  <input v-model="form.date" type="date" class="form-control form-dark" required />
+                  <input v-model="form.date" type="date" class="form-control form-dark" :min="todayDate" required />
                 </div>
                 <div class="col-6">
                   <label class="form-label text-secondary small">Idő *</label>
-                  <input v-model="form.time" type="time" class="form-control form-dark" required />
+                  <input v-model="form.time" type="time" class="form-control form-dark" :min="minTime" required />
                 </div>
               </div>
               <div class="mb-3">
@@ -35,11 +35,8 @@
               </div>
               <div class="row mb-3">
                 <div class="col-6">
-                  <label class="form-label text-secondary small">Értékelés</label>
-                  <select v-model="form.rating" class="form-select form-dark">
-                    <option value="0">Nincs értékelés</option>
-                    <option v-for="r in ratingOptions" :key="r" :value="r">{{ '⭐'.repeat(Math.floor(r)) }} {{ r }}</option>
-                  </select>
+                  <label class="form-label text-secondary small">Telefonszám</label>
+                  <input v-model="form.contact_phone" type="tel" class="form-control form-dark" placeholder="+36 30 123 4567" />
                 </div>
                 <div class="col-6">
                   <label class="form-label text-secondary small">Kategória</label>
@@ -84,7 +81,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, watch, inject } from 'vue';
+import { ref, reactive, watch, inject, computed } from 'vue';
 import { useEvents } from '../stores/events.js';
 
 const props = defineProps({ visible: Boolean });
@@ -94,18 +91,35 @@ const showToast = inject('showToast');
 const { createEvent } = useEvents();
 
 const categories = ['Házibuli', 'Klub', 'Fesztivál', 'Rave', 'Chill', 'Egyéb'];
-const ratingOptions = [1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5];
+
+const todayDate = computed(() => {
+  const d = new Date();
+  const yyyy = d.getFullYear();
+  const mm = String(d.getMonth() + 1).padStart(2, '0');
+  const dd = String(d.getDate()).padStart(2, '0');
+  return `${yyyy}-${mm}-${dd}`;
+});
+
+const minTime = computed(() => {
+  if (form.date === todayDate.value) {
+    const d = new Date();
+    const hh = String(d.getHours()).padStart(2, '0');
+    const min = String(d.getMinutes()).padStart(2, '0');
+    return `${hh}:${min}`;
+  }
+  return null;
+});
 
 const form = reactive({
   title: '', date: '', time: '', location: '', organizer: '',
-  rating: '0', category: 'Házibuli', description: '',
+  contact_phone: '', category: 'Házibuli', description: '',
 });
 const imageFile = ref(null);
 const imagePreview = ref(null);
 
 watch(() => props.visible, (val) => {
   if (val) {
-    Object.assign(form, { title: '', date: '', time: '', location: '', organizer: '', rating: '0', category: 'Házibuli', description: '' });
+    Object.assign(form, { title: '', date: '', time: '', location: '', organizer: '', contact_phone: '', category: 'Házibuli', description: '' });
     imageFile.value = null;
     imagePreview.value = null;
   }

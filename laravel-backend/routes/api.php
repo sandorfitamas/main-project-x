@@ -39,6 +39,7 @@ Route::get('/attendances/recent', [EventController::class, 'recentAttendances'])
 Route::get('/events/{id}', [EventController::class, 'show']);
 
 // --- REVIEWS ---
+Route::get('/reviews/recent', [ReviewController::class, 'recent']);
 Route::get('/events/{id}/reviews', [ReviewController::class, 'index']);
 Route::middleware('auth:sanctum')->post('/events/{id}/reviews', [ReviewController::class, 'store']);
 

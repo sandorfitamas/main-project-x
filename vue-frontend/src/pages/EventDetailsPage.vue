@@ -23,7 +23,7 @@
           </div>
           <div class="p-4 rounded-4 border border-secondary border-opacity-25 mb-4" style="background:rgba(30,41,59,.5)">
             <h5 class="text-white fw-bold mb-3"><i class="bi bi-file-text me-2" style="color:#d946ef"></i>Leírás</h5>
-            <p class="text-secondary lh-lg mb-0">{{ ev.description || 'Nincs leírás.' }}</p>
+            <p class="text-light lh-lg mb-0">{{ ev.description || 'Nincs leírás.' }}</p>
           </div>
           <div v-if="tags.length" class="mb-4">
             <h6 class="text-secondary mb-2"><i class="bi bi-tags me-1" style="color:#d946ef"></i>Címkék</h6>
@@ -33,7 +33,7 @@
           <div class="mt-5 border-top border-secondary pt-4">
             <h5 class="text-white fw-bold mb-4"><i class="bi bi-star me-2 text-warning"></i>Vélemények</h5>
 
-            <div v-if="currentUser" class="p-4 rounded-4 border border-secondary border-opacity-25 mb-4" style="background:rgba(30,41,59,.5)">
+            <div v-if="currentUser && !hasReviewed" class="p-4 rounded-4 border border-secondary border-opacity-25 mb-4" style="background:rgba(30,41,59,.5)">
               <h6 class="text-white mb-3 fw-bold"><i class="bi bi-pencil-square me-2" style="color:#d946ef"></i>Írj értékelést</h6>
               <div class="mb-3 d-flex gap-2">
                 <i v-for="i in 5" :key="i" class="bi fs-4 cursor-pointer" :class="reviewRating >= i ? 'bi-star-fill text-warning' : 'bi-star text-secondary opacity-50'" @click="reviewRating = i"></i>
@@ -44,6 +44,11 @@
                   <i class="bi bi-send me-2"></i>{{ isSubmittingReview ? 'Küldés...' : 'Értékelés beküldése' }}
                 </button>
               </div>
+            </div>
+            
+            <div v-else-if="currentUser && hasReviewed" class="p-4 rounded-4 border border-secondary border-opacity-25 mb-4 text-center text-light" style="background:rgba(30,41,59,.5)">
+              <i class="bi bi-check-circle text-success fs-1 mb-2 d-block"></i>
+              <p class="mb-0">Már értékelted ezt a helyszínt. Köszönjük a visszajelzést!</p>
             </div>
 
             <div v-if="reviewsLoading" class="text-secondary">Értékelések betöltése...</div>
@@ -58,7 +63,7 @@
                     <i v-for="i in 5" :key="i" class="bi" :class="r.rating >= i ? 'bi-star-fill' : 'bi-star'"></i>
                   </div>
                 </div>
-                <p class="text-secondary mb-0 small">{{ r.comment }}</p>
+                <p class="text-light mb-0 small">{{ r.comment }}</p>
                 <div class="text-light opacity-50 small mt-2">{{ new Date(r.created_at).toLocaleDateString('hu-HU') }}</div>
               </div>
             </div>
@@ -116,6 +121,15 @@ const reviewComment = ref('');
 const isSubmittingReview = ref(false);
 const isAttending = ref(false);
 const isTogglingAttendance = ref(false);
+const alreadyReviewedError = ref(false);
+
+const hasReviewed = computed(() => {
+  if (alreadyReviewedError.value) return true;
+  const user = currentUser?.value || currentUser;
+  const uid = user?.id || user?.value?.id;
+  if (!uid || !reviews.value) return false;
+  return reviews.value.some(r => Number(r.user_id) === Number(uid) || (r.user && Number(r.user.id) === Number(uid)));
+});
 
 const ratingNum = computed(() => parseFloat(ev.value.rating) || 0);
 const fmtDate = computed(() => {
@@ -168,18 +182,24 @@ async function loadReviews(id) {
 async function submitReview() {
   if (!reviewRating.value || !reviewComment.value.trim() || isSubmittingReview.value) return;
   isSubmittingReview.value = true;
+  alreadyReviewedError.value = false;
   try {
     const res = await apiSubmitReview(ev.value.id, reviewRating.value, reviewComment.value);
     if (res.success !== false) {
       showToast('Értékelés sikeresen beküldve!', 'success');
       reviewRating.value = 0;
       reviewComment.value = '';
+      alreadyReviewedError.value = true;
       await loadReviews(ev.value.id);
       if (res.new_average) {
           ev.value.rating = res.new_average;
       }
     } else {
-      showToast(res.message || 'Hiba történt', 'error');
+      if (res.already_reviewed || (res.message && res.message.includes('rt') && res.message.includes('kelted'))) {
+        alreadyReviewedError.value = true;
+      } else {
+        showToast(res.message || 'Hiba történt', 'error');
+      }
     }
   } catch (err) {
     showToast('Hiba történt', 'error');
@@ -213,3 +233,6 @@ onMounted(async () => {
   color: rgba(255, 255, 255, 0.6) !important;
 }
 </style>
+
+
+

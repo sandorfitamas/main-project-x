@@ -214,7 +214,7 @@ import EventCard from '../components/EventCard.vue';
 import { useEvents } from '../stores/events.js';
 import { useFavorites } from '../stores/favorites.js';
 import { useAuth } from '../stores/auth.js';
-import { apiFetchUsers, apiFetchEvents, apiFetchRecentAttendances } from '../services/api.js';
+import { apiFetchUsers, apiFetchEvents, apiFetchRecentAttendances, apiFetchRecentReviews } from '../services/api.js';
 
 const props = defineProps({
   activeSection: { type: String, default: 'events' },
@@ -237,6 +237,7 @@ const communityUsers = ref([]);
 const communityEventCount = ref(0);
 const topOrganizers = ref([]);
 const recentActivity = ref([]);
+const testimonials = ref([]);
 
 const availableCategories = computed(() => {
   const cats = ['all', ...new Set(allEvents.value.map(e => e.category).filter(Boolean))];
@@ -281,7 +282,7 @@ watch(() => props.activeSection, async (sec) => {
 }, { immediate: true });
 
 async function loadCommunityData() {
-  const [users, events, attendances] = await Promise.all([apiFetchUsers(), apiFetchEvents(), apiFetchRecentAttendances()]);
+    const [users, events, attendances, reviews] = await Promise.all([apiFetchUsers(), apiFetchEvents(), apiFetchRecentAttendances(), apiFetchRecentReviews()]);
   communityUsers.value = users;
   communityEventCount.value = events.length;
   const byUser = {};
@@ -308,17 +309,7 @@ async function loadCommunityData() {
   recentActivity.value = activityList.slice(0, 10).map(a => a.html);
 }
 
-const testimonials = [
-  { text: "A legjobb bulikat itt találtam! Végre nem kell 5 különböző Facebook csoportot bújnom, ha hétvégén csinálnék valamit.", name: "Bence", location: "Budapest", stars: 5, initial: "B", color: "linear-gradient(135deg, #3b82f6, #2dd4bf)" },
-  { text: "A házibuli funkció zseniális. Így sokkal könnyebb volt embereket hívni egyetemi buliba, és a szervezés is rögtön átláthatóbb lett!", name: "Anna", location: "Szeged", stars: 5, initial: "A", color: "linear-gradient(135deg, #ec4899, #f43f5e)" },
-  { text: "Nagyon király a dizájn, könnyű használni és rögtön értem mi hol van. Életmentő app a péntek estékhez.", name: "Dávid", location: "Debrecen", stars: 4, initial: "D", color: "linear-gradient(135deg, #8b5cf6, #c084fc)" },
-  { text: "Sosem tudtam, merre induljak szombat este. A Project X feldobta a legközelebbi underground bulikat is!", name: "Péter", location: "Győr", stars: 5, initial: "P", color: "linear-gradient(135deg, #10b981, #34d399)" },
-  { text: "Egyszerűen imádom! A kedvenc funkciómmal egy helyen gyűjthetem a fesztiválokat.", name: "Lilla", location: "Budapest", stars: 5, initial: "L", color: "linear-gradient(135deg, #f59e0b, #fbbf24)" },
-  { text: "Végre egy olyan oldal ami nem néz ki úgy mint a 2010-es évek elején. Modern, gyors, szexi.", name: "Karesz", location: "Miskolc", stars: 5, initial: "K", color: "linear-gradient(135deg, #6366f1, #818cf8)" },
-  { text: "Én leginkább csak chill eseményeket kerestem, de még úgy is szuper kávéházi akusztikus koncerteket dobott fel.", name: "Eszter", location: "Pécs", stars: 4, initial: "E", color: "linear-gradient(135deg, #14b8a6, #2dd4bf)" },
-  { text: "Egy saját DJ szettet szerveztem be és kb 50-en eljöttek innen. Nagyon adja a közösség!", name: "Zsolti", location: "Szombathely", stars: 5, initial: "Z", color: "linear-gradient(135deg, #ef4444, #f87171)" },
-  { text: "Brutális amit az applikáció tud. Egyszer mindenkinek ki kell próbálnia!", name: "Réka", location: "Budapest", stars: 5, initial: "R", color: "linear-gradient(135deg, #d946ef, #e879f9)" },
-];
+
 </script>
 
 <style scoped>
