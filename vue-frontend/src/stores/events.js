@@ -26,6 +26,7 @@ export function useEvents() {
     const result = await apiCreateEvent(formData);
     if (result.success) {
       await loadAllEvents();
+      await loadMyEvents();
     }
     return result;
   }

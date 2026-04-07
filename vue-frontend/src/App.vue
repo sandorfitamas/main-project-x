@@ -130,6 +130,7 @@ async function onRegisterSuccess(result) {
 async function onEventCreated() {
   showCreateModal.value = false;
   showToast('Esemény sikeresen létrehozva!', 'success');
+  navigateSection('my-events');
 }
 
 async function onEventUpdated() {
@@ -210,7 +211,7 @@ body { background: #0f172a; color: #e2e8f0; min-height: 100vh; display: flex; fl
 .hidden { display: none !important; }
 .nav-link-dark { color: #94a3b8 !important; text-decoration: none !important; font-size: .875rem; font-weight: 500; transition: color .2s; cursor: pointer; }
 .nav-link-dark:hover { color: #fff !important; }
-.user-dropdown { position: absolute; right: 0; top: calc(100% + 8px); min-width: 220px; background: #1e293b; border: 1px solid #334155; border-radius: 12px; box-shadow: 0 20px 40px rgba(0,0,0,.4); z-index: 1050; overflow: hidden; }
+.user-dropdown { position: absolute; right: -10px; top: calc(100% + 8px); min-width: 220px; background: #1e293b; border: 1px solid #334155; border-radius: 12px; box-shadow: 0 20px 40px rgba(0,0,0,.4); z-index: 1060; overflow: hidden; }
 .user-dropdown-btn { width: 100%; text-align: left; padding: .75rem 1rem; background: transparent; border: none; color: #cbd5e1; transition: background .15s; cursor: pointer; display: flex; align-items: center; gap: .75rem; }
 .user-dropdown-btn:hover { background: rgba(255,255,255,.05); color: #fff; }
 .favorite-btn { position: absolute; top: .75rem; right: .75rem; z-index: 10; background: rgba(15,23,42,.8); border: none; border-radius: 50%; width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(4px); transition: all .2s; color: #94a3b8; cursor: pointer; }

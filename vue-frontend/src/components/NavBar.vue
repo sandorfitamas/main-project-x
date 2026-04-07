@@ -1,5 +1,5 @@
 <template>
-  <nav class="navbar-custom sticky-top py-2 px-3 px-md-4">
+  <nav class="navbar-custom sticky-top py-2 px-3 px-md-4" style="z-index: 1060;">
     <div class="container-xl d-flex align-items-center justify-content-between">
       <div class="d-flex align-items-center gap-2" style="cursor:pointer" @click="$emit('show-all-events')">
         <div class="logo-icon"><i class="bi bi-lightning-fill text-white fs-5"></i></div>
@@ -9,9 +9,6 @@
         <a href="#" class="nav-link-dark" @click.prevent="$emit('show-home')">Kezdőlap</a>
         <a href="#" class="nav-link-dark" @click.prevent="$emit('show-all-events')">Események</a>
         <a href="#" class="nav-link-dark" @click.prevent="$emit('show-community')">Közösség</a>
-        <a href="#" v-if="currentUser" class="nav-link-dark" @click.prevent="$emit('show-favorites')">
-          Kedvencek
-        </a>
       </div>
       <div class="position-relative">
         <button v-if="!currentUser" class="btn btn-gradient btn-sm px-3 py-2 fw-semibold" @click="$emit('show-auth')">

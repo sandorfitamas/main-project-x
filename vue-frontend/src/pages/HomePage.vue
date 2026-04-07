@@ -79,7 +79,7 @@
       </div>
 
       <!-- Értékelések -->
-      <div class="container-xl pb-5 mb-5 mt-4">
+      <div class="container-xl pb-5 mb-5 mt-4" v-if="testimonials.length > 0">
         <h3 class="fw-bold text-white mb-4 text-center">Mit mondanak rólunk?</h3>
         <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
           <div v-for="(t, i) in (showAllTestimonials ? testimonials : testimonials.slice(0, 3))" :key="i" class="col">
@@ -249,9 +249,7 @@ const filteredEvents = computed(() => {
   let list = activeCategory.value === 'all' ? allEvents.value : allEvents.value.filter(e => e.category === activeCategory.value);
   if (q) {
     list = list.filter(e =>
-      (e.title||'').toLowerCase().includes(q) ||
-      (e.location||'').toLowerCase().includes(q) ||
-      (e.description||'').toLowerCase().includes(q)
+      (e.title || '').toLowerCase().startsWith(q)
     );
   }
   return list;
@@ -270,7 +268,12 @@ function escapeHtml(str) {
 }
 
 watch(() => props.activeSection, async (sec) => {
-  if (sec === 'my-events') {
+  if (sec === 'events') {
+    localSearch.value = '';
+    setSearch('');
+  } else if (!sec || sec === 'home') {
+    await loadTestimonials();
+  } else if (sec === 'my-events') {
     if (!props.currentUser) { showAuthModal(); emit('show-all-events'); return; }
     await loadMyEvents();
   } else if (sec === 'favorites') {
@@ -280,6 +283,23 @@ watch(() => props.activeSection, async (sec) => {
     await loadCommunityData();
   }
 }, { immediate: true });
+
+async function loadTestimonials() {
+  const reviews = await apiFetchRecentReviews();
+  if (Array.isArray(reviews)) {
+    testimonials.value = reviews.map(r => {
+      const uName = r.user?.name || 'Ismeretlen';
+      return {
+        stars: parseFloat(r.rating) || 0,
+        text: r.comment,
+        initial: uName.substring(0, 2).toUpperCase(),
+        name: uName,
+        location: r.event?.title || 'Esemény',
+        color: 'linear-gradient(135deg, #7c3aed, #d946ef)'
+      };
+    });
+  }
+}
 
 async function loadCommunityData() {
     const [users, events, attendances, reviews] = await Promise.all([apiFetchUsers(), apiFetchEvents(), apiFetchRecentAttendances(), apiFetchRecentReviews()]);

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Review;
+use App\Models\Event;
 
 class ReviewController extends Controller
 {
@@ -23,6 +24,11 @@ class ReviewController extends Controller
             'rating' => 'required|integer|min:1|max:5',
             'comment' => 'nullable|string'
         ]);
+
+        $event = Event::findOrFail($eventId);
+        if ($event->user_id === $request->user()->id) {
+            return response()->json(['success' => false, 'message' => 'A saját eseményedet nem értékelheted!'], 400);
+        }
 
         if (Review::where('event_id', $eventId)->where('user_id', $request->user()->id)->exists()) {
             return response()->json(['success' => false, 'message' => 'Már értékelted ezt a helyszínt!'], 400);

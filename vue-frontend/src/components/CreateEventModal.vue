@@ -29,14 +29,20 @@
                 <label class="form-label text-secondary small">Helyszín *</label>
                 <input v-model="form.location" type="text" class="form-control form-dark" placeholder="pl. Budapest, Deák tér" required />
               </div>
-              <div class="mb-3">
-                <label class="form-label text-secondary small">Szervező</label>
-                <input v-model="form.organizer" type="text" class="form-control form-dark" placeholder="A te neved" />
+              <div class="row mb-3">
+                <div class="col-6">
+                  <label class="form-label text-secondary small">Szervező</label>
+                  <input v-model="form.organizer" type="text" class="form-control form-dark" placeholder="A te neved" />
+                </div>
+                <div class="col-6">
+                  <label class="form-label text-secondary small">Belépő ára</label>
+                  <input v-model="form.price" @blur="formatPrice" type="text" class="form-control form-dark" placeholder="pl. Ingyenes vagy 2500 Ft" />
+                </div>
               </div>
               <div class="row mb-3">
                 <div class="col-6">
                   <label class="form-label text-secondary small">Telefonszám</label>
-                  <input v-model="form.contact_phone" type="tel" class="form-control form-dark" placeholder="+36 30 123 4567" />
+                  <input v-model="form.contact_phone" @blur="formatPhone" type="tel" class="form-control form-dark" placeholder="+36 30 123 4567" />
                 </div>
                 <div class="col-6">
                   <label class="form-label text-secondary small">Kategória</label>
@@ -48,6 +54,26 @@
               <div class="mb-3">
                 <label class="form-label text-secondary small">Leírás</label>
                 <textarea v-model="form.description" rows="3" class="form-control form-dark" placeholder="Írd le az esemény részleteit..."></textarea>
+              </div>
+              <div class="mb-3">
+                <label class="form-label text-secondary small">Címkék (maximum 3 választható)</label>
+                <div class="position-relative">
+                  <div v-if="tagDropdownOpen" class="position-fixed w-100 h-100 top-0 start-0" @click="tagDropdownOpen = false" style="z-index: 1049;"></div>
+                  <div class="form-control form-dark d-flex flex-wrap gap-1 align-items-center" style="min-height:38px;cursor:pointer;position:relative;z-index:1050;" @click="tagDropdownOpen = !tagDropdownOpen">
+                    <span v-if="form.tags.length === 0" class="text-secondary opacity-50">Válassz címkéket...</span>
+                    <span v-for="t in form.tags" :key="t" class="badge rounded-pill" style="background:#d946ef;font-size:0.75rem;" @click.stop="toggleTag(t)">
+                      {{ t }} <i class="bi bi-x-circle ms-1"></i>
+                    </span>
+                  </div>
+                  <ul v-if="tagDropdownOpen" class="dropdown-menu dropdown-menu-dark show position-absolute w-100 mt-1 shadow" style="max-height:150px;overflow-y:auto;z-index:1051;background:#1e293b;border-color:#334155;">
+                    <li v-for="t in availableTags" :key="t">
+                      <a class="dropdown-item text-light d-flex justify-content-between align-items-center" style="cursor:pointer;" @click.stop="toggleTag(t)">
+                        {{ t }}
+                        <i v-if="form.tags.includes(t)" class="bi bi-check text-success fs-5"></i>
+                      </a>
+                    </li>
+                  </ul>
+                </div>
               </div>
               <div class="mb-3">
                 <label class="form-label text-secondary small d-block mb-2">Esemény képe</label>
@@ -91,6 +117,7 @@ const showToast = inject('showToast');
 const { createEvent } = useEvents();
 
 const categories = ['Házibuli', 'Klub', 'Fesztivál', 'Rave', 'Chill', 'Egyéb'];
+const availableTags = ['Ingyenes', 'VIP', 'Szabadtéri', 'Terasz', '18+', 'Techno', 'Rock', 'Pop', 'Élőzene', 'Hip-Hop'];
 
 const todayDate = computed(() => {
   const d = new Date();
@@ -111,17 +138,28 @@ const minTime = computed(() => {
 });
 
 const form = reactive({
-  title: '', date: '', time: '', location: '', organizer: '',
-  contact_phone: '', category: 'Házibuli', description: '',
+  title: '', date: '', time: '', location: '', organizer: '', price: '',
+  contact_phone: '', category: 'Házibuli', description: '', tags: [],
 });
 const imageFile = ref(null);
 const imagePreview = ref(null);
+const tagDropdownOpen = ref(false);
+
+function toggleTag(t) {
+  const idx = form.tags.indexOf(t);
+  if (idx > -1) {
+    form.tags.splice(idx, 1);
+  } else if (form.tags.length < 3) {
+    form.tags.push(t);
+  }
+}
 
 watch(() => props.visible, (val) => {
   if (val) {
-    Object.assign(form, { title: '', date: '', time: '', location: '', organizer: '', contact_phone: '', category: 'Házibuli', description: '' });
+    Object.assign(form, { title: '', date: '', time: '', location: '', organizer: '', price: '', contact_phone: '', category: 'Házibuli', description: '', tags: [] });
     imageFile.value = null;
     imagePreview.value = null;
+    tagDropdownOpen.value = false;
   }
   document.body.style.overflow = val ? 'hidden' : '';
 });
@@ -142,9 +180,44 @@ function removeImage() {
   imagePreview.value = null;
 }
 
+function formatPrice() {
+  if (form.price) {
+    const trimmed = form.price.trim();
+    if (/^\d+$/.test(trimmed)) {
+      form.price = trimmed + ' Ft';
+    }
+  }
+}
+
+function formatPhone() {
+  if (form.contact_phone) {
+    let val = form.contact_phone.trim();
+    if (val.startsWith('06')) {
+      val = '+36' + val.substring(2);
+    }
+    let cleaned = val.replace(/[^\d+]/g, '');
+    let isPlus = cleaned.startsWith('+');
+    let digits = cleaned.replace(/\+/g, '').substring(0, 11);
+    let formatted = isPlus ? '+' : '';
+    if (digits.length > 0) formatted += digits.substring(0, 2);
+    if (digits.length > 2) formatted += ' ' + digits.substring(2, 4);
+    if (digits.length > 4) formatted += ' ' + digits.substring(4, 7);
+    if (digits.length > 7) formatted += ' ' + digits.substring(7, 11);
+    form.contact_phone = formatted;
+  }
+}
+
 async function handleSubmit() {
+  if (!imageFile.value) {
+    showToast('Kérjük, tölts fel egy képet az eseményhez!', 'error');
+    return;
+  }
+  if (form.tags.length === 0) {
+    showToast('Kérjük, válassz legalább egy címkét!', 'error');
+    return;
+  }
   const fd = new FormData();
-  Object.entries(form).forEach(([k, v]) => fd.append(k, v));
+  Object.entries(form).forEach(([k, v]) => fd.append(k, Array.isArray(v) ? v.join(', ') : v));
   const result = await createEvent(fd, imageFile.value);
   if (result.success) {
     emit('created');
