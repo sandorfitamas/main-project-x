@@ -93,14 +93,23 @@ export async function apiUpdateProfile(data) {
   const token = localStorage.getItem(STORAGE_KEYS.AUTH_TOKEN);
   if (!token) return { success: false, message: 'Nem vagy bejelentkezve' };
   try {
+    let body;
+    let headers = {
+      'Accept': 'application/json',
+      'Authorization': `Bearer ${token}`
+    };
+
+    if (data instanceof FormData) {
+      body = data;
+    } else {
+      headers['Content-Type'] = 'application/json';
+      body = JSON.stringify(data);
+    }
+
     const res = await fetch(`${AUTH_BASE}/profile`, {
-      method: 'PUT',
-      headers: { 
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-        'Authorization': `Bearer ${token}`
-      },
-      body: JSON.stringify(data),
+      method: data instanceof FormData ? 'POST' : 'PUT', // Laravel needs POST + _method=PUT for FormData
+      headers,
+      body,
     });
     return res.json();
   } catch {

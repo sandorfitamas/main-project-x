@@ -26,8 +26,22 @@
                 </div>
               </div>
               <div class="mb-3">
-                <label class="form-label text-secondary small">Helyszín *</label>
-                <input v-model="form.location" type="text" class="form-control form-dark" placeholder="pl. Budapest, Deák tér" required />
+                <label class="form-label text-secondary small">Város *</label>
+                <input v-model="locationData.city" type="text" class="form-control form-dark" placeholder="pl. Budapest" required />
+              </div>
+              <div class="row mb-3">
+                <div class="col-4" v-if="locationData.city && (locationData.city.toLowerCase().trim() === 'budapest' || locationData.city.toLowerCase().trim() === 'bp' || locationData.city.toLowerCase().trim() === 'bp.')">
+                  <label class="form-label text-secondary small">Kerület</label>
+                  <input v-model="locationData.district" type="text" class="form-control form-dark" placeholder="pl. VII." />
+                </div>
+                <div :class="(locationData.city && (locationData.city.toLowerCase().trim() === 'budapest' || locationData.city.toLowerCase().trim() === 'bp' || locationData.city.toLowerCase().trim() === 'bp.')) ? 'col-5' : 'col-8'">
+                  <label class="form-label text-secondary small">Utca *</label>
+                  <input v-model="locationData.street" type="text" class="form-control form-dark" placeholder="pl. Deák tér" required />
+                </div>
+                <div :class="(locationData.city && (locationData.city.toLowerCase().trim() === 'budapest' || locationData.city.toLowerCase().trim() === 'bp' || locationData.city.toLowerCase().trim() === 'bp.')) ? 'col-3' : 'col-4'">
+                  <label class="form-label text-secondary small">Házszám *</label>
+                  <input v-model="locationData.houseNumber" type="text" class="form-control form-dark" placeholder="pl. 1" required />
+                </div>
               </div>
               <div class="mb-3">
                 <label class="form-label text-secondary small">Szervező</label>
@@ -36,7 +50,15 @@
               <div class="row mb-3">
                 <div class="col-6">
                   <label class="form-label text-secondary small">Telefonszám</label>
-                  <input v-model="form.contact_phone" type="tel" class="form-control form-dark" placeholder="+36 30 123 4567" />
+                  <div class="input-group">
+                    <span class="input-group-text form-dark border-secondary text-secondary">+36</span>
+                    <select v-model="phoneData.prefix" class="form-select form-dark border-secondary" style="max-width: 80px;">
+                      <option value="20">20</option>
+                      <option value="30">30</option>
+                      <option value="70">70</option>
+                    </select>
+                    <input v-model="phoneData.number" type="tel" class="form-control form-dark" placeholder="123 4567" maxlength="9" />
+                  </div>
                 </div>
                 <div class="col-6">
                   <label class="form-label text-secondary small">Kategória</label>
@@ -114,12 +136,57 @@ const form = reactive({
   title: '', date: '', time: '', location: '', organizer: '',
   contact_phone: '', category: 'Házibuli', description: '',
 });
+
+const phoneData = reactive({ prefix: '30', number: '' });
+
+watch(phoneData, (newVal) => {
+  if (newVal.number && newVal.number.trim() !== '') {
+    form.contact_phone = `+36 ${newVal.prefix} ${newVal.number.trim().replace(/\s/g, '').replace(/(\d{3})(\d{0,4})/, '$1 $2').trim()}`;
+  } else {
+    form.contact_phone = '';
+  }
+}, { deep: true });
+
+const locationData = reactive({
+  city: '',
+  district: '',
+  street: '',
+  houseNumber: ''
+});
+
+watch(locationData, (newVal) => {
+  let loc = newVal.city ? newVal.city.trim() : '';
+  const isBp = loc.toLowerCase() === 'budapest' || loc.toLowerCase() === 'bp' || loc.toLowerCase() === 'bp.';
+  
+  if (isBp) {
+    loc = 'Budapest';
+    if (newVal.district && newVal.district.trim()) {
+      loc += `, ${newVal.district.trim()}`;
+      if (!loc.toLowerCase().includes('kerület') && !loc.toLowerCase().includes('ker.')) {
+        loc += ' ker.';
+      }
+    }
+  }
+
+  if (newVal.street && newVal.street.trim()) {
+    loc += (loc ? ', ' : '') + newVal.street.trim();
+  }
+
+  if (newVal.houseNumber && newVal.houseNumber.trim()) {
+    loc += (loc ? ' ' : '') + newVal.houseNumber.trim() + '.';
+  }
+
+  form.location = loc;
+}, { deep: true });
+
 const imageFile = ref(null);
 const imagePreview = ref(null);
 
 watch(() => props.visible, (val) => {
   if (val) {
     Object.assign(form, { title: '', date: '', time: '', location: '', organizer: '', contact_phone: '', category: 'Házibuli', description: '' });
+    Object.assign(locationData, { city: '', district: '', street: '', houseNumber: '' });
+    Object.assign(phoneData, { prefix: '30', number: '' });
     imageFile.value = null;
     imagePreview.value = null;
   }

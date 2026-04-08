@@ -38,6 +38,7 @@ class AuthController extends Controller
                 'id'    => $user->id,
                 'name'  => $user->name,
                 'email' => $user->email,
+                'profile_picture' => null,
             ],
         ]);
     }
@@ -67,6 +68,7 @@ class AuthController extends Controller
                 'id'    => $user->id,
                 'name'  => $user->name,
                 'email' => $user->email,
+                'profile_picture' => $user->profile_picture ? url('storage/' . $user->profile_picture) : null,
             ],
         ]);
     }
@@ -92,6 +94,7 @@ class AuthController extends Controller
                 'id'    => $user->id,
                 'name'  => $user->name,
                 'email' => $user->email,
+                'profile_picture' => $user->profile_picture ? url('storage/' . $user->profile_picture) : null,
             ],
         ]);
     }
@@ -103,12 +106,22 @@ class AuthController extends Controller
         $request->validate([
             'name'     => 'required|string|max:100',
             'password' => 'nullable|string|min:6',
+            'profile_picture' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
         $user->name = $request->name;
         if ($request->filled('password')) {
             $user->password = \Illuminate\Support\Facades\Hash::make($request->password);
         }
+
+        if ($request->hasFile('profile_picture')) {
+            if ($user->profile_picture && \Illuminate\Support\Facades\Storage::disk('public')->exists($user->profile_picture)) {
+                \Illuminate\Support\Facades\Storage::disk('public')->delete($user->profile_picture);
+            }
+            $path = $request->file('profile_picture')->store('profiles', 'public');
+            $user->profile_picture = $path;
+        }
+
         $user->save();
 
         return response()->json([
@@ -117,6 +130,7 @@ class AuthController extends Controller
                 'id'    => $user->id,
                 'name'  => $user->name,
                 'email' => $user->email,
+                'profile_picture' => $user->profile_picture ? asset('storage/' . $user->profile_picture) : null,
             ],
         ]);
     }

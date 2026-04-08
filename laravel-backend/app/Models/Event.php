@@ -60,6 +60,7 @@ class Event extends Model
             'price'         => $this->price ?? '',
             'contact_phone' => $this->contact_phone ?? '',
             'created_at'    => $this->created_at ? $this->created_at->toISOString() : null,
+            'attendees_count'=> $this->attendees_count ?? 0,
         ];
     }
 }

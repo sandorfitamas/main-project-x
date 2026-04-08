@@ -5,7 +5,7 @@
         <i class="bi bi-lightning-fill" style="color:#d946ef"></i>
         <span class="fw-bold text-white">PROJECT X</span>
       </div>
-      <p class="text-muted small mb-0">© 2026 Project X. Minden jog fenntartva.</p>
+      <p class="text-light small mb-0">© 2026 Project X. Minden jog fenntartva.</p>
     </div>
   </footer>
 </template>

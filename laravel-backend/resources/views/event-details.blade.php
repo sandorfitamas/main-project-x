@@ -108,7 +108,7 @@
 
 <footer class="py-4 mt-auto" style="background:#0f172a;border-top:1px solid #1e293b">
   <div class="container-xl text-center">
-    <p class="text-muted small mb-0">© 2026 Project X. Minden jog fenntartva.</p>
+    <p class="text-light small mb-0">© 2026 Project X. Minden jog fenntartva.</p>
   </div>
 </footer>
 

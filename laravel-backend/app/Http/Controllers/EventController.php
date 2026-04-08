@@ -9,7 +9,7 @@ class EventController extends Controller
 {
     public function index()
     {
-        $events = Event::orderBy('date')->orderBy('time')->get();
+        $events = Event::withCount('attendees')->orderBy('date')->orderBy('time')->get();
 
         return response()->json([
             'success' => true,

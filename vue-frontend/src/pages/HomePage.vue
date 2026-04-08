@@ -89,7 +89,8 @@
               </div>
               <p class="text-light opacity-75 fst-italic mb-4">"{{ t.text }}"</p>
               <div class="d-flex align-items-center gap-3 mt-auto">
-                <div class="rounded-circle d-flex align-items-center justify-content-center fw-bold text-white shadow" :style="{ width: '40px', height: '40px', background: t.color }">{{ t.initial }}</div>
+                <img v-if="t.profile_picture" :src="t.profile_picture" alt="Profilkép" class="rounded-circle shadow object-fit-cover" style="width: 40px; height: 40px; border: 2px solid rgba(139,92,246,0.5);">
+                <div v-else class="rounded-circle d-flex align-items-center justify-content-center fw-bold text-white shadow" :style="{ width: '40px', height: '40px', background: t.color }">{{ t.initial }}</div>
                 <div>
                   <h6 class="text-white mb-0">{{ t.name }}</h6>
                   <small class="text-light opacity-50">{{ t.location }}</small>
@@ -181,7 +182,7 @@
       <div class="row g-4 mb-5">
         <div class="col-md-4"><div class="stat-card stat-violet"><div class="d-flex align-items-center justify-content-between"><div><p class="text-secondary small mb-1">Aktív tagok</p><p class="h3 fw-bold text-white mb-0">{{ communityUsers.length }}</p></div><div class="rounded-3 p-2" style="background:rgba(124,58,237,.3)"><i class="bi bi-people-fill fs-3" style="color:#a78bfa"></i></div></div></div></div>
         <div class="col-md-4"><div class="stat-card stat-fuchsia"><div class="d-flex align-items-center justify-content-between"><div><p class="text-secondary small mb-1">Összes esemény</p><p class="h3 fw-bold text-white mb-0">{{ communityEventCount }}</p></div><div class="rounded-3 p-2" style="background:rgba(217,70,239,.3)"><i class="bi bi-calendar-event-fill fs-3" style="color:#e879f9"></i></div></div></div></div>
-        <div class="col-md-4"><div class="stat-card stat-pink"><div class="d-flex align-items-center justify-content-between"><div><p class="text-secondary small mb-1">Közösségi aktivitás</p><p class="h3 fw-bold text-white mb-0">🔥 {{ recentActivity.length }}</p></div><div class="rounded-3 p-2" style="background:rgba(236,72,153,.3)"><i class="bi bi-lightning-fill fs-3" style="color:#f9a8d4"></i></div></div></div></div>
+        <div class="col-md-4"><div class="stat-card stat-pink"><div class="d-flex align-items-center justify-content-between"><div><p class="text-secondary small mb-1">Közösségi aktivitás</p><p class="h3 fw-bold text-white mb-0">🔥 {{ totalCommunityActivity }}</p></div><div class="rounded-3 p-2" style="background:rgba(236,72,153,.3)"><i class="bi bi-lightning-fill fs-3" style="color:#f9a8d4"></i></div></div></div></div>
       </div>
       <h5 class="fw-bold mb-3"><i class="bi bi-star-fill text-warning me-2"></i>Legjobb szervezők</h5>
       <div v-if="topOrganizers.length" class="row row-cols-1 row-cols-sm-2 row-cols-lg-4 g-4 mb-5">
@@ -190,7 +191,7 @@
             <div class="rounded-circle d-flex align-items-center justify-content-center fw-bold text-white fs-5 mx-auto mb-3" style="width:56px;height:56px;background:linear-gradient(135deg,#7c3aed,#d946ef)">{{ (org.user.name||'?').substring(0,2).toUpperCase() }}</div>
             <p class="text-white fw-semibold mb-0 text-truncate">{{ org.user.name }}</p>
             <p class="text-secondary small mb-2">{{ org.user.email }}</p>
-            <span class="badge rounded-pill" style="background:rgba(217,70,239,.2);color:#e879f9;border:1px solid rgba(217,70,239,.3)"><i class="bi bi-calendar-event me-1"></i>{{ org.count }} esemény</span>
+            <span class="badge rounded-pill" style="background:rgba(217,70,239,.2);color:#e879f9;border:1px solid rgba(217,70,239,.3)"><i class="bi bi-people-fill me-1"></i>{{ org.count }} résztvevő</span>
           </div>
         </div>
       </div>
@@ -235,6 +236,7 @@ const localSearch = ref('');
 const showAllTestimonials = ref(false);
 const communityUsers = ref([]);
 const communityEventCount = ref(0);
+const totalCommunityActivity = ref(0);
 const topOrganizers = ref([]);
 const recentActivity = ref([]);
 const testimonials = ref([]);
@@ -268,16 +270,19 @@ function escapeHtml(str) {
 }
 
 watch(() => props.activeSection, async (sec) => {
+  document.title = 'Project X - Találd meg a legjobb bulit';
+  const hasToken = !!localStorage.getItem('auth_token');
+
   if (sec === 'events') {
     localSearch.value = '';
     setSearch('');
   } else if (!sec || sec === 'home') {
     await loadTestimonials();
   } else if (sec === 'my-events') {
-    if (!props.currentUser) { showAuthModal(); emit('show-all-events'); return; }
+    if (!props.currentUser && !hasToken) { showAuthModal(); emit('show-all-events'); return; }
     await loadMyEvents();
   } else if (sec === 'favorites') {
-    if (!props.currentUser) { showAuthModal(); emit('show-all-events'); return; }
+    if (!props.currentUser && !hasToken) { showAuthModal(); emit('show-all-events'); return; }
     await loadFavorites();
   } else if (sec === 'community') {
     await loadCommunityData();
@@ -294,6 +299,7 @@ async function loadTestimonials() {
         text: r.comment,
         initial: uName.substring(0, 2).toUpperCase(),
         name: uName,
+        profile_picture: r.user?.profile_picture ? (r.user.profile_picture.startsWith('http') ? r.user.profile_picture : 'http://localhost:8000/storage/' + r.user.profile_picture) : null,
         location: r.event?.title || 'Esemény',
         color: 'linear-gradient(135deg, #7c3aed, #d946ef)'
       };
@@ -305,23 +311,51 @@ async function loadCommunityData() {
     const [users, events, attendances, reviews] = await Promise.all([apiFetchUsers(), apiFetchEvents(), apiFetchRecentAttendances(), apiFetchRecentReviews()]);
   communityUsers.value = users;
   communityEventCount.value = events.length;
-  const byUser = {};
-  events.forEach(ev => { if (ev.user_id) byUser[ev.user_id] = (byUser[ev.user_id]||0)+1; });
-  topOrganizers.value = users
-    .filter(u => byUser[u.id] > 0)
-    .sort((a,b) => (byUser[b.id]||0) - (byUser[a.id]||0))
-    .slice(0, 8)
-    .map(u => ({ user: u, count: byUser[u.id]||0 }));
+  
+  let totalActivity = 0;
+  const orgMap = {};
+  events.forEach(ev => { 
+    totalActivity += (ev.attendees_count || 0);
+    let orgName = ev.organizer ? ev.organizer.trim() : '';
+    let orgEmail = '';
+    if (ev.user_id) {
+      const u = users.find(x => x.id === ev.user_id);
+      if (u) {
+        if (!orgName) orgName = u.name;
+        orgEmail = u.email;
+      }
+    }
+    if (!orgName) orgName = 'Ismeretlen szervező';
+    
+    if (!orgMap[orgName]) {
+      orgMap[orgName] = { name: orgName, email: ev.organizer ? '' : orgEmail, count: 0 };
+    }
+    orgMap[orgName].count += (ev.attendees_count || 0);
+  });
+
+  topOrganizers.value = Object.values(orgMap)
+    .sort((a,b) => b.count - a.count)
+    .slice(0, 4)
+    .map((item, idx) => ({
+      user: { id: 'org_' + idx, name: item.name, email: item.email || 'Klub / Egyéni szervező' },
+      count: item.count
+    }));
+
+  totalCommunityActivity.value = totalActivity;
 
   const activityList = [];
+  const todayStr = new Date().toDateString();
 
   const rawAttendances = attendances.attendances || attendances;
   if (Array.isArray(rawAttendances)) {
     rawAttendances.forEach(att => {
-      activityList.push({
-        time: new Date(att.created_at || 0),
-        html: `<strong class="text-info">${escapeHtml(att.user_name)}</strong> jelezte, hogy ott lesz: <strong class="text-white">${escapeHtml(att.event_title)}</strong>`
-      });
+      const d = new Date(att.created_at || 0);
+      if (d.toDateString() === todayStr) {
+        activityList.push({
+          time: d,
+          html: `<strong class="text-info">${escapeHtml(att.user_name)}</strong> jelezte, hogy ott lesz: <strong class="text-white">${escapeHtml(att.event_title)}</strong>`
+        });
+      }
     });
   }
 

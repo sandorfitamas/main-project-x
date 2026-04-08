@@ -10,6 +10,16 @@
         </div>
 
         <form @submit.prevent="submitForm">
+          <div class="mb-4 text-center">
+            <div class="d-inline-block position-relative">
+              <img :src="profilePicturePreview || currentUser?.profile_picture || 'https://via.placeholder.com/150'" alt="Profilkép" class="rounded-circle object-fit-cover shadow" style="width: 120px; height: 120px; border: 3px solid #8b5cf6;">
+              <label for="profilePicInput" class="position-absolute bottom-0 end-0 bg-primary text-white rounded-circle p-2 cursor-pointer shadow-sm" style="cursor: pointer; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center;">
+                <i class="bi bi-camera-fill"></i>
+              </label>
+              <input type="file" id="profilePicInput" class="d-none" accept="image/*" @change="handleFileChange">
+            </div>
+          </div>
+
           <div class="mb-4">
             <label class="form-label text-secondary mb-1">Email cím (nem módosítható)</label>
             <input v-model="form.email" type="email" class="form-control form-dark px-3 py-2" style="background-color:#0f172a !important; color:#94a3b8 !important; cursor:not-allowed;" disabled />
@@ -44,6 +54,20 @@ const form = ref({ name: '', email: '', password: '' });
 const loading = ref(false);
 const errorMsg = ref('');
 const successMsg = ref('');
+const profilePictureFile = ref(null);
+const profilePicturePreview = ref(null);
+
+function handleFileChange(e) {
+  const file = e.target.files[0];
+  if (file) {
+    profilePictureFile.value = file;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      profilePicturePreview.value = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  }
+}
 
 function loadUserData() {
   if (currentUser.value) {
@@ -66,9 +90,18 @@ async function submitForm() {
   errorMsg.value = '';
   successMsg.value = '';
   
-  const payload = { name: form.value.name };
-  if (form.value.password) {
-    payload.password = form.value.password;
+  let payload;
+  if (profilePictureFile.value) {
+    payload = new FormData();
+    payload.append('name', form.value.name);
+    if (form.value.password) payload.append('password', form.value.password);
+    payload.append('profile_picture', profilePictureFile.value);
+    payload.append('_method', 'PUT');
+  } else {
+    payload = { name: form.value.name };
+    if (form.value.password) {
+      payload.password = form.value.password;
+    }
   }
   
   const result = await updateProfile(payload);
@@ -77,6 +110,8 @@ async function submitForm() {
   if (result.success) {
     successMsg.value = 'Profil sikeresen frissítve!';
     form.value.password = '';
+    profilePictureFile.value = null;
+    document.getElementById('profilePicInput').value = '';
   } else {
     errorMsg.value = result.message || result.error || 'Hálózati hiba történt a mentés során.';
   }

@@ -14,13 +14,41 @@
                 <div class="col-6"><label class="form-label text-secondary small">Dátum *</label><input v-model="form.date" type="date" class="form-control form-dark" required /></div>
                 <div class="col-6"><label class="form-label text-secondary small">Idő *</label><input v-model="form.time" type="time" class="form-control form-dark" required /></div>
               </div>
-              <div class="mb-3"><label class="form-label text-secondary small">Helyszín *</label><input v-model="form.location" type="text" class="form-control form-dark" required /></div>
+              <div class="mb-3">
+                <label class="form-label text-secondary small">Város *</label>
+                <input v-model="locationData.city" type="text" class="form-control form-dark" placeholder="pl. Budapest" required />
+              </div>
+              <div class="row mb-3">
+                <div class="col-4" v-if="locationData.city && (locationData.city.toLowerCase().trim() === 'budapest' || locationData.city.toLowerCase().trim() === 'bp' || locationData.city.toLowerCase().trim() === 'bp.')">
+                  <label class="form-label text-secondary small">Kerület</label>
+                  <input v-model="locationData.district" type="text" class="form-control form-dark" placeholder="pl. VII." />
+                </div>
+                <div :class="(locationData.city && (locationData.city.toLowerCase().trim() === 'budapest' || locationData.city.toLowerCase().trim() === 'bp' || locationData.city.toLowerCase().trim() === 'bp.')) ? 'col-5' : 'col-8'">
+                  <label class="form-label text-secondary small">Utca *</label>
+                  <input v-model="locationData.street" type="text" class="form-control form-dark" placeholder="pl. Deák tér" required />
+                </div>
+                <div :class="(locationData.city && (locationData.city.toLowerCase().trim() === 'budapest' || locationData.city.toLowerCase().trim() === 'bp' || locationData.city.toLowerCase().trim() === 'bp.')) ? 'col-3' : 'col-4'">
+                  <label class="form-label text-secondary small">Házszám *</label>
+                  <input v-model="locationData.houseNumber" type="text" class="form-control form-dark" placeholder="pl. 1" required />
+                </div>
+              </div>
               <div class="row mb-3">
                 <div class="col-6"><label class="form-label text-secondary small">Szervező</label><input v-model="form.organizer" type="text" class="form-control form-dark" /></div>
                 <div class="col-6"><label class="form-label text-secondary small">Belépő ára</label><input v-model="form.price" @blur="formatPrice" type="text" class="form-control form-dark" /></div>
               </div>
               <div class="row mb-3">
-                <div class="col-6"><label class="form-label text-secondary small">Telefonszám</label><input v-model="form.contact_phone" @blur="formatPhone" type="tel" class="form-control form-dark" placeholder="+36 30 123 4567" /></div>
+                <div class="col-6">
+                  <label class="form-label text-secondary small">Telefonszám</label>
+                  <div class="input-group">
+                    <span class="input-group-text form-dark border-secondary text-secondary">+36</span>
+                    <select v-model="phoneData.prefix" class="form-select form-dark border-secondary" style="max-width: 80px;">
+                      <option value="20">20</option>
+                      <option value="30">30</option>
+                      <option value="70">70</option>
+                    </select>
+                    <input v-model="phoneData.number" type="tel" class="form-control form-dark" placeholder="123 4567" maxlength="9" />
+                  </div>
+                </div>
                 <div class="col-6"><label class="form-label text-secondary small">Kategória</label>
                   <select v-model="form.category" class="form-select form-dark"><option v-for="c in cats" :key="c" :value="c">{{ c }}</option></select>
                 </div>
@@ -80,6 +108,38 @@ const { updateEvent, deleteEvent } = useEvents();
 const cats = ['Házibuli','Klub','Fesztivál','Rave','Chill','Egyéb'];
 const availableTags = ['Ingyenes', 'VIP', 'Szabadtéri', 'Terasz', '18+', 'Techno', 'Rock', 'Pop', 'Élőzene', 'Hip-Hop'];
 const form = reactive({ title:'',date:'',time:'',location:'',organizer:'',price:'',contact_phone:'',category:'Egyéb',description:'',tags:[] });
+
+const phoneData = reactive({ prefix: '30', number: '' });
+watch(phoneData, (newVal) => {
+  if (newVal.number && newVal.number.trim() !== '') {
+    form.contact_phone = `+36 ${newVal.prefix} ${newVal.number.trim().replace(/\s/g, '').replace(/(\d{3})(\d{0,4})/, '$1 $2').trim()}`;
+  } else {
+    form.contact_phone = '';
+  }
+}, { deep: true });
+
+const locationData = reactive({ city: '', district: '', street: '', houseNumber: '' });
+watch(locationData, (newVal) => {
+  let loc = newVal.city ? newVal.city.trim() : '';
+  const isBp = loc.toLowerCase() === 'budapest' || loc.toLowerCase() === 'bp' || loc.toLowerCase() === 'bp.';
+  if (isBp) {
+    loc = 'Budapest';
+    if (newVal.district && newVal.district.trim()) {
+      loc += `, ${newVal.district.trim()}`;
+      if (!loc.toLowerCase().includes('kerület') && !loc.toLowerCase().includes('ker.')) {
+        loc += ' ker.';
+      }
+    }
+  }
+  if (newVal.street && newVal.street.trim()) {
+    loc += (loc ? ', ' : '') + newVal.street.trim();
+  }
+  if (newVal.houseNumber && newVal.houseNumber.trim()) {
+    loc += (loc ? ' ' : '') + newVal.houseNumber.trim() + (newVal.houseNumber.trim().endsWith('.') ? '' : '.');
+  }
+  form.location = loc;
+}, { deep: true });
+
 const existingImg = ref(null);
 const newFile = ref(null);
 const newPrev = ref(null);
@@ -98,6 +158,68 @@ watch(() => props.event, ev => {
   form.title=ev.title||''; form.date=ev.date||''; form.time=ev.time?ev.time.substring(0,5):'';
   form.location=ev.location||''; form.organizer=ev.organizer||''; form.price=ev.price||''; form.contact_phone=ev.contact_phone||'';
   form.category=ev.category||'Egyéb'; form.description=ev.description||'';
+  
+  if (ev.contact_phone) {
+    const cleaned = ev.contact_phone.trim().replace(/\s/g, '');
+    if (cleaned.startsWith('+36')) {
+      phoneData.prefix = cleaned.substring(3, 5);
+      phoneData.number = cleaned.substring(5).replace(/(\d{3})(\d{0,4})/, '$1 $2').trim();
+    } else if (cleaned.startsWith('06')) {
+      phoneData.prefix = cleaned.substring(2, 4);
+      phoneData.number = cleaned.substring(4).replace(/(\d{3})(\d{0,4})/, '$1 $2').trim();
+    }
+  } else {
+    Object.assign(phoneData, { prefix: '30', number: '' });
+  }
+
+  if (ev.location) {
+    const parts = ev.location.split(',').map(p => p.trim());
+    if (parts[0] && (parts[0].toLowerCase() === 'budapest' || parts[0].toLowerCase() === 'bp' || parts[0].toLowerCase() === 'bp.')) {
+      locationData.city = 'Budapest';
+      if (parts.length >= 3) { // Budapest, VII. ker., Deák tér 1.
+        locationData.district = parts[1].replace(/ker\.|kerület/gi, '').trim();
+        const streetHouse = parts.slice(2).join(', ');
+        const match = streetHouse.match(/(.*?)\s+(\d+.*)/);
+        if (match) {
+          locationData.street = match[1].trim();
+          locationData.houseNumber = match[2].replace(/\.$/, '').trim();
+        } else {
+          locationData.street = streetHouse;
+          locationData.houseNumber = '';
+        }
+      } else if (parts.length === 2) { // Budapest, Deák tér 1.
+        locationData.district = '';
+        const match = parts[1].match(/(.*?)\s+(\d+.*)/);
+        if (match) {
+          locationData.street = match[1].trim();
+          locationData.houseNumber = match[2].replace(/\.$/, '').trim();
+        } else {
+          locationData.street = parts[1];
+          locationData.houseNumber = '';
+        }
+      }
+    } else { // Más város
+      locationData.city = parts[0] || '';
+      locationData.district = '';
+      if (parts.length > 1) {
+        const streetHouse = parts.slice(1).join(', ');
+        const match = streetHouse.match(/(.*?)\s+(\d+.*)/);
+        if (match) {
+          locationData.street = match[1].trim();
+          locationData.houseNumber = match[2].replace(/\.$/, '').trim();
+        } else {
+          locationData.street = streetHouse;
+          locationData.houseNumber = '';
+        }
+      } else {
+        locationData.street = '';
+        locationData.houseNumber = '';
+      }
+    }
+  } else {
+    Object.assign(locationData, { city: '', district: '', street: '', houseNumber: '' });
+  }
+
   form.tags = Array.isArray(ev.tags) ? ev.tags.map(t => t.trim()) : (ev.tags ? ev.tags.split(',').map(t => t.trim()) : []);
   existingImg.value=ev.imageUrl||null; newFile.value=null; newPrev.value=null;
   tagDropdownOpen.value = false;

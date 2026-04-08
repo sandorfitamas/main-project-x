@@ -89,7 +89,7 @@
               <div v-if="ev.contact_phone" class="d-flex align-items-center gap-3 p-3 rounded-3" style="background:rgba(6,182,212,.15);border:1px solid rgba(6,182,212,.3)"><i class="bi bi-telephone fs-5 flex-shrink-0" style="color:#67e8f9"></i><div><div class="text-light opacity-75 small">Kapcsolat</div><div class="text-white fw-bold fs-5">{{ ev.contact_phone }}</div></div></div>
             </div>
             <button class="btn btn-gradient w-100 py-3 fw-semibold" @click="shareEvent"><i class="bi bi-share me-2"></i> Esemény Megosztása</button>
-            <button v-if="currentUser" class="btn w-100 py-3 mt-3 fw-semibold" :class="isAttending ? 'btn-success' : 'btn-outline-light'" @click="toggleAttendance">
+            <button v-if="currentUser && !isOwnEvent" class="btn w-100 py-3 mt-3 fw-semibold" :class="isAttending ? 'btn-success' : 'btn-outline-light'" @click="toggleAttendance">
               <i class="bi" :class="isAttending ? 'bi-check-circle-fill' : 'bi-calendar-plus'"></i> 
               {{ isAttending ? 'Ott Leszek! (Kattints a leiratkozáshoz)' : 'Ott Leszek!' }}
             </button>

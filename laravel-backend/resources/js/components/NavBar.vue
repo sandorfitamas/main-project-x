@@ -19,7 +19,8 @@
         </button>
         <button v-else ref="authBtnRef" class="btn btn-gradient btn-sm px-3 py-2 fw-semibold" @click="toggleDropdown">
           <div class="d-flex align-items-center gap-2">
-            <div class="rounded-circle d-flex align-items-center justify-content-center fw-bold text-white"
+            <img v-if="currentUser?.profile_picture" :src="currentUser.profile_picture" alt="Profil" class="rounded-circle shadow-sm object-fit-cover" style="width:32px;height:32px;">
+            <div v-else class="rounded-circle d-flex align-items-center justify-content-center fw-bold text-white"
                  style="width:32px;height:32px;background:linear-gradient(135deg,#7c3aed,#d946ef);font-size:.75rem">
               {{ initials }}
             </div>
