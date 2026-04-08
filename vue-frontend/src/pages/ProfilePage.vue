@@ -12,7 +12,7 @@
         <form @submit.prevent="submitForm">
           <div class="mb-4 text-center">
             <div class="d-inline-block position-relative">
-              <img :src="profilePicturePreview || currentUser?.profile_picture || 'https://via.placeholder.com/150'" alt="Profilkép" class="rounded-circle object-fit-cover shadow" style="width: 120px; height: 120px; border: 3px solid #8b5cf6;">
+              <img :src="profilePicturePreview || (currentUser?.profile_picture && currentUser.profile_picture !== 'null' ? currentUser.profile_picture : `https://ui-avatars.com/api/?name=${encodeURIComponent(currentUser?.name || 'User')}&background=8b5cf6&color=fff&size=150`)" alt="Profilkép" class="rounded-circle object-fit-cover shadow" style="width: 120px; height: 120px; border: 3px solid #8b5cf6;">
               <label for="profilePicInput" class="position-absolute bottom-0 end-0 bg-primary text-white rounded-circle p-2 cursor-pointer shadow-sm" style="cursor: pointer; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center;">
                 <i class="bi bi-camera-fill"></i>
               </label>
