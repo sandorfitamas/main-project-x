@@ -84,7 +84,7 @@ watch(() => props.visible, (val) => {
     regPassword.value = '';
     regPasswordConfirm.value = '';
   }
-  document.body.style.overflow = val ? 'hidden' : '';
+  document.body.style.overflow = val ? 'hidden' : ''; document.documentElement.style.overflow = val ? 'hidden' : '';
 });
 
 function close() {
@@ -96,7 +96,7 @@ async function handleLogin() {
   if (result.success) {
     emit('login-success', result);
   } else {
-    showToast(result.message || 'Hibás email vagy jelszó', 'error');
+    showToast(result.error || result.message || 'Hibás email vagy jelszó', 'error');
   }
 }
 

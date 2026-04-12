@@ -1,8 +1,8 @@
 <template>
   <Teleport to="body">
-    <div class="modal fade modal-dark" :class="{ show: visible }" :style="{ display: visible ? 'block' : 'none' }" tabindex="-1" @click.self="close">
-      <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
-        <div class="modal-content" style="background:#0f172a;border:1px solid #334155;color:#e2e8f0;border-radius:16px">
+    <div class="modal fade modal-dark" :class="{ show: visible }" :style="{ display: visible ? 'block' : 'none', overflowY: 'hidden !important' }" tabindex="-1" @click.self="close">
+      <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable" style="max-height: 85vh;">
+        <div class="modal-content" style="background:#0f172a;border:1px solid #334155;color:#e2e8f0;border-radius:16px; max-height: 80vh;">
           <div class="modal-header border-0 pb-0">
             <h5 class="modal-title fw-bold" style="background:linear-gradient(90deg,#a78bfa,#e879f9);-webkit-background-clip:text;-webkit-text-fill-color:transparent">Esemény szerkesztése</h5>
             <button type="button" class="btn-close btn-close-white" @click="close"></button>
@@ -224,7 +224,7 @@ watch(() => props.event, ev => {
   existingImg.value=ev.imageUrl||null; newFile.value=null; newPrev.value=null;
   tagDropdownOpen.value = false;
 }, { immediate: true });
-watch(() => props.visible, v => { document.body.style.overflow = v ? 'hidden' : ''; });
+watch(() => props.visible, v => { document.body.style.overflow = v ? 'hidden' : ''; document.documentElement.style.overflow = v ? 'hidden' : ''; });
 function close() { emit('update:visible', false); }
 function onFile(e) { const f=e.target.files[0]; if(!f)return; newFile.value=f; const r=new FileReader(); r.onload=ev=>{newPrev.value=ev.target.result}; r.readAsDataURL(f); }
 

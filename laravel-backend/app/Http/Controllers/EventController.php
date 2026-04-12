@@ -9,7 +9,21 @@ class EventController extends Controller
 {
     public function index()
     {
-        $events = Event::withCount('attendees')->orderBy('date')->orderBy('time')->get();
+        $events = Event::withCount('attendees')
+            ->where(function($query) {
+                $query->whereNull('suspended_until')
+                      ->orWhere('suspended_until', '<', now());
+            })
+            ->where(function($query) {
+                $query->whereDoesntHave('user')
+                      ->orWhereHas('user', function($q) {
+                          $q->whereNull('suspended_until')
+                            ->orWhere('suspended_until', '<', now());
+                      });
+            })
+            ->orderBy('date')
+            ->orderBy('time')
+            ->get();
 
         return response()->json([
             'success' => true,
@@ -19,10 +33,20 @@ class EventController extends Controller
 
     public function show($id)
     {
-        $event = Event::find($id);
+        $event = Event::with('user')->find($id);
 
         if (!$event) {
             return response()->json(['success' => false, 'error' => 'Esemény nem található'], 404);
+        }
+
+        if ($event->suspended_until && $event->suspended_until > now()) {
+             // Adminok még láthatják? (vagy hagyjuk hogy ők is a dashboardon nézzék)
+             // Most egyszerűen csak egy 404
+             return response()->json(['success' => false, 'error' => 'Esemény felfüggesztve eddig: ' . $event->suspended_until->format('Y-m-d H:i:s')], 403);
+        }
+        
+        if ($event->user && $event->user->suspended_until && $event->user->suspended_until > now()) {
+             return response()->json(['success' => false, 'error' => 'A szervező profilja fel van függesztve'], 403);
         }
 
         return response()->json(['success' => true, 'event' => $event->toApiArray()]);

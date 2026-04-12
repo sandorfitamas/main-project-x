@@ -9,6 +9,7 @@
       @show-my-events="navigateSection('my-events')"
       @show-favorites="navigateSection('favorites')"
       @show-community="navigateSection('community')"
+      @show-admin="router.push('/admin')"
       @show-profile="router.push('/profile')"
       @logout="handleLogout"
       @create-event="showCreateModal = true"
@@ -89,9 +90,10 @@ const detailEvent = ref(null);
 
 const router = useRouter();
 
-function navigateSection(section) {
+async function navigateSection(section) {
   activeSection.value = section;
   localStorage.setItem('activeSection', section);
+  if (section === 'events' || section === 'home' || !section) { await loadAllEvents(); }
   router.push('/');
 }
 
@@ -136,11 +138,15 @@ async function onEventCreated() {
 async function onEventUpdated() {
   showEditModal.value = false;
   showToast('Esemény frissítve!', 'success');
+  await loadAllEvents(); // Frissíti a globális állapotot is
+  window.dispatchEvent(new CustomEvent('app-event-updated'));
 }
 
 async function onEventDeleted() {
   showEditModal.value = false;
   showToast('Esemény törölve', 'info');
+  await loadAllEvents();
+  window.dispatchEvent(new CustomEvent('app-event-updated'));
 }
 
 function shareEvent(ev) {

@@ -35,6 +35,9 @@
           <button class="user-dropdown-btn" @click="dropdownOpen = false; $emit('show-favorites')">
             <i class="bi bi-heart"></i> Kedvenceim
           </button>
+          <button v-if="currentUser?.is_admin" class="user-dropdown-btn text-warning" @click="dropdownOpen = false; $emit('show-admin')">
+            <i class="bi bi-shield-lock"></i> Admin Panel
+          </button>
           <hr style="border-color:#334155;margin:.25rem 0">
           <button class="user-dropdown-btn text-danger" @click="dropdownOpen = false; $emit('logout')">
             <i class="bi bi-box-arrow-right"></i> Kijelentkezés

@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('image_url', 500)->nullable();
             $table->string('category', 50)->default('Egyéb');
             $table->string('organizer', 100)->nullable();
-            $table->foreignId('user_id')->nullable()->constrained()->nullOnDelete();
+            $table->foreignId('user_id')->nullable()->constrained()->cascadeOnDelete();
             $table->string('tags', 255)->nullable();
             $table->string('price', 100)->nullable();
             $table->string('contact_phone', 50)->nullable();

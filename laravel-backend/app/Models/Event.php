@@ -20,11 +20,13 @@ class Event extends Model
         'tags',
         'price',
         'contact_phone',
+        'suspended_until',
     ];
 
     protected $casts = [
         'rating' => 'float',
         'date'   => 'date:Y-m-d',
+        'suspended_until' => 'datetime',
     ];
 
     public function user()
@@ -61,6 +63,7 @@ class Event extends Model
             'contact_phone' => $this->contact_phone ?? '',
             'created_at'    => $this->created_at ? $this->created_at->toISOString() : null,
             'attendees_count'=> $this->attendees_count ?? 0,
+            'suspended_until'=> $this->suspended_until ? $this->suspended_until->toISOString() : null,
         ];
     }
 }

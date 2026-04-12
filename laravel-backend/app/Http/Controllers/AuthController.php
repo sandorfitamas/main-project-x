@@ -38,6 +38,7 @@ class AuthController extends Controller
                 'id'    => $user->id,
                 'name'  => $user->name,
                 'email' => $user->email,
+                'is_admin' => (bool)$user->is_admin,
                 'profile_picture' => null,
             ],
         ]);
@@ -59,6 +60,13 @@ class AuthController extends Controller
             ], 401);
         }
 
+        if ($user->suspended_until && $user->suspended_until > now()) {
+            return response()->json([
+                'success' => false,
+                'error'   => 'A fiókod fel van függesztve eddig: ' . $user->suspended_until->format('Y-m-d H:i:s'),
+            ], 403);
+        }
+
         $token = $user->createToken('auth_token')->plainTextToken;
 
         return response()->json([
@@ -68,6 +76,7 @@ class AuthController extends Controller
                 'id'    => $user->id,
                 'name'  => $user->name,
                 'email' => $user->email,
+                'is_admin' => (bool)$user->is_admin,
                 'profile_picture' => $user->profile_picture ? url('storage/' . $user->profile_picture) : null,
             ],
         ]);
@@ -94,6 +103,7 @@ class AuthController extends Controller
                 'id'    => $user->id,
                 'name'  => $user->name,
                 'email' => $user->email,
+                'is_admin' => (bool)$user->is_admin,
                 'profile_picture' => $user->profile_picture ? url('storage/' . $user->profile_picture) : null,
             ],
         ]);

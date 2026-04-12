@@ -1,8 +1,8 @@
 <template>
   <Teleport to="body">
-    <div class="modal fade modal-dark" :class="{ show: visible }" :style="{ display: visible ? 'block' : 'none' }" tabindex="-1" @click.self="close">
-      <div class="modal-dialog modal-dialog-centered modal-xl modal-dialog-scrollable">
-        <div class="modal-content" style="background:#0f172a;border:1px solid #334155;color:#e2e8f0;border-radius:16px">
+    <div class="modal fade modal-dark" :class="{ show: visible }" :style="{ display: visible ? 'block' : 'none', overflowY: 'hidden !important' }" tabindex="-1" @click.self="close">
+      <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable" style="max-height: 85vh;">
+        <div class="modal-content" style="background:#0f172a;border:1px solid #334155;color:#e2e8f0;border-radius:16px; max-height: 80vh;">
           <div class="modal-header border-0 pb-0">
             <h5 class="modal-title fw-bold text-white">{{ ev.title || 'Esemény részletei' }}</h5>
             <button type="button" class="btn-close btn-close-white" @click="close"></button>
@@ -75,6 +75,6 @@ const tags = computed(() => {
   const l = Array.isArray(t) ? t : (t ? t.split(',') : []);
   return l.map(x => x.trim()).filter(Boolean);
 });
-watch(() => props.visible, v => { document.body.style.overflow = v ? 'hidden' : ''; });
+watch(() => props.visible, v => { document.body.style.overflow = v ? 'hidden' : ''; document.documentElement.style.overflow = v ? 'hidden' : ''; });
 function close() { emit('update:visible', false); }
 </script>

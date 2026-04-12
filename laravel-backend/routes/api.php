@@ -55,3 +55,14 @@ Route::middleware('auth:sanctum')->post('/upload', [UploadController::class, 'st
 
 // --- USERS (public) ---
 Route::get('/users', [UserController::class, 'index']);
+Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function () {
+    Route::get('/dashboard', [\App\Http\Controllers\AdminController::class, 'dashboard']);
+    Route::get('/users', [\App\Http\Controllers\AdminController::class, 'users']);
+    Route::delete('/users/{id}', [\App\Http\Controllers\AdminController::class, 'deleteUser']);
+    Route::post('/users/{id}/suspend', [\App\Http\Controllers\AdminController::class, 'suspendUser']);
+    Route::get('/events', [\App\Http\Controllers\AdminController::class, 'events']);
+    Route::delete('/events/{id}', [\App\Http\Controllers\AdminController::class, 'deleteEvent']);
+    Route::post('/events/{id}/suspend', [\App\Http\Controllers\AdminController::class, 'suspendEvent']);
+    Route::get('/reviews', [\App\Http\Controllers\AdminController::class, 'reviews']);
+    Route::delete('/reviews/{id}', [\App\Http\Controllers\AdminController::class, 'deleteReview']);
+});

@@ -259,6 +259,10 @@ const filteredEvents = computed(() => {
 
 const router = useRouter();
 
+onMounted(async () => {
+  await loadAllEvents();
+});
+
 function openDetails(ev) {
   router.push(`/event/${ev.id}`);
 }
@@ -272,6 +276,11 @@ function escapeHtml(str) {
 watch(() => props.activeSection, async (sec) => {
   document.title = 'Project X - Találd meg a legjobb bulit';
   const hasToken = !!localStorage.getItem('auth_token');
+
+  // Automatikus frissítĂŠs
+  if (sec === 'events' || sec === 'home' || !sec) {
+    await loadAllEvents();
+  }
 
   if (sec === 'events') {
     localSearch.value = '';
