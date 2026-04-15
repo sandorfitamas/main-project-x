@@ -88,7 +88,19 @@
               <div class="d-flex align-items-center gap-3 p-3 rounded-3" style="background:rgba(16,185,129,.15);border:1px solid rgba(16,185,129,.3)"><i class="bi bi-ticket-perforated fs-5 flex-shrink-0" style="color:#6ee7b7"></i><div><div class="text-light opacity-75 small">Belépő</div><div class="text-white fw-bold fs-5">{{ ev.price || 'Ingyenes' }}</div></div></div>
               <div v-if="ev.contact_phone" class="d-flex align-items-center gap-3 p-3 rounded-3" style="background:rgba(6,182,212,.15);border:1px solid rgba(6,182,212,.3)"><i class="bi bi-telephone fs-5 flex-shrink-0" style="color:#67e8f9"></i><div><div class="text-light opacity-75 small">Kapcsolat</div><div class="text-white fw-bold fs-5">{{ ev.contact_phone }}</div></div></div>
             </div>
-            <button class="btn btn-gradient w-100 py-3 fw-semibold" @click="shareEvent"><i class="bi bi-share me-2"></i> Esemény Megosztása</button>
+              <button class="btn btn-gradient w-100 py-3 fw-semibold" @click="shareEvent"><i class="bi bi-share me-2"></i> Esemény Megosztása</button>
+              
+              <div v-if="currentUser && !isOwnEvent" class="d-flex align-items-center gap-3 mt-3">
+                <div class="input-group flex-nowrap shadow-sm" style="width: 140px;">
+                  <button class="btn text-white ps-3 border-0" style="background: rgba(255,255,255,0.1);" type="button" @click="ticketQty > 1 ? ticketQty-- : null" :disabled="ticketQty <= 1"><i class="bi bi-dash-lg"></i></button>
+                  <input type="text" class="form-control text-center text-white border-0 fw-bold px-0 fs-5" style="background: rgba(255,255,255,0.05);" :value="ticketQty" readonly>
+                  <button class="btn text-white pe-3 border-0" style="background: rgba(255,255,255,0.1);" type="button" @click="ticketQty < 10 ? ticketQty++ : null" :disabled="ticketQty >= 10"><i class="bi bi-plus-lg"></i></button>
+                </div>
+                <button class="btn btn-warning flex-grow-1 py-3 fw-bold text-dark shadow-sm fs-5 rounded-3 d-flex justify-content-center align-items-center gap-2" @click="handleAddToCart">
+                  <i class="bi bi-bag-plus-fill"></i> Kosárba
+                </button>
+              </div>
+
             <button v-if="currentUser && !isOwnEvent" class="btn w-100 py-3 mt-3 fw-semibold" :class="isAttending ? 'btn-success' : 'btn-outline-light'" @click="toggleAttendance">
               <i class="bi" :class="isAttending ? 'bi-check-circle-fill' : 'bi-calendar-plus'"></i> 
               {{ isAttending ? 'Ott Leszek! (Kattints a leiratkozáshoz)' : 'Ott Leszek!' }}
@@ -103,8 +115,9 @@
 <script setup>
 import { ref, computed, watch, onMounted, inject } from 'vue';
 import { useRoute } from 'vue-router';
-import { apiFetchEvent, PLACEHOLDER_IMAGE, apiFetchReviews, apiSubmitReview, apiToggleAttendance, apiCheckAttendance } from '../services/api.js';
+import { apiFetchEvent, PLACEHOLDER_IMAGE, apiFetchReviews, apiSubmitReview, apiToggleAttendance, apiCheckAttendance, apiBuyTicket } from '../services/api.js';
 import { useAuth } from '../stores/auth.js';
+import { useCart } from '../stores/cart.js';
 
 const route = useRoute();
 const showToast = inject('showToast');
@@ -114,6 +127,10 @@ const error = ref(false);
 const ev = ref({});
 
 const { currentUser } = useAuth();
+const { addToCart } = useCart();
+
+const ticketQty = ref(1);
+
 const reviews = ref([]);
 const reviewsLoading = ref(true);
 const reviewRating = ref(0);
@@ -137,6 +154,7 @@ watch(reviewComment, (newVal, oldVal) => {
 
 const isAttending = ref(false);
 const isTogglingAttendance = ref(false);
+const isBuyingTicket = ref(false);
 const alreadyReviewedError = ref(false);
 
 const isOwnEvent = computed(() => {
@@ -170,6 +188,13 @@ function shareEvent() {
   const url = window.location.href;
   if (navigator.share) { navigator.share({ title: ev.value.title, url }); }
   else { navigator.clipboard.writeText(url).then(() => showToast('Link másolva!', 'success')); }
+}
+
+function handleAddToCart() {
+  if (!currentUser) return showToast('Kérjük jelentkezz be a vásárláshoz!', 'error');
+  addToCart(ev.value, ticketQty.value);
+  showToast(`${ticketQty.value} db jegy hozzáadva a kosárhoz!`, 'success');
+  ticketQty.value = 1;
 }
 
 async function toggleAttendance() {

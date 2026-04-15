@@ -13,7 +13,7 @@
             <form id="create-form" @submit.prevent="handleSubmit">
               <div class="mb-3">
                 <label class="form-label text-secondary small">Esemény Címe *</label>
-                <input v-model="form.title" type="text" class="form-control form-dark" placeholder="pl. Tetőterasz Nyitó" required />
+                <input v-model="form.title" type="text" class="form-control form-dark" placeholder="pl. Tetőterasz Nyitó" maxlength="25" required />
               </div>
               <div class="row mb-3">
                 <div class="col-6">
@@ -211,8 +211,18 @@ watch(() => form.price, (newVal, oldVal) => {
       form.price = 'Ingyenes';
       return;
     }
-    if (newVal === 'Ingyenes' || 'Ingyenes'.startsWith(newVal) || newVal.endsWith(' Ft')) return;
-    const cleaned = newVal.replace(/\D/g, '');
+    if (newVal === 'Ingyenes' || 'Ingyenes'.startsWith(newVal)) return;
+    
+    if (newVal.endsWith(' Ft')) {
+      const numbersOnly = newVal.replace(/\D/g, '');
+      if (numbersOnly.length > 5) {
+        form.price = numbersOnly.substring(0, 5) + ' Ft';
+      }
+      return;
+    }
+    
+    let cleaned = newVal.replace(/\D/g, '');
+    if (cleaned.length > 5) cleaned = cleaned.substring(0, 5);
     if (cleaned !== newVal) form.price = cleaned;
   }
 });

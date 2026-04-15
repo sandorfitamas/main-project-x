@@ -68,7 +68,7 @@ class EventController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'title'    => 'required|string|max:255',
+            'title'    => 'required|string|max:25',
             'date'     => 'required|date',
             'time'     => 'required',
             'location' => 'required|string|max:255',
@@ -116,7 +116,7 @@ class EventController extends Controller
         }
 
         $request->validate([
-            'title'    => 'required|string|max:255',
+            'title'    => 'required|string|max:25',
             'date'     => 'required|date',
             'time'     => 'required',
             'location' => 'required|string|max:255',

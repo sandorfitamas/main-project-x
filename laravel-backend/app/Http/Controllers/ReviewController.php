@@ -41,7 +41,20 @@ class ReviewController extends Controller
             'comment' => $request->comment
         ]);
 
-        $averageRating = Review::where('event_id', $eventId)->avg('rating');
+        $realAvg = Review::where('event_id', $eventId)->avg('rating') ?: 0;
+        $realCount = Review::where('event_id', $eventId)->count();
+        
+        $baseRating = $event->base_rating; // Csak a tényleges, seed-ből kapott értéket nézzük (a dinamikussal ne vegyítsük)
+        
+        // Ha az eseménynek nincs kezdeti értékelése (azaz új, null vagy 0), akkor csak a valódi átlagot vesszük
+        if ($baseRating === null || (float)$baseRating === 0.0) {
+            $averageRating = round($realAvg, 1);
+        } else {
+            $baseWeight = 5; // A kezdeti értékelés súlya (5 fiktív ember)
+            $averageRating = (($baseRating * $baseWeight) + ($realAvg * $realCount)) / ($baseWeight + $realCount);
+            $averageRating = round($averageRating, 1);
+        }
+
         $event->update(['rating' => $averageRating]);
 
         return response()->json([

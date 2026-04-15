@@ -3,6 +3,8 @@ import HomePage from '../pages/HomePage.vue';
 import EventDetailsPage from '../pages/EventDetailsPage.vue';
 import ProfilePage from '../pages/ProfilePage.vue';
 import AdminPage from '../pages/AdminPage.vue';
+import CartPage from '../pages/CartPage.vue';
+import CheckoutPage from '../pages/CheckoutPage.vue';
 
 const routes = [
   { path: '/', redirect: '/home' },
@@ -14,6 +16,8 @@ const routes = [
   { path: '/event/:id', name: 'event-details', component: EventDetailsPage },
   { path: '/profile', name: 'profile', component: ProfilePage },
   { path: '/admin', name: 'admin', component: AdminPage },
+  { path: '/cart', name: 'cart', component: CartPage },
+  { path: '/checkout', name: 'checkout', component: CheckoutPage },
 ];
 
 const router = createRouter({

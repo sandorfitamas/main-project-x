@@ -10,7 +10,13 @@
         <a href="#" class="nav-link-dark" @click.prevent="$emit('show-all-events')">Események</a>
         <a href="#" class="nav-link-dark" @click.prevent="$emit('show-community')">Közösség</a>
       </div>
-      <div class="position-relative">
+      <div class="position-relative d-flex align-items-center gap-3">
+        <button v-if="currentUser" class="btn btn-link text-white position-relative p-0" @click="$router.push('/cart')" style="text-decoration: none;" title="Kosár">
+          <i class="bi bi-cart3 fs-4" style="color: #e879f9;"></i>
+          <span v-if="cartCount > 0" class="position-absolute top-0 start-100 translate-middle badge rounded-pill shadow-sm" style="font-size: 0.65rem; background: linear-gradient(90deg,#7c3aed,#d946ef);">
+            {{ cartCount }}
+          </span>
+        </button>
         <button v-if="!currentUser" class="btn btn-gradient btn-sm px-3 py-2 fw-semibold" @click="$emit('show-auth')">
           <i class="bi bi-person me-1"></i> Bejelentkezés
         </button>
@@ -50,6 +56,9 @@
 
 <script setup>
 import { computed, ref, onMounted, onUnmounted } from 'vue';
+import { useCart } from '../stores/cart.js';
+
+const { cartCount } = useCart();
 
 const props = defineProps({
   currentUser: { type: Object, default: null },

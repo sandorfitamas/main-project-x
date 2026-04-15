@@ -12,11 +12,12 @@ class AuthController extends Controller
     public function register(Request $request)
     {
         $request->validate([
-            'name'     => 'required|string|max:100',
+            'name'     => 'required|string|max:100|unique:users,name',
             'email'    => 'required|email|unique:users,email',
             'password' => 'required|string|min:6',
         ], [
-            'name.required'     => 'A név megadása kötelező',
+            'name.required'     => 'A felhasználónév megadása kötelező',
+            'name.unique'       => 'Ez a felhasználónév már foglalt',
             'email.required'    => 'Az email megadása kötelező',
             'email.unique'      => 'Ez az email cím már regisztrálva van',
             'password.required' => 'A jelszó megadása kötelező',
@@ -114,9 +115,12 @@ class AuthController extends Controller
         $user = $request->user();
 
         $request->validate([
-            'name'     => 'required|string|max:100',
+            'name'     => 'required|string|max:100|unique:users,name,' . $user->id,
             'password' => 'nullable|string|min:6',
             'profile_picture' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ], [
+            'name.required' => 'A felhasználónév megadása kötelező',
+            'name.unique'   => 'Ez a felhasználónév már foglalt'
         ]);
 
         $user->name = $request->name;

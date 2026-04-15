@@ -35,6 +35,11 @@ Route::middleware('auth:sanctum')->group(function () {
 // --- COMMUNITY ---
 Route::get('/attendances/recent', [EventController::class, 'recentAttendances']);
 
+// --- TICKETS ---
+Route::middleware('auth:sanctum')->post('/events/{id}/buy', [\App\Http\Controllers\TicketController::class, 'buyTicket']);
+Route::middleware('auth:sanctum')->post('/checkout', [\App\Http\Controllers\CheckoutController::class, 'process']);
+Route::middleware('auth:sanctum')->get('/tickets', [\App\Http\Controllers\TicketController::class, 'getUserTickets']);
+
 // --- EVENTS (public detail) — wildcard last so specific routes match first ---
 Route::get('/events/{id}', [EventController::class, 'show']);
 

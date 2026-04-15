@@ -272,6 +272,44 @@ export async function apiFetchRecentReviews() {
   }
 }
 
+export async function apiFetchMyTickets() {
+  try {
+    const res = await fetch(`${API_BASE}/tickets`, {
+      headers: { ...getAuthHeaders(), 'Accept': 'application/json' }
+    });
+    const data = await res.json();
+    return data.success ? data.tickets : [];
+  } catch {
+    return [];
+  }
+}
+
+export async function apiBuyTicket(eventId, quantity = 1) {
+  try {
+    const res = await fetch(`${API_BASE}/events/${eventId}/buy`, {
+      method: 'POST',
+      headers: { ...getAuthHeaders(), 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify({ quantity })
+    });
+    return await res.json();
+  } catch {
+    return { success: false, message: 'Hálózati hiba' };
+  }
+}
+
+export async function apiCheckoutCart(items, customer = {}) {
+  try {
+    const res = await fetch(`${API_BASE}/checkout`, {
+      method: 'POST',
+      headers: { ...getAuthHeaders(), 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify({ items, customer })
+    });
+    return await res.json();
+  } catch {
+    return { success: false, message: 'Hálózati hiba' };
+  }
+}
+
 export async function apiSubmitReview(eventId, rating, comment) {
   try {
     const res = await fetch(`${API_BASE}/events/${eventId}/reviews`, {

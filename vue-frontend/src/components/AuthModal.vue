@@ -25,8 +25,8 @@
             <!-- Regisztráció rész -->
             <form v-else @submit.prevent="handleRegister">
               <div class="mb-3">
-                <label class="form-label text-secondary small">Név</label>
-                <input v-model="regName" type="text" class="form-control form-dark" placeholder="Teljes neved" required />
+                  <label class="form-label text-secondary small">Felhasználónév</label>
+                  <input v-model="regName" type="text" class="form-control form-dark" placeholder="Pl.: TesztElek99" required />
               </div>
               <div class="mb-3">
                 <label class="form-label text-secondary small">Email</label>

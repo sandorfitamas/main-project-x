@@ -1,8 +1,10 @@
 <template>
-  <main class="flex-grow-1 container-xl px-3 px-md-4 py-5 d-flex justify-content-center align-items-center">
-    <div class="col-12 col-md-8 col-lg-6">
-      <div class="p-4 p-md-5 rounded-4 border border-secondary border-opacity-25" style="background:rgba(30,41,59,.5)">
-        <h3 class="text-white fw-bold mb-4 text-center">Profil beállítások</h3>
+  <main class="flex-grow-1 container-xl px-3 px-md-4 py-5">
+    <div class="row g-4 justify-content-center">
+      <!-- Profil Beállítások -->
+      <div class="col-12 col-lg-5">
+        <div class="p-4 p-md-5 rounded-4 border border-secondary border-opacity-25 h-100" style="background:rgba(30,41,59,.5)">
+          <h3 class="text-white fw-bold mb-4 text-center">Profil beállítások</h3>
         
         <div v-if="errorMsg" class="alert alert-danger p-3 mb-4">{{ errorMsg }}</div>
         <div v-if="successMsg" class="alert alert-success p-3 mb-4" style="background-color:rgba(22, 163, 74, 0.2); color:#4ade80; border-color:#22c55e;">
@@ -26,7 +28,7 @@
           </div>
           
           <div class="mb-4">
-            <label class="form-label text-secondary mb-1">Név</label>
+            <label class="form-label text-secondary mb-1">Felhasználónév</label>
             <input v-model="form.name" type="text" class="form-control form-dark px-3 py-2" required />
           </div>
           
@@ -41,21 +43,140 @@
           </button>
         </form>
       </div>
+      </div>
+      <!-- Saját Jegyek -->
+      <div class="col-12 col-lg-7">
+        <div class="p-4 p-md-5 rounded-4 border border-secondary border-opacity-25 h-100" style="background:rgba(30,41,59,.5)">
+          <h3 class="text-white fw-bold mb-4 text-center">Saját Jegyek</h3>
+          <div v-if="loadingTickets" class="text-center text-secondary py-4">
+            <div class="spinner-border text-primary" role="status"></div>
+            <p class="mt-2">Jegyek betöltése...</p>
+          </div>
+          <div v-else-if="myTickets.length === 0" class="text-center py-5 rounded-3 border border-secondary border-opacity-25 bg-dark">
+            <i class="bi bi-ticket-perforated display-4 text-secondary mb-3"></i>
+            <p class="text-secondary fs-5 mb-1">Még nincsenek megvásárolt jegyeid</p>
+            <button class="btn btn-outline-light mt-3" @click="$router.push('/home')">Események böngészése</button>
+          </div>
+          <div v-else class="d-flex flex-column gap-3">
+            <div v-for="purchase in groupedPurchases" :key="purchase.key" class="rounded-3 overflow-hidden" style="background:rgba(15,23,42,.6);border:1px solid rgba(71,85,105,.5)">
+              
+              <!-- VÁSÁRLÁS FEJLÉC (KATTINTHATÓ) -->
+              <div 
+                class="d-flex justify-content-between align-items-center p-3" 
+                style="cursor: pointer; transition: background 0.2s;"
+                @click="togglePurchase(purchase.key)"
+                :style="expandedPurchases[purchase.key] ? 'background:rgba(255,255,255,0.05)' : ''"
+              >
+                <div>
+                  <div class="text-white fw-bold mb-1">
+                    Vásárlás – {{ formatDate(purchase.date) }}
+                  </div>
+                  <div class="text-secondary small">
+                    {{ purchase.tickets.length }} db jegy &bull; Összesen: {{ parseInt(purchase.totalAmount).toLocaleString('hu-HU') }} Ft
+                  </div>
+                </div>
+                <div class="d-flex align-items-center gap-3">
+                  <span class="badge bg-success">{{ purchase.status === 'paid' ? 'Fizetve' : purchase.status }}</span>
+                  <i class="bi text-secondary" :class="expandedPurchases[purchase.key] ? 'bi-chevron-up' : 'bi-chevron-down'"></i>
+                </div>
+              </div>
+
+              <!-- JELEN VÁSÁRLÁS JEGYEI (KINYITVA LÁTSZANAK CSD) -->
+              <div v-if="expandedPurchases[purchase.key]" class="p-3 border-top" style="border-color: rgba(71,85,105,.5) !important;">
+                <div class="row g-3">
+                  <div v-for="ticket in purchase.tickets" :key="ticket.id" class="col-12">
+                    <div class="p-3 rounded-3 d-flex flex-column flex-sm-row gap-3 align-items-sm-center" style="background:rgba(30,41,59,0.8); border:1px solid rgba(255,255,255,0.05);">
+                      
+                      <!-- QR CODE -->
+                      <div class="bg-white p-1 rounded d-flex align-items-center justify-content-center mx-auto mx-sm-0" style="width: 80px; height: 80px; flex-shrink: 0;">
+                        <img :src="`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${ticket.ticket_code}`" alt="QR Kód" class="w-100 h-100 object-fit-contain">
+                      </div>
+                      
+                      <!-- TICKET INFO -->
+                      <div class="flex-grow-1 text-center text-sm-start overflow-hidden">
+                        <h6 class="text-white mb-2 text-truncate fw-bold">{{ ticket.event?.title || 'Ismeretlen Esemény' }}</h6>
+                        <div class="d-flex flex-column flex-sm-row justify-content-between text-secondary small gap-1">
+                          <div>
+                            <i class="bi bi-calendar-event me-1"></i> {{ ticket.event?.date || '-' }}
+                            <span class="d-none d-sm-inline mx-2 text-white-50">|</span>
+                            Mennyiség: {{ ticket.quantity }} db
+                          </div>
+                          <div>
+                            Részösszeg: <span class="text-white">{{ ticket.total_price > 0 ? parseInt(ticket.total_price) + ' Ft' : 'Ingyenes' }}</span>
+                          </div>
+                        </div>
+                        <div class="mt-2 small text-secondary">
+                          Vonalkód: <strong class="text-white user-select-all fs-6" style="letter-spacing: 1px;">{{ ticket.ticket_code }}</strong>
+                        </div>
+                      </div>
+                      
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+
     </div>
   </main>
 </template>
 
 <script setup>
-import { ref, watch, onMounted } from 'vue';
+import { ref, reactive, computed, watch, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
 import { useAuth } from '../stores/auth.js';
+import { apiFetchMyTickets } from '../services/api.js';
 
+const router = useRouter();
 const { currentUser, updateProfile } = useAuth();
 const form = ref({ name: '', email: '', password: '' });
 const loading = ref(false);
+const loadingTickets = ref(true);
+const myTickets = ref([]);
 const errorMsg = ref('');
 const successMsg = ref('');
 const profilePictureFile = ref(null);
 const profilePicturePreview = ref(null);
+
+const expandedPurchases = reactive({});
+
+function togglePurchase(key) {
+  expandedPurchases[key] = !expandedPurchases[key];
+}
+
+function formatDate(dateStr) {
+  if (!dateStr) return '';
+  const d = new Date(dateStr);
+  return d.toLocaleString('hu-HU', {
+    year: 'numeric', month: '2-digit', day: '2-digit',
+    hour: '2-digit', minute: '2-digit'
+  });
+}
+
+const groupedPurchases = computed(() => {
+  const groups = {};
+  myTickets.value.forEach(ticket => {
+    const dateStr = ticket.created_at || '';
+    const groupKey = dateStr ? dateStr.substring(0, 16) : Math.random().toString(36).substring(7);
+    
+    if (!groups[groupKey]) {
+      groups[groupKey] = {
+        date: dateStr,
+        key: groupKey,
+        tickets: [],
+        totalAmount: 0,
+        status: ticket.status
+      };
+    }
+    groups[groupKey].tickets.push(ticket);
+    groups[groupKey].totalAmount += parseFloat(ticket.total_price || 0);
+  });
+  
+  return Object.values(groups).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()).reverse();
+});
 
 function handleFileChange(e) {
   const file = e.target.files[0];
@@ -74,7 +195,16 @@ function loadUserData() {
     form.value.name = currentUser.value.name || '';
     form.value.email = currentUser.value.email || '';
     form.value.password = '';
+    fetchTickets();
   }
+}
+
+async function fetchTickets() {
+  loadingTickets.value = true;
+  try {
+    myTickets.value = await apiFetchMyTickets();
+  } catch (e) {}
+  loadingTickets.value = false;
 }
 
 onMounted(() => {
