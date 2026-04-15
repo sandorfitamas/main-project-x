@@ -25,9 +25,22 @@
                   <input v-model="form.time" type="time" class="form-control form-dark" :min="minTime" required />
                 </div>
               </div>
-              <div class="mb-3">
-                <label class="form-label text-secondary small">Város *</label>
-                <input v-model="locationData.city" type="text" class="form-control form-dark" placeholder="pl. Budapest" required />
+              <div class="row mb-3">
+                <div class="col-4">
+                  <label class="form-label text-secondary small">Irányítószám *</label>
+                  <input v-model="locationData.zipCode" type="text" class="form-control form-dark" placeholder="pl. 1051" required />
+                </div>
+                <div class="col-8 position-relative">
+                  <label class="form-label text-secondary small">Város *</label>
+                  <input v-model="locationData.city" type="text" class="form-control form-dark" placeholder="pl. Budapest" required @focus="cityDropdownOpen = true" @blur="setTimeout(() => cityDropdownOpen = false, 200)" />
+                  <ul v-if="cityDropdownOpen && filteredCities.length" class="dropdown-menu dropdown-menu-dark show position-absolute w-100 mt-1 shadow" style="max-height: 155px; overflow-y: auto; z-index: 1051; background: #1e293b; border-color: #334155;">
+                    <li v-for="city in filteredCities" :key="city">
+                      <a class="dropdown-item text-light" style="cursor: pointer;" @click.prevent="selectCity(city)">
+                        {{ city }}
+                      </a>
+                    </li>
+                  </ul>
+                </div>
               </div>
               <div class="row mb-3">
                 <div class="col-4" v-if="locationData.city && (locationData.city.toLowerCase().trim() === 'budapest' || locationData.city.toLowerCase().trim() === 'bp' || locationData.city.toLowerCase().trim() === 'bp.')">
@@ -164,6 +177,15 @@ const form = reactive({
   contact_phone: '', category: 'Házibuli', description: '', tags: [],
 });
 
+watch(() => form.title, (newVal, oldVal) => {
+  if (newVal) {
+    const digits = newVal.match(/\d/g);
+    if (digits && digits.length > 2) {
+      form.title = oldVal || '';
+    }
+  }
+});
+
 const phoneData = reactive({ prefix: '30', number: '' });
 
 watch(phoneData, (newVal) => {
@@ -175,10 +197,61 @@ watch(phoneData, (newVal) => {
 }, { deep: true });
 
 const locationData = reactive({
+  zipCode: '',
   city: '',
   district: '',
   street: '',
   houseNumber: ''
+});
+
+const cityDropdownOpen = ref(false);
+const popularCities = [
+  'Budapest', 'Debrecen', 'Szeged', 'Miskolc', 'Pécs', 'Győr', 'Nyíregyháza',
+  'Kecskemét', 'Székesfehérvár', 'Szombathely', 'Érd', 'Szolnok', 'Tatabánya',
+  'Kaposvár', 'Sopron', 'Veszprém', 'Békéscsaba', 'Zalaegerszeg', 'Eger',
+  'Hódmezővásárhely', 'Nagykanizsa', 'Dunaújváros', 'Dunakeszi', 'Cegléd',
+  'Szigetszentmiklós', 'Mosonmagyaróvár', 'Baja', 'Vác', 'Ózd', 'Gödöllő',
+  'Pápa', 'Salgótarján', 'Esztergom', 'Ajka', 'Gyöngyös', 'Kazincbarcika',
+  'Hajdúböszörmény', 'Gyál', 'Kiskunfélegyháza', 'Keszthely', 'Orosháza',
+  'Komló', 'Vecsés', 'Makó', 'Monor', 'Mátészalka', 'Budaörs', 'Siófok',
+  'Pilisvörösvár', 'Mohács'
+];
+
+const filteredCities = computed(() => {
+  if (!locationData.city) return popularCities.slice(0, 5);
+  const query = locationData.city.toLowerCase().trim();
+  return popularCities
+    .filter(city => city.toLowerCase().startsWith(query))
+    .slice(0, 5);
+});
+
+const selectCity = (city) => {
+  locationData.city = city;
+  cityDropdownOpen.value = false;
+};
+
+watch(() => locationData.city, (newVal) => {
+  if (newVal) {
+    let cleaned = newVal.replace(/\d/g, ''); // no numbers allowed
+    if (cleaned.length > 15) {
+      cleaned = cleaned.substring(0, 15); // max 15 chars
+    }
+    if (cleaned !== newVal) {
+      locationData.city = cleaned;
+    }
+  }
+});
+
+watch(() => locationData.zipCode, (newVal) => {
+  if (newVal) {
+    let cleaned = newVal.replace(/\D/g, ''); // csak számok
+    if (cleaned.length > 4) {
+      cleaned = cleaned.substring(0, 4); // max 4 karakter (magyar irányítószám)
+    }
+    if (cleaned !== newVal) {
+      locationData.zipCode = cleaned;
+    }
+  }
 });
 
 watch(locationData, (newVal) => {
@@ -195,6 +268,10 @@ watch(locationData, (newVal) => {
     }
   }
 
+  if (newVal.zipCode && newVal.zipCode.trim()) {
+    loc = newVal.zipCode.trim() + ' ' + loc;
+  }
+
   if (newVal.street && newVal.street.trim()) {
     loc += (loc ? ', ' : '') + newVal.street.trim();
   }
@@ -203,7 +280,7 @@ watch(locationData, (newVal) => {
     loc += (loc ? ' ' : '') + newVal.houseNumber.trim() + '.';
   }
 
-  form.location = loc;
+  form.location = loc.trim();
 }, { deep: true });
 
 const imageFile = ref(null);
@@ -275,6 +352,12 @@ function formatPhone() {
 }
 
 async function handleSubmit() {
+  const digitsMatch = form.title.match(/\d/g);
+  if (digitsMatch && digitsMatch.length > 2) {
+    showToast('Az esemény címében maximum 2 számjegy szerepelhet!', 'error');
+    return;
+  }
+  
   if (!imageFile.value) {
     showToast('Kérjük, tölts fel egy képet az eseményhez!', 'error');
     return;

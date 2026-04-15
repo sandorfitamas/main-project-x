@@ -80,7 +80,7 @@
 
       <!-- Értékelések -->
       <div class="container-xl pb-5 mb-5 mt-4" v-if="testimonials.length > 0">
-        <h3 class="fw-bold text-white mb-4 text-center">Mit mondanak rólunk?</h3>
+        <h3 class="fw-bold text-white mb-4 text-center">Vélemények az eseményekről</h3>
         <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
           <div v-for="(t, i) in (showAllTestimonials ? testimonials : testimonials.slice(0, 3))" :key="i" class="col">
             <div class="rounded-4 p-4 h-100 d-flex flex-column" style="background: rgba(30,41,59,0.5); border: 1px solid rgba(71,85,105,0.5);">
@@ -274,10 +274,9 @@ function escapeHtml(str) {
 }
 
 watch(() => props.activeSection, async (sec) => {
-  document.title = 'Project X - Találd meg a legjobb bulit';
   const hasToken = !!localStorage.getItem('auth_token');
 
-  // Automatikus frissítĂŠs
+  // Automatikus frissítés
   if (sec === 'events' || sec === 'home' || !sec) {
     await loadAllEvents();
   }

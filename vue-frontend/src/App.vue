@@ -61,8 +61,8 @@
 </template>
 
 <script setup>
-import { ref, onMounted, provide } from 'vue';
-import { useRouter } from 'vue-router';
+import { ref, computed, onMounted, provide } from 'vue';
+import { useRouter, useRoute } from 'vue-router';
 import NavBar from './components/NavBar.vue';
 import FooterBar from './components/FooterBar.vue';
 import ToastContainer from './components/ToastContainer.vue';
@@ -80,7 +80,9 @@ const { loadAllEvents } = useEvents();
 const { loadFavoriteIds } = useFavorites();
 const { showToast } = useToast();
 
-const activeSection = ref(localStorage.getItem('activeSection') || 'home');
+const activeSection = computed(() => {
+  return ['events', 'my-events', 'favorites', 'community'].includes(route.name) ? route.name : 'home';
+});
 const showAuthModal = ref(false);
 const showCreateModal = ref(false);
 const showEditModal = ref(false);
@@ -89,12 +91,15 @@ const editingEvent = ref(null);
 const detailEvent = ref(null);
 
 const router = useRouter();
+const route = useRoute();
 
 async function navigateSection(section) {
-  activeSection.value = section;
-  localStorage.setItem('activeSection', section);
-  if (section === 'events' || section === 'home' || !section) { await loadAllEvents(); }
-  router.push('/');
+  if (section === 'home' || !section) {
+    await loadAllEvents();
+    router.push('/home');
+  } else {
+    router.push(`/${section}`);
+  }
 }
 
 // Provide global functions to child components

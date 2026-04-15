@@ -111,7 +111,7 @@ class EventController extends Controller
             return response()->json(['success' => false, 'error' => 'Esemény nem található'], 404);
         }
 
-        if ($event->user_id !== $request->user()->id) {
+        if ($event->user_id !== $request->user()->id && !$request->user()->is_admin) {
             return response()->json(['success' => false, 'error' => 'Nincs jogosultságod módosítani ezt az eseményt'], 403);
         }
 
@@ -153,7 +153,7 @@ class EventController extends Controller
             return response()->json(['success' => false, 'error' => 'Esemény nem található'], 404);
         }
 
-        if ($event->user_id !== $request->user()->id) {
+        if ($event->user_id !== $request->user()->id && !$request->user()->is_admin) {
             return response()->json(['success' => false, 'error' => 'Nincs jogosultságod törölni ezt az eseményt'], 403);
         }
 
