@@ -31,6 +31,11 @@ class FavoriteController extends Controller
         $userId  = $request->user()->id;
         $eventId = $request->event_id;
 
+        $event = Event::findOrFail($eventId);
+        if ($event->user_id == $userId) {
+            return response()->json(['success' => false, 'error' => 'A saját eseményedet nem adhatod a kedvenceidhez!'], 403);
+        }
+
         $exists = Favorite::where('user_id', $userId)->where('event_id', $eventId)->exists();
         if ($exists) {
             return response()->json(['success' => false, 'error' => 'Már kedvenc'], 409);

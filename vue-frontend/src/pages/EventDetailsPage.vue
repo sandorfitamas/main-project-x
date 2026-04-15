@@ -38,7 +38,7 @@
               <div class="mb-3 d-flex gap-2">
                 <i v-for="i in 5" :key="i" class="bi fs-4 cursor-pointer" :class="reviewRating >= i ? 'bi-star-fill text-warning' : 'bi-star text-secondary opacity-50'" @click="reviewRating = i"></i>
               </div>
-              <textarea v-model="reviewComment" class="form-control review-textarea text-white border-secondary border-opacity-25 mb-4 p-3 shadow-none" style="background:rgba(15,23,42,.6); border-radius: 0.75rem;" rows="3" placeholder="Oszd meg a tapasztalataidat..."></textarea>
+                <textarea v-model="reviewComment" class="form-control review-textarea text-white border-secondary border-opacity-25 mb-4 p-3 shadow-none" style="background:rgba(15,23,42,.6); border-radius: 0.75rem; resize: none;" rows="3" placeholder="Oszd meg a tapasztalataidat..."></textarea>
               <div class="d-flex justify-content-end">
                 <button class="btn btn-gradient px-4 py-2 fw-semibold rounded-pill" @click="submitReview" :disabled="!reviewRating || !reviewComment.trim() || isSubmittingReview">
                   <i class="bi bi-send me-2"></i>{{ isSubmittingReview ? 'Küldés...' : 'Értékelés beküldése' }}
@@ -101,7 +101,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, inject } from 'vue';
+import { ref, computed, watch, onMounted, inject } from 'vue';
 import { useRoute } from 'vue-router';
 import { apiFetchEvent, PLACEHOLDER_IMAGE, apiFetchReviews, apiSubmitReview, apiToggleAttendance, apiCheckAttendance } from '../services/api.js';
 import { useAuth } from '../stores/auth.js';
@@ -119,6 +119,22 @@ const reviewsLoading = ref(true);
 const reviewRating = ref(0);
 const reviewComment = ref('');
 const isSubmittingReview = ref(false);
+
+watch(reviewComment, (newVal, oldVal) => {
+  if (!newVal) return;
+  let val = newVal;
+  if (val.length > 50) {
+    val = val.substring(0, 50);
+  }
+  const digitMatches = val.match(/\d/g);
+  if (digitMatches && digitMatches.length > 2) {
+    val = oldVal || '';
+  }
+  if (val !== newVal) {
+    reviewComment.value = val;
+  }
+});
+
 const isAttending = ref(false);
 const isTogglingAttendance = ref(false);
 const alreadyReviewedError = ref(false);

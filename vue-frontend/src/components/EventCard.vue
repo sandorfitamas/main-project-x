@@ -1,10 +1,11 @@
 <template>
   <div class="col">
-    <div class="event-card h-100" :data-event-id="event.id">
+    <div class="event-card h-100" :data-event-id="event.id" @click="$emit('details', event)" style="cursor: pointer;">
       <div class="event-card-img">
         <img :src="imgSrc" :alt="event.title || ''" loading="lazy" @error="onImgError" />
         <div class="card-img-gradient"></div>
         <button
+          v-if="!isOwnEvent"
           :class="['favorite-btn', { active: isFav }]"
           :title="isFav ? 'Eltávolítás a kedvencekből' : 'Kedvencekhez adás'"
           @click.stop="onFavoriteClick"
@@ -73,6 +74,7 @@ const showToast = inject('showToast');
 const imgSrc = computed(() => props.event.imageUrl || PLACEHOLDER_IMAGE);
 const rating = computed(() => parseFloat(props.event.rating) || 0);
 const isFav = computed(() => isFavorite(props.event.id));
+const isOwnEvent = computed(() => currentUser.value && String(props.event.user_id) === String(currentUser.value.id));
 
 const cleanTags = computed(() => {
   const tags = props.event.tags;

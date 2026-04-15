@@ -150,8 +150,8 @@
         <EventCard v-for="ev in myEvents" :key="ev.id" :event="ev" :is-mine="true" @details="openDetails" @edit="openEdit" />
       </div>
       <div v-else class="text-center py-5 rounded-4 border border-secondary border-opacity-25 mt-3">
-        <p class="text-secondary fs-5 mb-1">Még nincs eseményed</p>
-        <p class="text-muted small mb-3">Hozz létre az első bulidat!</p>
+          <p class="text-white fs-5 mb-1">Még nincs eseményed</p>
+          <p class="text-light opacity-75 small mb-3">Hozz létre az első bulidat!</p>
         <button class="btn btn-gradient px-4 py-2 fw-semibold" @click="$emit('create-event')"><i class="bi bi-plus-lg me-1"></i> Új buli létrehozása</button>
       </div>
     </section>
@@ -342,6 +342,7 @@ async function loadCommunityData() {
   });
 
   topOrganizers.value = Object.values(orgMap)
+    .filter(item => item.count > 0)
     .sort((a,b) => b.count - a.count)
     .slice(0, 4)
     .map((item, idx) => ({

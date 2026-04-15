@@ -41,6 +41,13 @@ class ReviewController extends Controller
             'comment' => $request->comment
         ]);
 
-        return response()->json(['success' => true, 'review' => $review->load('user')]);
+        $averageRating = Review::where('event_id', $eventId)->avg('rating');
+        $event->update(['rating' => $averageRating]);
+
+        return response()->json([
+            'success' => true, 
+            'review' => $review->load('user'),
+            'new_average' => $averageRating
+        ]);
     }
 }
