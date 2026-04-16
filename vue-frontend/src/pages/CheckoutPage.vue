@@ -89,7 +89,7 @@
               </div>
               <div class="col-12">
                 <label class="form-label text-light small">E-mail cím *</label>
-                <input type="email" class="form-control text-white bg-transparent py-2" style="border-color: rgba(255,255,255,0.2) !important;" v-model="checkoutForm.email" placeholder="pelda@email.com" required>
+                <input type="email" class="form-control text-white bg-transparent py-2" style="border-color: rgba(255,255,255,0.2) !important;" v-model="checkoutForm.email" placeholder="pelda@email.com" required maxlength="30" @input="checkoutForm.email = checkoutForm.email.replace(/\d/g, (m, offset, str) => (str.substring(0, offset).match(/\d/g) || []).length < 3 ? m : '')">
               </div>
             </div>
 
@@ -101,7 +101,7 @@
               </div>
               <div class="col-md-8 position-relative">
                 <label class="form-label text-light small">Település *</label>
-                <input type="text" class="form-control text-white bg-transparent py-2 custom-arrow" style="border-color: rgba(255,255,255,0.2) !important;" v-model="checkoutForm.city" placeholder="Budapest" required @focus="cityDropdownOpen = true" @blur="closeCityDropdown">
+                <input type="text" class="form-control text-white bg-transparent py-2 custom-arrow" style="border-color: rgba(255,255,255,0.2) !important;" v-model="checkoutForm.city" placeholder="Budapest" required maxlength="15" @input="checkoutForm.city = checkoutForm.city.replace(/[^a-zA-ZáéíóöőúüűÁÉÍÓÖŐÚÜŰ\s\-]/g, '')" @focus="cityDropdownOpen = true" @blur="closeCityDropdown">
                 <ul v-if="cityDropdownOpen && filteredCities.length" class="dropdown-menu show w-100 mt-1 shadow border-0" style="max-height: 155px; overflow-y: auto; z-index: 1051; background: rgba(30,41,59,0.95); backdrop-filter: blur(10px);">
                   <li v-for="city in filteredCities" :key="city">
                     <a class="dropdown-item text-light city-item" style="cursor: pointer;" @click.prevent="selectCity(city)">{{ city }}</a>
@@ -110,11 +110,11 @@
               </div>
               <div class="col-md-6">
                 <label class="form-label text-light small">Utca, házszám *</label>
-                <input type="text" class="form-control text-white bg-transparent py-2" style="border-color: rgba(255,255,255,0.2) !important;" v-model="checkoutForm.address" placeholder="Kossuth Lajos u. 1." required maxlength="25">
+                <input type="text" class="form-control text-white bg-transparent py-2" style="border-color: rgba(255,255,255,0.2) !important;" v-model="checkoutForm.address" placeholder="Kossuth Lajos u. 1." required maxlength="25" @input="checkoutForm.address = checkoutForm.address.replace(/\d/g, (m, offset, str) => (str.substring(0, offset).match(/\d/g) || []).length < 3 ? m : '')">
               </div>
               <div class="col-md-6">
                 <label class="form-label text-light small">Egyéb (lépcsőház, emelet, ajtó, kapucsengő)</label>
-                <input type="text" class="form-control text-white bg-transparent py-2" style="border-color: rgba(255,255,255,0.2) !important;" v-model="checkoutForm.other" placeholder="2. emelet 4. ajtó">
+                <input type="text" class="form-control text-white bg-transparent py-2" style="border-color: rgba(255,255,255,0.2) !important;" v-model="checkoutForm.other" placeholder="2. emelet 4. ajtó" @input="checkoutForm.other = checkoutForm.other.replace(/\d/g, (m, offset, str) => (str.substring(0, offset).match(/\d/g) || []).length < 6 ? m : '')">
               </div>
             </div>
           </div>
@@ -259,10 +259,20 @@ async function processCheckout() {
     return;
   }
 
+  if (!checkoutForm.email.includes('@')) {
+    showToast('Az e-mail cím hiányos, tartalmaznia kell egy "@" jelet!', 'error');
+    return;
+  }
+
   // Card validation check
   if (checkoutForm.paymentMethod === 'card') {
     if (!checkoutForm.cardName || !checkoutForm.cardNumber || !checkoutForm.cardExpiry || !checkoutForm.cardCvv) {
       showToast('Kérjük, add meg a bankkártya adataidat a fizetéshez!', 'error');
+      return;
+    }
+
+    if (checkoutForm.cardNumber.replace(/\D/g, '').length !== 16) {
+      showToast('A bankkártya számnak pontosan 16 számjegyből kell állnia!', 'error');
       return;
     }
 

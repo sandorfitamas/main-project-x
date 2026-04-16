@@ -30,7 +30,7 @@
       <div class="mb-5">
         <h4 class="fw-bold mb-3">Felhasználók kezelése</h4>
         <div class="table-responsive">
-          <table class="table table-dark table-hover align-middle">
+          <table class="table table-dark table-hover align-middle text-nowrap">
             <thead>
               <tr>
                 <th>ID</th>
@@ -47,13 +47,15 @@
                 <td>{{ user.email }}</td>
                 <td>{{ new Date(user.created_at).toLocaleDateString() }}</td>
                 <td>
-                  <button v-if="!user.is_admin" class="btn btn-sm btn-outline-warning me-2" @click="suspendUser(user)">
-                    <i class="bi" :class="user.suspended_until ? 'bi-play-circle' : 'bi-pause-circle'"></i> 
-                    {{ user.suspended_until ? 'Feloldás' : 'Felfüggesztés' }}
-                  </button>
-                  <button v-if="!user.is_admin" class="btn btn-sm btn-outline-danger" @click="deleteUser(user.id)">
-                    <i class="bi bi-trash"></i> Törlés
-                  </button>
+                  <div class="d-flex flex-column flex-md-row gap-2">
+                    <button v-if="!user.is_admin" class="btn btn-sm btn-outline-warning" @click="suspendUser(user)">
+                      <i class="bi" :class="user.suspended_until ? 'bi-play-circle' : 'bi-pause-circle'"></i> 
+                      {{ user.suspended_until ? 'Feloldás' : 'Felfüggesztés' }}
+                    </button>
+                    <button v-if="!user.is_admin" class="btn btn-sm btn-outline-danger" @click="deleteUser(user.id)">
+                      <i class="bi bi-trash"></i> Törlés
+                    </button>
+                  </div>
                 </td>
               </tr>
             </tbody>
@@ -64,7 +66,7 @@
       <div>
         <h4 class="fw-bold mb-3">Események moderálása</h4>
         <div class="table-responsive">
-          <table class="table table-dark table-hover align-middle">
+          <table class="table table-dark table-hover align-middle text-nowrap">
             <thead>
               <tr>
                 <th>ID</th>
@@ -81,16 +83,18 @@
                 <td>{{ event.creator_name }}</td>
                 <td>{{ event.date }}</td>
                 <td>
-                  <button class="btn btn-sm btn-outline-info me-2" @click="openEditModal(event)">
-                    <i class="bi bi-pencil"></i> Szerkesztés
-                  </button>
-                  <button class="btn btn-sm btn-outline-warning me-2" @click="suspendEvent(event)">
-                    <i class="bi" :class="event.suspended_until ? 'bi-eye' : 'bi-eye-slash'"></i> 
-                    {{ event.suspended_until ? 'Megjelenítés' : 'Elrejtés' }}
-                  </button>
-                  <button class="btn btn-sm btn-outline-danger" @click="deleteEvent(event.id)">
-                    <i class="bi bi-trash"></i> Törlés
-                  </button>
+                  <div class="d-flex flex-column flex-md-row gap-2">
+                    <button class="btn btn-sm btn-outline-info" @click="openEditModal(event)">
+                      <i class="bi bi-pencil"></i> Szerkesztés
+                    </button>
+                    <button class="btn btn-sm btn-outline-warning" @click="suspendEvent(event)">
+                      <i class="bi" :class="event.suspended_until ? 'bi-eye' : 'bi-eye-slash'"></i> 
+                      {{ event.suspended_until ? 'Megjelenítés' : 'Elrejtés' }}
+                    </button>
+                    <button class="btn btn-sm btn-outline-danger" @click="deleteEvent(event.id)">
+                      <i class="bi bi-trash"></i> Törlés
+                    </button>
+                  </div>
                 </td>
               </tr>
             </tbody>
@@ -101,7 +105,7 @@
       <div class="mb-5">
         <h4 class="fw-bold mb-3">Vélemények moderálása</h4>
         <div class="table-responsive">
-          <table class="table table-dark table-hover align-middle">
+          <table class="table table-dark table-hover align-middle text-nowrap">
             <thead>
               <tr>
                 <th>ID</th>
@@ -125,13 +129,15 @@
                 </td>
                 <td style="max-width: 300px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" :title="review.comment">{{ review.comment }}</td>
                 <td>
-                  <button v-if="!review.user_is_admin" class="btn btn-sm btn-outline-warning me-2" @click="suspendUserByReview(review)">
-                    <i class="bi" :class="review.user_suspended_until ? 'bi-play-circle' : 'bi-pause-circle'"></i> 
-                    {{ review.user_suspended_until ? 'Feloldás' : 'Felfüggesztés' }}
-                  </button>
-                  <button class="btn btn-sm btn-outline-danger" @click="deleteReview(review.id)">
-                    <i class="bi bi-trash"></i> Törlés
-                  </button>
+                  <div class="d-flex flex-column flex-md-row gap-2">
+                    <button v-if="!review.user_is_admin" class="btn btn-sm btn-outline-warning" @click="suspendUserByReview(review)">
+                      <i class="bi" :class="review.user_suspended_until ? 'bi-play-circle' : 'bi-pause-circle'"></i> 
+                      {{ review.user_suspended_until ? 'Feloldás' : 'Felfüggesztés' }}
+                    </button>
+                    <button class="btn btn-sm btn-outline-danger" @click="deleteReview(review.id)">
+                      <i class="bi bi-trash"></i> Törlés
+                    </button>
+                  </div>
                 </td>
               </tr>
               <tr v-if="reviews.length === 0">

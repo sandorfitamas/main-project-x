@@ -166,9 +166,9 @@
         <EventCard v-for="ev in favoriteEvents" :key="ev.id" :event="ev" @details="openDetails" @edit="openEdit" />
       </div>
       <div v-else class="text-center py-5 rounded-4 border border-secondary border-opacity-25 mt-3">
-        <i class="bi bi-heart display-3 text-secondary d-block mb-3"></i>
-        <p class="text-secondary fs-5 mb-1">Még nincs kedvenc eseményed</p>
-        <p class="text-muted small mb-3">Az események melletti szív ikonra kattintva adhatsz hozzá kedvenceket</p>
+        <i class="bi bi-heart display-3 text-white-50 d-block mb-3"></i>
+        <p class="text-light fs-5 mb-1">Még nincs kedvenc eseményed</p>
+        <p class="text-white-50 small mb-3">Az események melletti szív ikonra kattintva adhatsz hozzá kedvenceket</p>
         <button class="btn btn-gradient px-4 py-2 fw-semibold" @click="$emit('show-all-events')">Események böngészése</button>
       </div>
     </section>

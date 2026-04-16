@@ -175,7 +175,7 @@ const groupedPurchases = computed(() => {
     groups[groupKey].totalAmount += parseFloat(ticket.total_price || 0);
   });
   
-  return Object.values(groups).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()).reverse();
+  return Object.values(groups).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 });
 
 function handleFileChange(e) {

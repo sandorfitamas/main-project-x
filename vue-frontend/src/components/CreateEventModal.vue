@@ -67,7 +67,7 @@
                 </div>
               </div>
               <div class="row mb-3">
-                <div class="col-6">
+                <div class="col-12 col-md-6 mb-3 mb-md-0">
                   <label class="form-label text-secondary small">Telefonszám</label>
                   <div class="input-group">
                     <span class="input-group-text form-dark border-secondary text-secondary">+36</span>
@@ -79,7 +79,7 @@
                     <input v-model="phoneData.number" type="tel" class="form-control form-dark" placeholder="123 4567" maxlength="9" />
                   </div>
                 </div>
-                <div class="col-6">
+                <div class="col-12 col-md-6">
                   <label class="form-label text-secondary small">Kategória</label>
                   <select v-model="form.category" class="form-select form-dark">
                     <option v-for="cat in categories" :key="cat" :value="cat">{{ cat }}</option>
@@ -180,7 +180,7 @@ const form = reactive({
 watch(() => form.title, (newVal, oldVal) => {
   if (newVal) {
     const digits = newVal.match(/\d/g);
-    if (digits && digits.length > 2) {
+    if (digits && digits.length > 4) {
       form.title = oldVal || '';
     }
   }
@@ -190,7 +190,7 @@ watch(() => form.description, (newVal, oldVal) => {
   if (newVal) {
     let check = newVal.length > 100 ? newVal.substring(0, 100) : newVal;
     const digits = check.match(/\d/g);
-    if (digits && digits.length > 2) {
+    if (digits && digits.length > 4) {
       check = oldVal || '';
     }
     if (check !== newVal) form.description = check;
@@ -456,8 +456,8 @@ function formatPhone() {
 
 async function handleSubmit() {
   const digitsMatch = form.title.match(/\d/g);
-  if (digitsMatch && digitsMatch.length > 2) {
-    showToast('Az esemény címében maximum 2 számjegy szerepelhet!', 'error');
+  if (digitsMatch && digitsMatch.length > 4) {
+    showToast('Az esemény címében maximum 4 számjegy szerepelhet!', 'error');
     return;
   }
   

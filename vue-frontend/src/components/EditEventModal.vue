@@ -50,7 +50,7 @@
                 <div class="col-6"><label class="form-label text-secondary small">Belépő ára</label><input v-model="form.price" @blur="formatPrice" type="text" class="form-control form-dark" /></div>
               </div>
               <div class="row mb-3">
-                <div class="col-6">
+                <div class="col-12 col-md-6 mb-3 mb-md-0">
                   <label class="form-label text-secondary small">Telefonszám</label>
                   <div class="input-group">
                     <span class="input-group-text form-dark border-secondary text-secondary">+36</span>
@@ -62,7 +62,7 @@
                     <input v-model="phoneData.number" type="tel" class="form-control form-dark" placeholder="123 4567" maxlength="9" />
                   </div>
                 </div>
-                <div class="col-6"><label class="form-label text-secondary small">Kategória</label>
+                <div class="col-12 col-md-6"><label class="form-label text-secondary small">Kategória</label>
                   <select v-model="form.category" class="form-select form-dark"><option v-for="c in cats" :key="c" :value="c">{{ c }}</option></select>
                 </div>
               </div>
