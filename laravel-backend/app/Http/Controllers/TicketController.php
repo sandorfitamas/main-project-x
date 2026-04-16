@@ -7,14 +7,38 @@ use App\Models\Ticket;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
+/**
+ * Class TicketController
+ * Jegyvásárlás és jegykezelés controller.
+ */
+
 class TicketController extends Controller
 {
+    /**
+     * Bejelentkezett felhasználó jegyeinek lekérdezése.
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function getUserTickets(Request $request)
     {
-        $tickets = Ticket::with('event')->where('user_id', $request->user()->id)->orderBy('created_at', 'desc')->get();
-        return response()->json(['success' => true, 'tickets' => $tickets]);
+        $userId = $request->user()->id;
+        $tickets = Ticket::with('event')
+            ->where('user_id', $userId)
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return response()->json([
+            'success' => true,
+            'tickets' => $tickets
+        ]);
     }
 
+    /**
+     * Jegyvásárlás egy adott eseményre.
+     * @param Request $request
+     * @param int $eventId
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function buyTicket(Request $request, $eventId)
     {
         $request->validate([
@@ -24,24 +48,30 @@ class TicketController extends Controller
         $event = Event::findOrFail($eventId);
 
         if ($event->user_id === $request->user()->id) {
-            return response()->json(['success' => false, 'message' => 'A saját eseményedre nem vehetsz jegyet!'], 400);
+            return response()->json([
+                'success' => false,
+                'message' => 'A saját eseményedre nem vehetsz jegyet!'
+            ], 400);
         }
 
-        // Just a basic mock for price calculation if it exists
-        $priceVal = 0;
+        $price = 0;
         if (is_numeric($event->price)) {
-            $priceVal = (float) $event->price;
+            $price = (float) $event->price;
         }
 
         $ticket = Ticket::create([
-            'event_id' => $event->id,
-            'user_id' => $request->user()->id,
-            'quantity' => $request->quantity,
-            'total_price' => $priceVal * $request->quantity,
-            'status' => 'paid', // Dummy checkout bypass for now
+            'event_id'    => $event->id,
+            'user_id'     => $request->user()->id,
+            'quantity'    => $request->quantity,
+            'total_price' => $price * $request->quantity,
+            'status'      => 'paid',
             'ticket_code' => strtoupper(Str::random(10))
         ]);
 
-        return response()->json(['success' => true, 'ticket' => $ticket, 'message' => 'Sikeres jegyvásárlás!']);
+        return response()->json([
+            'success' => true,
+            'ticket'  => $ticket,
+            'message' => 'Sikeres jegyvásárlás!'
+        ]);
     }
 }

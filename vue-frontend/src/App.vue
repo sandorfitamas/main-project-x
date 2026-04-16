@@ -75,78 +75,108 @@ import { useEvents } from './stores/events.js';
 import { useFavorites } from './stores/favorites.js';
 import { useToast } from './stores/toast.js';
 
-const { currentUser, login, register, logout, restoreSession } = useAuth();
+const { currentUser, logout, restoreSession } = useAuth();
 const { loadAllEvents } = useEvents();
 const { loadFavoriteIds } = useFavorites();
 const { showToast } = useToast();
 
+const router = useRouter();
+const route = useRoute();
+
+/**
+ * Számított tulajdonságként meghatározza a jelenleg aktív szekció nevét az útvonal (URL) alapján.
+ */
 const activeSection = computed(() => {
-  return ['events', 'my-events', 'favorites', 'community'].includes(route.name) ? route.name : 'home';
+  const allowedSections = ['events', 'my-events', 'favorites', 'community'];
+  return allowedSections.includes(route.name) ? route.name : 'home';
 });
+
+// Komponensek modaljainak vizibilitási állapotai
 const showAuthModal = ref(false);
 const showCreateModal = ref(false);
 const showEditModal = ref(false);
 const showDetailsModal = ref(false);
+
+// Szerkesztés (Edit) és Részletek (Details) modalok aktuális esemény adatai
 const editingEvent = ref(null);
 const detailEvent = ref(null);
 
-const router = useRouter();
-const route = useRoute();
-
-async function navigateSection(section) {
-  if (section === 'home' || !section) {
+/**
+ * Kezeli az alkalmazáson belüli főmenü navigációt.
+ * Kilistázza és betölti az összes eseményt mielőtt a kezdőlapra váltana.
+ */
+async function navigateSection(sectionName) {
+  if (sectionName === 'home' || !sectionName) {
     await loadAllEvents();
     router.push('/home');
   } else {
-    router.push(`/${section}`);
+    router.push(`/${sectionName}`);
   }
 }
 
-// Provide global functions to child components
+// Globális függvények biztosítása (provide) a belső (child) komponensek számára
 provide('showToast', showToast);
-provide('openEditModal', (ev) => {
-  editingEvent.value = ev;
+provide('openEditModal', (eventData) => {
+  editingEvent.value = eventData;
   showEditModal.value = true;
 });
-provide('openDetailsModal', (ev) => {
-  detailEvent.value = ev;
+provide('openDetailsModal', (eventData) => {
+  detailEvent.value = eventData;
   showDetailsModal.value = true;
 });
 provide('showAuthModal', () => {
   showAuthModal.value = true;
 });
 
+/**
+ * Kijelentkezteti a felhasználót, és átirányítja az 'Események' oldalra.
+ */
 async function handleLogout() {
   await logout();
   navigateSection('events');
   showToast('Sikeresen kijelentkeztél', 'info');
 }
 
+/**
+ * Betölti az indulási adatokat (kedvencek szinkronizálása) sikeres bejelentkezés után.
+ */
 async function onLoginSuccess(result) {
   showAuthModal.value = false;
   showToast(`Üdv, ${result.user.name}!`, 'success');
   await loadFavoriteIds();
 }
 
-async function onRegisterSuccess(result) {
+/**
+ * Betölti az indulási adatokat sikeres regisztráció után.
+ */
+async function onRegisterSuccess() {
   showAuthModal.value = false;
   showToast('Regisztráció sikeres!', 'success');
   await loadFavoriteIds();
 }
 
+/**
+ * Modál bezárása és navigálás sikeres esemény-létrehozás után.
+ */
 async function onEventCreated() {
   showCreateModal.value = false;
   showToast('Esemény sikeresen létrehozva!', 'success');
   navigateSection('my-events');
 }
 
+/**
+ * Frissíti a globális álapotot az esemény szerkesztése után.
+ */
 async function onEventUpdated() {
   showEditModal.value = false;
   showToast('Esemény frissítve!', 'success');
-  await loadAllEvents(); // Frissíti a globális állapotot is
+  await loadAllEvents(); 
   window.dispatchEvent(new CustomEvent('app-event-updated'));
 }
 
+/**
+ * Frissíti a globális állapotot egy esemény törlése után.
+ */
 async function onEventDeleted() {
   showEditModal.value = false;
   showToast('Esemény törölve', 'info');
@@ -154,18 +184,23 @@ async function onEventDeleted() {
   window.dispatchEvent(new CustomEvent('app-event-updated'));
 }
 
-function shareEvent(ev) {
-  const url = `${window.location.origin}/event/${ev.id}`;
+/**
+ * Kezeli az alkalmazás külső megosztási logikáját natív API-n keresztül.
+ */
+function shareEvent(eventData) {
+  const eventUrl = `${window.location.origin}/event/${eventData.id}`;
   if (navigator.share) {
-    navigator.share({ title: ev.title, url });
+    navigator.share({ title: eventData.title, url: eventUrl });
   } else {
-    navigator.clipboard.writeText(url).then(() => showToast('Link másolva!', 'success'));
+    navigator.clipboard.writeText(eventUrl).then(() => {
+      showToast('Link másolva az eseményhez!', 'success');
+    });
   }
 }
 
 onMounted(async () => {
-  const user = await restoreSession();
-  if (user) {
+  const loggedInUser = await restoreSession();
+  if (loggedInUser) {
     await loadFavoriteIds();
   }
   await loadAllEvents();

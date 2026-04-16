@@ -176,7 +176,8 @@ const phoneData = reactive({ prefix: '30', number: '' });
 
 watch(() => phoneData.number, (newVal) => {
   if (newVal) {
-    const cleaned = newVal.replace(/\D/g, '');
+    let cleaned = newVal.replace(/\D/g, '');
+    if (cleaned.length > 7) cleaned = cleaned.substring(0, 7);
     if (cleaned !== newVal) phoneData.number = cleaned;
   }
 });

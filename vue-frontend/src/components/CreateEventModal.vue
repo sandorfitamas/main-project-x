@@ -151,99 +151,143 @@ const emit = defineEmits(['update:visible', 'created']);
 const showToast = inject('showToast');
 const { createEvent } = useEvents();
 
+/** Fix kategóriák és címkék a modalhoz */
 const categories = ['Házibuli', 'Klub', 'Fesztivál', 'Rave', 'Chill', 'Egyéb'];
 const availableTags = ['Ingyenes', 'VIP', 'Szabadtéri', 'Terasz', '18+', 'Techno', 'Rock', 'Pop', 'Élőzene', 'Hip-Hop'];
 
+/** Visszaadja a mai dátumot ÉÉÉÉ-HH-NN formátumban a date picker minimum értékéhez */
 const todayDate = computed(() => {
-  const d = new Date();
-  const yyyy = d.getFullYear();
-  const mm = String(d.getMonth() + 1).padStart(2, '0');
-  const dd = String(d.getDate()).padStart(2, '0');
-  return `${yyyy}-${mm}-${dd}`;
+  const date = new Date();
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
 });
 
+/** Ha a kiválasztott dátum a mai, a jelenlegi idő lesz a minimum beállítható idő */
 const minTime = computed(() => {
   if (form.date === todayDate.value) {
-    const d = new Date();
-    const hh = String(d.getHours()).padStart(2, '0');
-    const min = String(d.getMinutes()).padStart(2, '0');
-    return `${hh}:${min}`;
+    const date = new Date();
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    return `${hours}:${minutes}`;
   }
   return null;
 });
 
+/** Maga az esemény űrlapjának állapota */
 const form = reactive({
-  title: '', date: '', time: '', location: '', organizer: '', price: '',
-  contact_phone: '', category: 'Házibuli', description: '', tags: [],
+  title: '', 
+  date: '', 
+  time: '', 
+  location: '', 
+  organizer: '', 
+  price: '',
+  contact_phone: '', 
+  category: 'Házibuli', 
+  description: '', 
+  tags: [],
 });
 
-watch(() => form.title, (newVal, oldVal) => {
-  if (newVal) {
-    const digits = newVal.match(/\d/g);
-    if (digits && digits.length > 4) {
-      form.title = oldVal || '';
+/** 
+ * Cím validáció: Megakadályozzuk, hogy túl sok számot tartalmazzon (reklám tiltás).
+ * Ha a bevitelben \d előfordul több mint 4-szer, a régit állítjuk vissza.
+ */
+watch(() => form.title, (newValue, oldValue) => {
+  if (newValue) {
+    const digitsInTitle = newValue.match(/\d/g);
+    if (digitsInTitle && digitsInTitle.length > 4) {
+      form.title = oldValue || '';
     }
   }
 });
 
-watch(() => form.description, (newVal, oldVal) => {
-  if (newVal) {
-    let check = newVal.length > 100 ? newVal.substring(0, 100) : newVal;
-    const digits = check.match(/\d/g);
-    if (digits && digits.length > 4) {
-      check = oldVal || '';
+/**
+ * Leírás validáció: Max 100 karakter, és a számokat is vizsgáljuk.
+ */
+watch(() => form.description, (newValue, oldValue) => {
+  if (newValue) {
+    let validatedText = newValue.length > 100 ? newValue.substring(0, 100) : newValue;
+    const digitsInDescription = validatedText.match(/\d/g);
+    if (digitsInDescription && digitsInDescription.length > 4) {
+      validatedText = oldValue || '';
     }
-    if (check !== newVal) form.description = check;
+    if (validatedText !== newValue) {
+      form.description = validatedText;
+    }
   }
 });
 
-watch(() => form.organizer, (newVal) => {
-  if (newVal) {
-    let cleaned = newVal.replace(/\d/g, '');
-    if (cleaned.length > 15) cleaned = cleaned.substring(0, 15);
-    if (cleaned !== newVal) form.organizer = cleaned;
+/** 
+ * Szervező validáció: Legyen számmentes és max 15 karakteres.
+ */
+watch(() => form.organizer, (newValue) => {
+  if (newValue) {
+    let cleanOrganizer = newValue.replace(/\d/g, '');
+    if (cleanOrganizer.length > 15) {
+      cleanOrganizer = cleanOrganizer.substring(0, 15);
+    }
+    if (cleanOrganizer !== newValue) {
+      form.organizer = cleanOrganizer;
+    }
   }
 });
 
-watch(() => form.price, (newVal, oldVal) => {
-  if (newVal) {
-    if ((newVal.toLowerCase() === 'i' || newVal.toLowerCase() === 'in') && (!oldVal || newVal.length > oldVal.length)) {
+/**
+ * Ár validáció: Speciális logika az "Ingyenes" kulcsszó engedésére vagy az Ft utótagra.
+ */
+watch(() => form.price, (newValue, oldValue) => {
+  if (newValue) {
+    if ((newValue.toLowerCase() === 'i' || newValue.toLowerCase() === 'in') && (!oldValue || newValue.length > oldValue.length)) {
       form.price = 'Ingyenes';
       return;
     }
-    if (newVal === 'Ingyenes' || 'Ingyenes'.startsWith(newVal)) return;
+    if (newValue === 'Ingyenes' || 'Ingyenes'.startsWith(newValue)) {
+      return;
+    }
     
-    if (newVal.endsWith(' Ft')) {
-      const numbersOnly = newVal.replace(/\D/g, '');
+    if (newValue.endsWith(' Ft')) {
+      const numbersOnly = newValue.replace(/\D/g, '');
       if (numbersOnly.length > 5) {
         form.price = numbersOnly.substring(0, 5) + ' Ft';
       }
       return;
     }
     
-    let cleaned = newVal.replace(/\D/g, '');
-    if (cleaned.length > 5) cleaned = cleaned.substring(0, 5);
-    if (cleaned !== newVal) form.price = cleaned;
+    let cleanPrice = newValue.replace(/\D/g, '');
+    if (cleanPrice.length > 5) {
+      cleanPrice = cleanPrice.substring(0, 5);
+    }
+    
+    if (cleanPrice !== newValue) {
+      form.price = cleanPrice;
+    }
   }
 });
 
+/** Telefonszám blokk kezelése */
 const phoneData = reactive({ prefix: '30', number: '' });
 
-watch(() => phoneData.number, (newVal) => {
-  if (newVal) {
-    const cleaned = newVal.replace(/\D/g, '');
-    if (cleaned !== newVal) phoneData.number = cleaned;
+watch(() => phoneData.number, (newValue) => {
+  if (newValue) {
+    let cleanedNumber = newValue.replace(/\D/g, '');
+    if (cleanedNumber.length > 7) cleanedNumber = cleanedNumber.substring(0, 7);
+    if (cleanedNumber !== newValue) {
+      phoneData.number = cleanedNumber;
+    }
   }
 });
 
-watch(phoneData, (newVal) => {
-  if (newVal.number && newVal.number.trim() !== '') {
-    form.contact_phone = `+36 ${newVal.prefix} ${newVal.number.trim().replace(/\s/g, '').replace(/(\d{3})(\d{0,4})/, '$1 $2').trim()}`;
+watch(phoneData, (newValue) => {
+  if (newValue.number && newValue.number.trim() !== '') {
+    const formattedNumber = newValue.number.trim().replace(/\s/g, '').replace(/(\d{3})(\d{0,4})/, '$1 $2').trim();
+    form.contact_phone = `+36 ${newValue.prefix} ${formattedNumber}`;
   } else {
     form.contact_phone = '';
   }
 }, { deep: true });
 
+/** Helyszín adatok szétbontva a pontosabb validáláshoz */
 const locationData = reactive({
   zipCode: '',
   city: '',
@@ -253,6 +297,8 @@ const locationData = reactive({
 });
 
 const cityDropdownOpen = ref(false);
+
+/** Népszerű hazai települések listája az autocomplethez */
 const popularCities = [
   'Budapest', 'Debrecen', 'Szeged', 'Miskolc', 'Pécs', 'Győr', 'Nyíregyháza',
   'Kecskemét', 'Székesfehérvár', 'Szombathely', 'Érd', 'Szolnok', 'Tatabánya',
@@ -265,14 +311,18 @@ const popularCities = [
   'Pilisvörösvár', 'Mohács'
 ];
 
+/** Gépelés alapján szűrt város lista (max 5 elem) */
 const filteredCities = computed(() => {
-  if (!locationData.city) return popularCities.slice(0, 5);
+  if (!locationData.city) {
+    return popularCities.slice(0, 5);
+  }
   const query = locationData.city.toLowerCase().trim();
   return popularCities
     .filter(city => city.toLowerCase().startsWith(query))
     .slice(0, 5);
 });
 
+/** Település kiválasztása a legördülő gombra kattintva */
 const selectCity = (city) => {
   locationData.city = city;
   cityDropdownOpen.value = false;
@@ -284,55 +334,71 @@ const closeCityDropdown = () => {
   }, 100);
 };
 
-watch(() => locationData.city, (newVal) => {
-  if (newVal) {
-    let cleaned = newVal.replace(/\d/g, ''); // no numbers allowed
-    if (cleaned.length > 15) {
-      cleaned = cleaned.substring(0, 15); // max 15 chars
+/** Település mező validáció (tiltott számok, max 15 karakter) */
+watch(() => locationData.city, (newValue) => {
+  if (newValue) {
+    let cleanCity = newValue.replace(/\d/g, ''); 
+    if (cleanCity.length > 15) {
+      cleanCity = cleanCity.substring(0, 15); 
     }
-    if (cleaned !== newVal) {
-      locationData.city = cleaned;
-    }
-  }
-});
-
-watch(() => locationData.zipCode, (newVal) => {
-  if (newVal) {
-    let cleaned = newVal.replace(/\D/g, ''); // csak számok
-    if (cleaned.length > 4) {
-      cleaned = cleaned.substring(0, 4); // max 4 karakter (magyar irányítószám)
-    }
-    if (cleaned !== newVal) {
-      locationData.zipCode = cleaned;
+    if (cleanCity !== newValue) {
+      locationData.city = cleanCity;
     }
   }
 });
 
-watch(() => locationData.district, (newVal) => {
-  if (newVal) {
-    let cleaned = newVal.toUpperCase().replace(/[^IXV]/g, '');
-    if (cleaned.length > 5) cleaned = cleaned.substring(0, 5);
-    if (cleaned !== newVal) locationData.district = cleaned;
+/** Irányítószám validáció (csak szám, max 4 karakter) */
+watch(() => locationData.zipCode, (newValue) => {
+  if (newValue) {
+    let cleanZip = newValue.replace(/\D/g, ''); 
+    if (cleanZip.length > 4) {
+      cleanZip = cleanZip.substring(0, 4); 
+    }
+    if (cleanZip !== newValue) {
+      locationData.zipCode = cleanZip;
+    }
   }
 });
 
-watch(() => locationData.street, (newVal) => {
-  if (newVal) {
-    let cleaned = newVal.replace(/\d/g, ''); // no numbers allowed
-    if (cleaned.length > 25) cleaned = cleaned.substring(0, 25);
-    if (cleaned !== newVal) locationData.street = cleaned;
+/** Kerület validáció (csak római szám I, X, V karakterekből, max 5 hossz) */
+watch(() => locationData.district, (newValue) => {
+  if (newValue) {
+    let cleanDistrict = newValue.toUpperCase().replace(/[^IXV]/g, '');
+    if (cleanDistrict.length > 5) {
+      cleanDistrict = cleanDistrict.substring(0, 5);
+    }
+    if (cleanDistrict !== newValue) {
+      locationData.district = cleanDistrict;
+    }
   }
 });
 
-watch(() => locationData.houseNumber, (newVal) => {
-  if (newVal) {
+/** Utca név validáció: Tiltott számok, max 25 karakter */
+watch(() => locationData.street, (newValue) => {
+  if (newValue) {
+    let cleanStreet = newValue.replace(/\d/g, ''); 
+    if (cleanStreet.length > 25) {
+      cleanStreet = cleanStreet.substring(0, 25);
+    }
+    if (cleanStreet !== newValue) {
+      locationData.street = cleanStreet;
+    }
+  }
+});
+
+/** 
+ * Házszám validáció: 
+ * Max 3 számjegy, max 1 betű és max 1 perjel, a teljes hossz max 5.
+ */
+watch(() => locationData.houseNumber, (newValue) => {
+  if (newValue) {
     let result = '';
     let digits = 0;
     let letters = 0;
     let slashes = 0;
 
-    for (let i = 0; i < newVal.length; i++) {
-      const char = newVal[i];
+    for (let i = 0; i < newValue.length; i++) {
+      const char = newValue[i];
       if (result.length >= 5) break;
 
       if (/[0-9]/.test(char)) {
@@ -353,110 +419,123 @@ watch(() => locationData.houseNumber, (newVal) => {
       }
     }
 
-    if (result !== newVal) locationData.houseNumber = result;
+    if (result !== newValue) {
+      locationData.houseNumber = result;
+    }
   }
 });
 
-watch(locationData, (newVal) => {
-  let loc = newVal.city ? newVal.city.trim() : '';
-  const isBp = loc.toLowerCase() === 'budapest' || loc.toLowerCase() === 'bp' || loc.toLowerCase() === 'bp.';
+/**
+ * Automatikusan összefűzi és formázza a location mezőt a részadatokból.
+ */
+watch(locationData, (newValue) => {
+  let locationString = newValue.city ? newValue.city.trim() : '';
+  const isBudapest = locationString.toLowerCase() === 'budapest' || locationString.toLowerCase() === 'bp' || locationString.toLowerCase() === 'bp.';
   
-  if (isBp) {
-    loc = 'Budapest';
-    if (newVal.district && newVal.district.trim()) {
-      loc += `, ${newVal.district.trim()}`;
-      if (!loc.toLowerCase().includes('kerület') && !loc.toLowerCase().includes('ker.')) {
-        loc += ' ker.';
+  if (isBudapest) {
+    locationString = 'Budapest';
+    if (newValue.district && newValue.district.trim()) {
+      locationString += `, ${newValue.district.trim()}`;
+      if (!locationString.toLowerCase().includes('kerület') && !locationString.toLowerCase().includes('ker.')) {
+        locationString += ' ker.';
       }
     }
   }
 
-  if (newVal.zipCode && newVal.zipCode.trim()) {
-    loc = newVal.zipCode.trim() + ' ' + loc;
+  if (newValue.zipCode && newValue.zipCode.trim()) {
+    locationString = newValue.zipCode.trim() + ' ' + locationString;
   }
 
-  if (newVal.street && newVal.street.trim()) {
-    loc += (loc ? ', ' : '') + newVal.street.trim();
+  if (newValue.street && newValue.street.trim()) {
+    locationString += (locationString ? ', ' : '') + newValue.street.trim();
   }
 
-  if (newVal.houseNumber && newVal.houseNumber.trim()) {
-    loc += (loc ? ' ' : '') + newVal.houseNumber.trim() + '.';
+  if (newValue.houseNumber && newValue.houseNumber.trim()) {
+    locationString += (locationString ? ' ' : '') + newValue.houseNumber.trim() + '.';
   }
 
-  form.location = loc.trim();
+  form.location = locationString.trim();
 }, { deep: true });
 
 const imageFile = ref(null);
 const imagePreview = ref(null);
 const tagDropdownOpen = ref(false);
 
-function toggleTag(t) {
-  const idx = form.tags.indexOf(t);
-  if (idx > -1) {
-    form.tags.splice(idx, 1);
+/**
+ * Hozzáadja vagy eltávolítja a kiválasztott címkét (tag).
+ */
+function toggleTag(tag) {
+  const index = form.tags.indexOf(tag);
+  if (index > -1) {
+    form.tags.splice(index, 1);
   } else if (form.tags.length < 3) {
-    form.tags.push(t);
+    form.tags.push(tag);
   }
 }
 
-watch(() => props.visible, (val) => {
-  if (val) {
-    Object.assign(form, { title: '', date: '', time: '', location: '', organizer: '', price: '', contact_phone: '', category: 'Házibuli', description: '', tags: [] });
-    Object.assign(locationData, { city: '', district: '', street: '', houseNumber: '' });
+/** 
+ * Modal megnyitásakor vagy bezárásakor futó watcher.
+ * Ha a modal megnyílik, mindent alaphelyzetbe állít (form nullázás, body scroll tiltás).
+ */
+watch(() => props.visible, (isVisible) => {
+  if (isVisible) {
+    Object.assign(form, { 
+      title: '', 
+      date: '', 
+      time: '', 
+      location: '', 
+      organizer: '', 
+      price: '', 
+      contact_phone: '', 
+      category: 'Házibuli', 
+      description: '', 
+      tags: [] 
+    });
+    Object.assign(locationData, { zipCode: '', city: '', district: '', street: '', houseNumber: '' });
     Object.assign(phoneData, { prefix: '30', number: '' });
     imageFile.value = null;
     imagePreview.value = null;
     tagDropdownOpen.value = false;
   }
-  document.body.style.overflow = val ? 'hidden' : '';
+  document.body.style.overflow = isVisible ? 'hidden' : '';
 });
 
-function close() { emit('update:visible', false); }
+/** Modal elrejtését kezelő függvény */
+function close() { 
+  emit('update:visible', false); 
+}
 
-function onFileChange(e) {
-  const file = e.target.files[0];
-  if (!file) return;
+/** 
+ * Fájlfeltöltést kezelő függvény.
+ * Beolvassa a kiválasztott képet és egy lokális dataURL-ként elmenti.
+ */
+function onFileChange(event) {
+  const file = event.target.files[0];
+  if (!file) {
+    return;
+  }
   imageFile.value = file;
+  
   const reader = new FileReader();
-  reader.onload = ev => { imagePreview.value = ev.target.result; };
+  reader.onload = loadEvent => { 
+    imagePreview.value = loadEvent.target.result; 
+  };
   reader.readAsDataURL(file);
 }
 
+/** Törli a kiválasztott és előnézeti képet */
 function removeImage() {
   imageFile.value = null;
   imagePreview.value = null;
 }
 
-function formatPrice() {
-  if (form.price) {
-    const trimmed = form.price.trim();
-    if (/^\d+$/.test(trimmed)) {
-      form.price = trimmed + ' Ft';
-    }
-  }
-}
-
-function formatPhone() {
-  if (form.contact_phone) {
-    let val = form.contact_phone.trim();
-    if (val.startsWith('06')) {
-      val = '+36' + val.substring(2);
-    }
-    let cleaned = val.replace(/[^\d+]/g, '');
-    let isPlus = cleaned.startsWith('+');
-    let digits = cleaned.replace(/\+/g, '').substring(0, 11);
-    let formatted = isPlus ? '+' : '';
-    if (digits.length > 0) formatted += digits.substring(0, 2);
-    if (digits.length > 2) formatted += ' ' + digits.substring(2, 4);
-    if (digits.length > 4) formatted += ' ' + digits.substring(4, 7);
-    if (digits.length > 7) formatted += ' ' + digits.substring(7, 11);
-    form.contact_phone = formatted;
-  }
-}
-
+/**
+ * Űrlap beküldése
+ */
 async function handleSubmit() {
-  const digitsMatch = form.title.match(/\d/g);
-  if (digitsMatch && digitsMatch.length > 4) {
+  // Extra cím ellenőrzés biztonsági okokból a beküldés előtt
+  const digitsInTitle = form.title.match(/\d/g);
+  if (digitsInTitle && digitsInTitle.length > 4) {
     showToast('Az esemény címében maximum 4 számjegy szerepelhet!', 'error');
     return;
   }
@@ -465,18 +544,25 @@ async function handleSubmit() {
     showToast('Kérjük, tölts fel egy képet az eseményhez!', 'error');
     return;
   }
+  
   if (form.tags.length === 0) {
     showToast('Kérjük, válassz legalább egy címkét!', 'error');
     return;
   }
-  const fd = new FormData();
-  Object.entries(form).forEach(([k, v]) => fd.append(k, Array.isArray(v) ? v.join(', ') : v));
-  const result = await createEvent(fd, imageFile.value);
+  
+  const formData = new FormData();
+  Object.entries(form).forEach(([key, value]) => {
+    formData.append(key, Array.isArray(value) ? value.join(', ') : value);
+  });
+  
+  const result = await createEvent(formData, imageFile.value);
+  
   if (result.success) {
     emit('created');
   } else {
-    const msg = result.message || Object.values(result.errors || {})[0]?.[0] || 'Hiba a létrehozás során';
-    showToast(msg, 'error');
+    // API hibaüzenet kibontása
+    const errorMessage = result.message || Object.values(result.errors || {})[0]?.[0] || 'Hiba a létrehozás során';
+    showToast(errorMessage, 'error');
   }
 }
 </script>

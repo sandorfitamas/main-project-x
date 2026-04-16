@@ -5,18 +5,27 @@ namespace App\Http\Controllers;
 use App\Models\Event;
 use Illuminate\Http\Request;
 
+/**
+ * Class EventController
+ * Események kezeléséért felelős controller.
+ */
+
 class EventController extends Controller
 {
+    /**
+     * Publikus, aktív események listázása.
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function index()
     {
         $events = Event::withCount('attendees')
-            ->where(function($query) {
+            ->where(function ($query) {
                 $query->whereNull('suspended_until')
                       ->orWhere('suspended_until', '<', now());
             })
-            ->where(function($query) {
+            ->where(function ($query) {
                 $query->whereDoesntHave('user')
-                      ->orWhereHas('user', function($q) {
+                      ->orWhereHas('user', function ($q) {
                           $q->whereNull('suspended_until')
                             ->orWhere('suspended_until', '<', now());
                       });
@@ -27,10 +36,15 @@ class EventController extends Controller
 
         return response()->json([
             'success' => true,
-            'events'  => $events->map(fn($e) => $e->toApiArray()),
+            'events'  => $events->map(fn ($event) => $event->toApiArray()),
         ]);
     }
 
+    /**
+     * Egy adott esemény részletei.
+     * @param int $id
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function show($id)
     {
         $event = Event::with('user')->find($id);
@@ -40,31 +54,49 @@ class EventController extends Controller
         }
 
         if ($event->suspended_until && $event->suspended_until > now()) {
-             // Adminok még láthatják? (vagy hagyjuk hogy ők is a dashboardon nézzék)
-             // Most egyszerűen csak egy 404
-             return response()->json(['success' => false, 'error' => 'Esemény felfüggesztve eddig: ' . $event->suspended_until->format('Y-m-d H:i:s')], 403);
-        }
-        
-        if ($event->user && $event->user->suspended_until && $event->user->suspended_until > now()) {
-             return response()->json(['success' => false, 'error' => 'A szervező profilja fel van függesztve'], 403);
+            return response()->json([
+                'success' => false,
+                'error' => 'Esemény felfüggesztve eddig: ' . $event->suspended_until->format('Y-m-d H:i:s')
+            ], 403);
         }
 
-        return response()->json(['success' => true, 'event' => $event->toApiArray()]);
+        if ($event->user && $event->user->suspended_until && $event->user->suspended_until > now()) {
+            return response()->json([
+                'success' => false,
+                'error' => 'A szervező profilja fel van függesztve'
+            ], 403);
+        }
+
+        return response()->json([
+            'success' => true,
+            'event' => $event->toApiArray()
+        ]);
     }
 
+    /**
+     * Bejelentkezett felhasználó saját eseményei.
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function myEvents(Request $request)
     {
-        $events = Event::where('user_id', $request->user()->id)
+        $userId = $request->user()->id;
+        $events = Event::where('user_id', $userId)
             ->orderBy('date')
             ->orderBy('time')
             ->get();
 
         return response()->json([
             'success' => true,
-            'events'  => $events->map(fn($e) => $e->toApiArray()),
+            'events'  => $events->map(fn ($event) => $event->toApiArray()),
         ]);
     }
 
+    /**
+     * Új esemény létrehozása.
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function store(Request $request)
     {
         $request->validate([

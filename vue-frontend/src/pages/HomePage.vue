@@ -315,61 +315,72 @@ async function loadTestimonials() {
   }
 }
 
+/**
+ * Közösség fül adatainak letöltése és feldolgozása.
+ */
 async function loadCommunityData() {
-    const [users, events, attendances, reviews] = await Promise.all([apiFetchUsers(), apiFetchEvents(), apiFetchRecentAttendances(), apiFetchRecentReviews()]);
+  const [users, events, attendances, reviews] = await Promise.all([
+    apiFetchUsers(), 
+    apiFetchEvents(), 
+    apiFetchRecentAttendances(), 
+    apiFetchRecentReviews()
+  ]);
+  
   communityUsers.value = users;
   communityEventCount.value = events.length;
   
   let totalActivity = 0;
-  const orgMap = {};
-  events.forEach(ev => { 
-    totalActivity += (ev.attendees_count || 0);
-    let orgName = ev.organizer ? ev.organizer.trim() : '';
-    let orgEmail = '';
-    if (ev.user_id) {
-      const u = users.find(x => x.id === ev.user_id);
-      if (u) {
-        if (!orgName) orgName = u.name;
-        orgEmail = u.email;
+  const organizerMap = {};
+  
+  events.forEach(event => { 
+    totalActivity += (event.attendees_count || 0);
+    let organizerName = event.organizer ? event.organizer.trim() : '';
+    let organizerEmail = '';
+    
+    if (event.user_id) {
+      const user = users.find(u => u.id === event.user_id);
+      if (user) {
+        if (!organizerName) organizerName = user.name;
+        organizerEmail = user.email;
       }
     }
-    if (!orgName) orgName = 'Ismeretlen szervező';
+    if (!organizerName) organizerName = 'Ismeretlen szervező';
     
-    if (!orgMap[orgName]) {
-      orgMap[orgName] = { name: orgName, email: ev.organizer ? '' : orgEmail, count: 0 };
+    if (!organizerMap[organizerName]) {
+      organizerMap[organizerName] = { name: organizerName, email: event.organizer ? '' : organizerEmail, count: 0 };
     }
-    orgMap[orgName].count += (ev.attendees_count || 0);
+    organizerMap[organizerName].count += (event.attendees_count || 0);
   });
 
-  topOrganizers.value = Object.values(orgMap)
+  topOrganizers.value = Object.values(organizerMap)
     .filter(item => item.count > 0)
-    .sort((a,b) => b.count - a.count)
+    .sort((a, b) => b.count - a.count)
     .slice(0, 4)
-    .map((item, idx) => ({
-      user: { id: 'org_' + idx, name: item.name, email: item.email || 'Klub / Egyéni szervező' },
+    .map((item, index) => ({
+      user: { id: 'org_' + index, name: item.name, email: item.email || 'Klub / Egyéni szervező' },
       count: item.count
     }));
 
   totalCommunityActivity.value = totalActivity;
 
   const activityList = [];
-  const todayStr = new Date().toDateString();
+  const todayString = new Date().toDateString();
 
   const rawAttendances = attendances.attendances || attendances;
   if (Array.isArray(rawAttendances)) {
-    rawAttendances.forEach(att => {
-      const d = new Date(att.created_at || 0);
-      if (d.toDateString() === todayStr) {
+    rawAttendances.forEach(attendance => {
+      const date = new Date(attendance.created_at || 0);
+      if (date.toDateString() === todayString) {
         activityList.push({
-          time: d,
-          html: `<strong class="text-info">${escapeHtml(att.user_name)}</strong> jelezte, hogy ott lesz: <strong class="text-white">${escapeHtml(att.event_title)}</strong>`
+          time: date,
+          html: `<strong class="text-info">${escapeHtml(attendance.user_name)}</strong> jelezte, hogy ott lesz: <strong class="text-white">${escapeHtml(attendance.event_title)}</strong>`
         });
       }
     });
   }
 
   activityList.sort((a, b) => b.time - a.time);
-  recentActivity.value = activityList.slice(0, 10).map(a => a.html);
+  recentActivity.value = activityList.slice(0, 10).map(activity => activity.html);
 }
 
 

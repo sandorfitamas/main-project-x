@@ -190,101 +190,166 @@ onUnmounted(() => {
 });
 
 async function loadData() {
-  const dashRes = await apiGetAdminDashboard();
-  if (dashRes.success) stats.value = dashRes.stats;
+  const dashResponse = await apiGetAdminDashboard();
+  if (dashResponse.success) {
+    stats.value = dashResponse.stats;
+  }
 
-  const usersRes = await apiGetAdminUsers();
-  if (usersRes.success) users.value = usersRes.users;
+  const usersResponse = await apiGetAdminUsers();
+  if (usersResponse.success) {
+    users.value = usersResponse.users;
+  }
 
-  const eventsRes = await apiGetAdminEvents();
-  if (eventsRes.success) events.value = eventsRes.events;
+  const eventsResponse = await apiGetAdminEvents();
+  if (eventsResponse.success) {
+    events.value = eventsResponse.events;
+  }
 
-  const reviewsRes = await apiGetAdminReviews();
-  if (reviewsRes.success) reviews.value = reviewsRes.reviews;
-}
-
-async function deleteUser(id) {
-  if (!confirm('Biztosan törlöd a felhasználót?')) return;
-  const res = await apiDeleteAdminUser(id);
-  if (res.success) {
-    showToast('Felhasználó sikeresen törölve!', 'success');
-    loadData();
-  } else {
-    showToast(res.error || 'Hiba történt a törlés során', 'error');
+  const reviewsResponse = await apiGetAdminReviews();
+  if (reviewsResponse.success) {
+    reviews.value = reviewsResponse.reviews;
   }
 }
 
+/**
+ * Felhasználó törlése az admin panelről.
+ */
+async function deleteUser(id) {
+  if (!confirm('Biztosan törlöd a felhasználót?')) {
+    return;
+  }
+
+  const response = await apiDeleteAdminUser(id);
+  if (response.success) {
+    showToast('Felhasználó sikeresen törölve!', 'success');
+    loadData();
+  } else {
+    showToast(response.error || 'Hiba történt a törlés során', 'error');
+  }
+}
+
+/**
+ * Felhasználó felfüggesztésének kezelése.
+ */
 async function suspendUser(user) {
   if (user.suspended_until) {
-    if (!confirm('Biztosan feloldod a felhasználó felfüggesztését?')) return;
-    const res = await apiSuspendAdminUser(user.id, 0);
-    if (res.success) { showToast('Felhasználó feloldva!', 'success'); loadData(); }
+    if (!confirm('Biztosan feloldod a felhasználó felfüggesztését?')) {
+      return;
+    }
+    
+    const response = await apiSuspendAdminUser(user.id, 0);
+    if (response.success) {
+      showToast('Felhasználó feloldva!', 'success');
+      loadData();
+    }
     return;
   }
   
   const days = prompt('Hány napra függeszted fel a felhasználót?');
-  if (days === null) return; // Mégsem
+  if (days === null) {
+    return;
+  }
   
-  const res = await apiSuspendAdminUser(user.id, days === '' ? 36500 : parseInt(days));
-  if (res.success) {
+  const parsedDays = days === '' ? 36500 : parseInt(days, 10);
+  const response = await apiSuspendAdminUser(user.id, parsedDays);
+  
+  if (response.success) {
     showToast('Felhasználó sikeresen felfüggesztve!', 'success');
     loadData();
   }
 }
 
+/**
+ * Esemény törlése az admin panelről.
+ */
 async function deleteEvent(id) {
-  if (!confirm('Biztosan törlöd az eseményt?')) return;
-  const res = await apiDeleteAdminEvent(id);
-  if (res.success) {
+  if (!confirm('Biztosan törlöd az eseményt?')) {
+    return;
+  }
+
+  const response = await apiDeleteAdminEvent(id);
+  if (response.success) {
     showToast('Esemény sikeresen törölve!', 'success');
     loadData();
   } else {
-    showToast(res.error || 'Hiba történt a törlés során', 'error');
+    showToast(response.error || 'Hiba történt a törlés során', 'error');
   }
 }
 
+/**
+ * Esemény elrejtésének/felfüggesztésének kezelése.
+ */
 async function suspendEvent(event) {
   if (event.suspended_until) {
-    if (!confirm('Biztosan újra láthatóvá teszed az eseményt?')) return;
-    const res = await apiSuspendAdminEvent(event.id, 0);
-    if (res.success) { showToast('Esemény újra aktív!', 'success'); loadData(); }
+    if (!confirm('Biztosan újra láthatóvá teszed az eseményt?')) {
+      return;
+    }
+    
+    const response = await apiSuspendAdminEvent(event.id, 0);
+    if (response.success) {
+      showToast('Esemény újra aktív!', 'success');
+      loadData();
+    }
     return;
   }
   
   const days = prompt('Hány napra rejtjük el az eseményt (pl. vizsgálat idejére)?');
-  if (days === null) return;
+  if (days === null) {
+    return;
+  }
   
-  const res = await apiSuspendAdminEvent(event.id, days === '' ? 36500 : parseInt(days));
-  if (res.success) {
+  const parsedDays = days === '' ? 36500 : parseInt(days, 10);
+  const response = await apiSuspendAdminEvent(event.id, parsedDays);
+  
+  if (response.success) {
     showToast('Esemény sikeresen elrejtve a publikum elől!', 'success');
     loadData();
   }
 }
 
+/**
+ * Vélemény törlése.
+ */
 async function deleteReview(id) {
-  if (!confirm('Biztosan törlöd a véleményt?')) return;
-  const res = await apiDeleteAdminReview(id);
-  if (res.success) {
+  if (!confirm('Biztosan törlöd a véleményt?')) {
+    return;
+  }
+
+  const response = await apiDeleteAdminReview(id);
+  if (response.success) {
     showToast('Vélemény sikeresen törölve!', 'success');
     loadData();
   } else {
-    showToast(res.error || 'Hiba történt a törlés során', 'error');
+    showToast(response.error || 'Hiba történt a törlés során', 'error');
   }
 }
 
+/**
+ * Felhasználó felfüggesztése az írt véleménye alapján.
+ */
 async function suspendUserByReview(review) {
   if (review.user_suspended_until) {
-    if (!confirm('Biztosan feloldod a felhasználó felfüggesztését?')) return;
-    const res = await apiSuspendAdminUser(review.user_id, 0);
-    if (res.success) { showToast('Felhasználó feloldva!', 'success'); loadData(); }
+    if (!confirm('Biztosan feloldod a felhasználó felfüggesztését?')) {
+      return;
+    }
+    
+    const response = await apiSuspendAdminUser(review.user_id, 0);
+    if (response.success) {
+      showToast('Felhasználó feloldva!', 'success');
+      loadData();
+    }
     return;
   }
   
   const days = prompt(`Hány napra függeszted fel a vélemény íróját (${review.user_name})?`);
-  if (days === null) return; 
+  if (days === null) {
+    return;
+  }
   
-  const res = await apiSuspendAdminUser(review.user_id, days === '' ? 36500 : parseInt(days));
-  if (res.success) {
+  const parsedDays = days === '' ? 36500 : parseInt(days, 10);
+  const response = await apiSuspendAdminUser(review.user_id, parsedDays);
+  
+  if (response.success) {
     showToast('Felhasználó sikeresen felfüggesztve!', 'success');
     loadData();
   }

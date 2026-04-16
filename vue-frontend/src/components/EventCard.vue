@@ -68,48 +68,85 @@ const emit = defineEmits(['details', 'edit']);
 
 const { currentUser } = useAuth();
 const { isFavorite, toggleFavorite } = useFavorites();
+
 const showAuthModal = inject('showAuthModal');
 const showToast = inject('showToast');
 
+/**
+ * Számított tulajdonságok a kártya megjelenítéséhez.
+ */
 const imgSrc = computed(() => props.event.imageUrl || PLACEHOLDER_IMAGE);
 const rating = computed(() => parseFloat(props.event.rating) || 0);
-const isFav = computed(() => isFavorite(props.event.id));
-const isOwnEvent = computed(() => currentUser.value && String(props.event.user_id) === String(currentUser.value.id));
 
-const cleanTags = computed(() => {
-  const tags = props.event.tags;
-  const list = Array.isArray(tags) ? tags : (tags ? tags.split(',') : []);
-  return list.map(t => t.trim()).filter(Boolean).slice(0, 3);
+/**
+ * Ellenőrzi, hogy az adott esemény a bejelentkezett felhasználó kedvencei között van-e.
+ */
+const isFav = computed(() => isFavorite(props.event.id));
+
+/**
+ * Ellenőrzi, hogy a bejelentkezett felhasználó a létrehozója-e az eseménynek.
+ */
+const isOwnEvent = computed(() => {
+  return currentUser.value && String(props.event.user_id) === String(currentUser.value.id);
 });
 
+/**
+ * Legfeljebb 3 tisztított címkét (tag-et) ad vissza az eseményből a kártyán való megjelenítéshez.
+ */
+const cleanTags = computed(() => {
+  const eventTags = props.event.tags;
+  const tagsList = Array.isArray(eventTags) ? eventTags : (eventTags ? eventTags.split(',') : []);
+  return tagsList.map(tag => tag.trim()).filter(Boolean).slice(0, 3);
+});
+
+/**
+ * Formázott dátumvisszaadás (pl. Jan 01) a rövidebb kártya formátumhoz.
+ */
 const formattedDate = computed(() => {
   if (!props.event.date) return '';
   try {
-    const d = new Date(props.event.date);
-    return d.toLocaleDateString('hu-HU', { month: 'short', day: 'numeric' });
-  } catch { return props.event.date; }
+    const dateObj = new Date(props.event.date);
+    return dateObj.toLocaleDateString('hu-HU', { month: 'short', day: 'numeric' });
+  } catch { 
+    return props.event.date; 
+  }
 });
 
+/**
+ * Formázott idő (Óra:Perc formátum).
+ */
 const formattedTime = computed(() => {
   return props.event.time ? props.event.time.substring(0, 5) : '';
 });
 
-function onImgError(e) {
-  e.target.src = PLACEHOLDER_IMAGE;
+/**
+ * Kép betöltési hiba esetén beállítja az alapértelmezett helyettesítő képet.
+ */
+function onImgError(event) {
+  event.target.src = PLACEHOLDER_IMAGE;
 }
 
-function getStarClass(index, rating) {
-  if (rating >= index) return 'bi-star-fill';
-  if (rating >= index - 0.5) return 'bi-star-half';
+/**
+ * Visszaadja a megfelelő csillag ikon osztályt (pl. tört csillagok esetén) a kártyához.
+ */
+function getStarClass(index, currentRating) {
+  if (currentRating >= index) return 'bi-star-fill';
+  if (currentRating >= index - 0.5) return 'bi-star-half';
   return 'bi-star';
 }
 
+/**
+ * Kezeli a Kedvencek gomb kattintását.
+ * Nem bejelentkezett felhasználó esetén megjeleníti a bejelentkezési modalt.
+ */
 async function onFavoriteClick() {
   if (!currentUser.value) {
     showAuthModal();
     return;
   }
+  
   const result = await toggleFavorite(props.event.id);
+  
   if (result.removed) {
     showToast('Eltávolítva a kedvencekből', 'info');
   } else {

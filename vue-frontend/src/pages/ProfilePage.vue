@@ -60,7 +60,7 @@
           <div v-else class="d-flex flex-column gap-3">
             <div v-for="purchase in groupedPurchases" :key="purchase.key" class="rounded-3 overflow-hidden" style="background:rgba(15,23,42,.6);border:1px solid rgba(71,85,105,.5)">
               
-              <!-- VÁSÁRLÁS FEJLÉC (KATTINTHATÓ) -->
+              <!-- VÁSÁRLÁS FEJLÉC (kattintható) -->
               <div 
                 class="d-flex justify-content-between align-items-center p-3" 
                 style="cursor: pointer; transition: background 0.2s;"
@@ -81,18 +81,18 @@
                 </div>
               </div>
 
-              <!-- JELEN VÁSÁRLÁS JEGYEI (KINYITVA LÁTSZANAK CSD) -->
+              <!-- JELEN VÁSÁRLÁS JEGYEI (csak lenyitva látszanak) -->
               <div v-if="expandedPurchases[purchase.key]" class="p-3 border-top" style="border-color: rgba(71,85,105,.5) !important;">
                 <div class="row g-3">
                   <div v-for="ticket in purchase.tickets" :key="ticket.id" class="col-12">
                     <div class="p-3 rounded-3 d-flex flex-column flex-sm-row gap-3 align-items-sm-center" style="background:rgba(30,41,59,0.8); border:1px solid rgba(255,255,255,0.05);">
                       
-                      <!-- QR CODE -->
+                      <!-- QR kód -->
                       <div class="bg-white p-1 rounded d-flex align-items-center justify-content-center mx-auto mx-sm-0" style="width: 80px; height: 80px; flex-shrink: 0;">
                         <img :src="`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${ticket.ticket_code}`" alt="QR Kód" class="w-100 h-100 object-fit-contain">
                       </div>
                       
-                      <!-- TICKET INFO -->
+                      <!-- Jegyek info -->
                       <div class="flex-grow-1 text-center text-sm-start overflow-hidden">
                         <h6 class="text-white mb-2 text-truncate fw-bold">{{ ticket.event?.title || 'Ismeretlen Esemény' }}</h6>
                         <div class="d-flex flex-column flex-sm-row justify-content-between text-secondary small gap-1">
@@ -132,54 +132,84 @@ import { apiFetchMyTickets } from '../services/api.js';
 
 const router = useRouter();
 const { currentUser, updateProfile } = useAuth();
+
 const form = ref({ name: '', email: '', password: '' });
 const loading = ref(false);
 const loadingTickets = ref(true);
 const myTickets = ref([]);
+
 const errorMsg = ref('');
 const successMsg = ref('');
+
 const profilePictureFile = ref(null);
 const profilePicturePreview = ref(null);
 
 const expandedPurchases = reactive({});
 
+/**
+ * Lenyitja vagy bezárja a vásárláshoz tartozó jegyek lenyíló listáját.
+ * 
+ * @param {string} key - A vásárlás egyedi azonosító kulcsa.
+ */
 function togglePurchase(key) {
   expandedPurchases[key] = !expandedPurchases[key];
 }
 
-function formatDate(dateStr) {
-  if (!dateStr) return '';
-  const d = new Date(dateStr);
-  return d.toLocaleString('hu-HU', {
-    year: 'numeric', month: '2-digit', day: '2-digit',
-    hour: '2-digit', minute: '2-digit'
+/**
+ * Szebben formázott dátumvisszaadás a vásárlás idejéhez.
+ * 
+ * @param {string} dateString - Az eredeti dátum sztring.
+ * @returns {string} Lokalizált (magyar) pontos dátum és idő.
+ */
+function formatDate(dateString) {
+  if (!dateString) return '';
+  const dateObj = new Date(dateString);
+  return dateObj.toLocaleString('hu-HU', {
+    year: 'numeric', 
+    month: '2-digit', 
+    day: '2-digit',
+    hour: '2-digit', 
+    minute: '2-digit'
   });
 }
 
+/**
+ * Csoportosítja a jegyeket a vásárlás dátuma alapján.
+ * Ezzel elkerülhető, hogy azonos időben vásárolt jegyek külön tételként jelenjenek meg.
+ */
 const groupedPurchases = computed(() => {
-  const groups = {};
+  const purchaseGroups = {};
+  
   myTickets.value.forEach(ticket => {
-    const dateStr = ticket.created_at || '';
-    const groupKey = dateStr ? dateStr.substring(0, 16) : Math.random().toString(36).substring(7);
+    const timestampStr = ticket.created_at || '';
+    // Ha nincs időbélyeg (pl teszt adat), kap egy véletlenszerű kulcsot. Különben percre pontosan csoportosít.
+    const groupKey = timestampStr ? timestampStr.substring(0, 16) : Math.random().toString(36).substring(7);
     
-    if (!groups[groupKey]) {
-      groups[groupKey] = {
-        date: dateStr,
+    if (!purchaseGroups[groupKey]) {
+      purchaseGroups[groupKey] = {
+        date: timestampStr,
         key: groupKey,
         tickets: [],
         totalAmount: 0,
         status: ticket.status
       };
     }
-    groups[groupKey].tickets.push(ticket);
-    groups[groupKey].totalAmount += parseFloat(ticket.total_price || 0);
+    
+    purchaseGroups[groupKey].tickets.push(ticket);
+    purchaseGroups[groupKey].totalAmount += parseFloat(ticket.total_price || 0);
   });
   
-  return Object.values(groups).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+  // Rendezi a csoportokat a legújabb elől logikával
+  return Object.values(purchaseGroups).sort((first, second) => {
+    return new Date(second.date).getTime() - new Date(first.date).getTime();
+  });
 });
 
-function handleFileChange(e) {
-  const file = e.target.files[0];
+/**
+ * Feldolgozza a képfeltöltés bemeneti mező változását (Profilkép előnézet).
+ */
+function handleFileChange(event) {
+  const file = event.target.files[0];
   if (file) {
     profilePictureFile.value = file;
     const reader = new FileReader();
@@ -190,6 +220,9 @@ function handleFileChange(e) {
   }
 }
 
+/**
+ * Betölti a bejelentkezett felhasználó adatait az űrlapba.
+ */
 function loadUserData() {
   if (currentUser.value) {
     form.value.name = currentUser.value.name || '';
@@ -199,12 +232,19 @@ function loadUserData() {
   }
 }
 
+/**
+ * Lekéri a saját vásárolt jegyeket az adatbázisból.
+ */
 async function fetchTickets() {
   loadingTickets.value = true;
   try {
-    myTickets.value = await apiFetchMyTickets();
-  } catch (e) {}
-  loadingTickets.value = false;
+    const data = await apiFetchMyTickets();
+    myTickets.value = data || [];
+  } catch (error) {
+    console.error('Hiba a jegyek lekérésekor:', error);
+  } finally {
+    loadingTickets.value = false;
+  }
 }
 
 onMounted(() => {
@@ -215,35 +255,50 @@ watch(currentUser, () => {
   loadUserData();
 });
 
+/**
+ * Beküldi a profil módosításokat (név, jelszó, profilkép) a szerver felé.
+ */
 async function submitForm() {
   loading.value = true;
   errorMsg.value = '';
   successMsg.value = '';
   
-  let payload;
+  let updatePayload;
+  
   if (profilePictureFile.value) {
-    payload = new FormData();
-    payload.append('name', form.value.name);
-    if (form.value.password) payload.append('password', form.value.password);
-    payload.append('profile_picture', profilePictureFile.value);
-    payload.append('_method', 'PUT');
-  } else {
-    payload = { name: form.value.name };
+    updatePayload = new FormData();
+    updatePayload.append('name', form.value.name);
+    
     if (form.value.password) {
-      payload.password = form.value.password;
+      updatePayload.append('password', form.value.password);
+    }
+    
+    updatePayload.append('profile_picture', profilePictureFile.value);
+    
+    // Laravel PUT request workaround FormData esetén
+    updatePayload.append('_method', 'PUT'); 
+  } else {
+    updatePayload = { name: form.value.name };
+    if (form.value.password) {
+      updatePayload.password = form.value.password;
     }
   }
   
-  const result = await updateProfile(payload);
+  const result = await updateProfile(updatePayload);
   loading.value = false;
   
-  if (result.success) {
+  if (result && result.success) {
     successMsg.value = 'Profil sikeresen frissítve!';
     form.value.password = '';
     profilePictureFile.value = null;
-    document.getElementById('profilePicInput').value = '';
+    
+    // Alapértelmezett bemeneti mező resetelése
+    const fileInput = document.getElementById('profilePicInput');
+    if (fileInput) {
+       fileInput.value = '';
+    }
   } else {
-    errorMsg.value = result.message || result.error || 'Hálózati hiba történt a mentés során.';
+    errorMsg.value = result?.message || result?.error || 'Hálózati hiba történt a mentés során.';
   }
 }
 </script>

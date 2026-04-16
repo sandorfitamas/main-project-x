@@ -174,6 +174,8 @@ const isCheckingOut = ref(false);
 const emit = defineEmits(['show-auth']);
 
 const cityDropdownOpen = ref(false);
+
+/** Leggyakoribb magyarországi települések listája a legördülő menühöz */
 const popularCities = [
   'Budapest', 'Debrecen', 'Szeged', 'Miskolc', 'Pécs', 'Győr', 'Nyíregyháza',
   'Kecskemét', 'Székesfehérvár', 'Szombathely', 'Érd', 'Szolnok', 'Tatabánya',
@@ -183,6 +185,7 @@ const popularCities = [
   'Pilisvörösvár', 'Mohács'
 ];
 
+/** A pénztár űrlap reaktív állapota */
 const checkoutForm = reactive({
   paymentMethod: 'card',
   cardName: '',
@@ -198,36 +201,52 @@ const checkoutForm = reactive({
   other: ''
 });
 
+/** Telefonszám különválasztott reaktív adatai a formázás megkönnyítésére */
 const phoneData = reactive({ prefix: '30', number: '' });
 
-watch(() => phoneData.number, (newVal) => {
-  if (newVal) {
-    const cleaned = newVal.replace(/\D/g, '');
-    if (cleaned !== newVal) phoneData.number = cleaned;
+/** Figyeli a telefonszám bevitelt, és csak a számokat hagyja meg */
+watch(() => phoneData.number, (newValue) => {
+  if (newValue) {
+    const cleanedValue = newValue.replace(/\D/g, '');
+    if (cleanedValue !== newValue) {
+      phoneData.number = cleanedValue;
+    }
   }
 });
 
-watch(phoneData, (newVal) => {
-  if (newVal.number && newVal.number.trim() !== '') {
-    checkoutForm.phone = `+36 ${newVal.prefix} ${newVal.number.trim().replace(/\s/g, '').replace(/(\d{3})(\d{0,4})/, '$1 $2').trim()}`;
+/** Figyeli a telefonszám objektumot és összerakja a nemzetközi formátumot */
+watch(phoneData, (newValue) => {
+  if (newValue.number && newValue.number.trim() !== '') {
+    const formattedNumber = newValue.number.trim().replace(/\s/g, '').replace(/(\d{3})(\d{0,4})/, '$1 $2').trim();
+    checkoutForm.phone = `+36 ${newValue.prefix} ${formattedNumber}`;
   } else {
     checkoutForm.phone = '';
   }
 }, { deep: true });
 
+/** Keresés alapján szűri a népszerű településeket az autocomplethez */
 const filteredCities = computed(() => {
-  if (!checkoutForm.city) return popularCities.slice(0, 5);
+  if (!checkoutForm.city) {
+    return popularCities.slice(0, 5);
+  }
   const query = checkoutForm.city.toLowerCase().trim();
   return popularCities
     .filter(city => city.toLowerCase().startsWith(query))
     .slice(0, 5);
 });
 
+/**
+ * Kiválaszt egy települést a legördülőből.
+ * @param {string} city - A kiválasztott település neve.
+ */
 const selectCity = (city) => {
   checkoutForm.city = city;
   cityDropdownOpen.value = false;
 };
 
+/**
+ * Késleltetve zárja be a legördülő menüt, hogy a kattintás esemény lefuthessen.
+ */
 const closeCityDropdown = () => {
   setTimeout(() => {
     cityDropdownOpen.value = false;
@@ -241,80 +260,124 @@ onMounted(() => {
   }
 });
 
-function getDisplayPrice(priceStr, qty) {
-  if (!priceStr || String(priceStr).toLowerCase().includes('ingyen')) return 'Ingyenes';
-  const match = String(priceStr).replace(/\s/g, '').match(/\d+/);
+/**
+ * Formázza a megjelenítendő árat jegyszámtól függően.
+ * @param {string|number} priceString - Az ár eredeti string formája.
+ * @param {number} quantity - A megvásárolni kívánt mennyiség.
+ * @returns {string} - A formázott ár Ft-ban, vagy 'Ingyenes'.
+ */
+function getDisplayPrice(priceString, quantity) {
+  if (!priceString || String(priceString).toLowerCase().includes('ingyen')) {
+    return 'Ingyenes';
+  }
+  
+  const match = String(priceString).replace(/\s/g, '').match(/\d+/);
   if (match) {
-    return (parseInt(match[0], 10) * qty).toLocaleString() + ' Ft';
+    const parsedPrice = parseInt(match[0], 10);
+    return (parsedPrice * quantity).toLocaleString() + ' Ft';
   }
   return 'Ismeretlen ár';
 }
 
-async function processCheckout() {
-  if (items.value.length === 0) return;
-
-  // Basic validation check
-  if (!checkoutForm.name || !checkoutForm.email || !checkoutForm.phone || !checkoutForm.zip || !checkoutForm.city || !checkoutForm.address) {
+/**
+ * Validálja a személyes és szállítási adatokat.
+ * @returns {boolean} - True ha minden adat megfelelő, False különben.
+ */
+function validatePersonalData() {
+  const { name, email, phone, zip, city, address } = checkoutForm;
+  if (!name || !email || !phone || !zip || !city || !address) {
     showToast('Kérjük, tölts ki minden kötelező mezőt!', 'error');
-    return;
+    return false;
   }
 
-  if (!checkoutForm.email.includes('@')) {
+  if (!email.includes('@')) {
     showToast('Az e-mail cím hiányos, tartalmaznia kell egy "@" jelet!', 'error');
-    return;
+    return false;
+  }
+  return true;
+}
+
+/**
+ * Validálja a bankkártya adatait.
+ * @returns {boolean} - True ha a kártya adatok helyesek vagy a fizetés nem kártyás, False különben.
+ */
+function validateCardData() {
+  if (checkoutForm.paymentMethod !== 'card') {
+    return true; // Csak kártyás fizetés esetén kell validálni
   }
 
-  // Card validation check
-  if (checkoutForm.paymentMethod === 'card') {
-    if (!checkoutForm.cardName || !checkoutForm.cardNumber || !checkoutForm.cardExpiry || !checkoutForm.cardCvv) {
-      showToast('Kérjük, add meg a bankkártya adataidat a fizetéshez!', 'error');
-      return;
-    }
-
-    if (checkoutForm.cardNumber.replace(/\D/g, '').length !== 16) {
-      showToast('A bankkártya számnak pontosan 16 számjegyből kell állnia!', 'error');
-      return;
-    }
-
-    const expiryMatch = checkoutForm.cardExpiry.match(/^(\d{2})\/(\d{2})$/);
-    if (!expiryMatch) {
-      showToast('A lejárati dátumnak HH/ÉÉ formátumúnak kell lennie!', 'error');
-      return;
-    }
-
-    const expMonth = parseInt(expiryMatch[1], 10);
-    const expYear = parseInt(expiryMatch[2], 10) + 2000;
-    const currentYear = new Date().getFullYear();
-    const currentMonth = new Date().getMonth() + 1;
-
-    if (expMonth < 1 || expMonth > 12) {
-      showToast('Érvénytelen hónap a lejárati dátumban!', 'error');
-      return;
-    }
-
-    if (expYear < currentYear || (expYear === currentYear && expMonth < currentMonth)) {
-      showToast('A megadott bankkártya már lejárt!', 'error');
-      return;
-    }
+  const { cardName, cardNumber, cardExpiry, cardCvv } = checkoutForm;
+  if (!cardName || !cardNumber || !cardExpiry || !cardCvv) {
+    showToast('Kérjük, add meg a bankkártya adataidat a fizetéshez!', 'error');
+    return false;
   }
 
-  // Auth check before sending request
+  const cleanedCardNumber = cardNumber.replace(/\D/g, '');
+  if (cleanedCardNumber.length !== 16) {
+    showToast('A bankkártya számnak pontosan 16 számjegyből kell állnia!', 'error');
+    return false;
+  }
+
+  const expiryMatch = cardExpiry.match(/^(\d{2})\/(\d{2})$/);
+  if (!expiryMatch) {
+    showToast('A lejárati dátumnak HH/ÉÉ formátumúnak kell lennie!', 'error');
+    return false;
+  }
+
+  const expiryMonth = parseInt(expiryMatch[1], 10);
+  const expiryYear = parseInt(expiryMatch[2], 10) + 2000;
+  
+  const currentDate = new Date();
+  const currentYear = currentDate.getFullYear();
+  const currentMonth = currentDate.getMonth() + 1;
+
+  if (expiryMonth < 1 || expiryMonth > 12) {
+    showToast('Érvénytelen hónap a lejárati dátumban!', 'error');
+    return false;
+  }
+
+  if (expiryYear < currentYear || (expiryYear === currentYear && expiryMonth < currentMonth)) {
+    showToast('A megadott bankkártya már lejárt!', 'error');
+    return false;
+  }
+
+  return true;
+}
+
+/**
+ * Ellenőrzi, hogy a felhasználó be van-e jelentkezve a vásárláshoz.
+ * @returns {boolean} - True ha be van jelentkezve, False ha nincs.
+ */
+function checkAuthentication() {
   const token = localStorage.getItem('auth_token');
   if (!token) {
     showToast('A rendelés véglegesítéséhez be kell jelentkezned!', 'error');
     emit('show-auth');
-    return;
+    return false;
   }
+  return true;
+}
+
+/**
+ * A fő fizetési (Checkout) folyamatot indító és kezelő függvény.
+ */
+async function processCheckout() {
+  if (items.value.length === 0) return;
+
+  if (!validatePersonalData()) return;
+  if (!validateCardData()) return;
+  if (!checkAuthentication()) return;
 
   isCheckingOut.value = true;
   
-  const payload = items.value.map(i => ({
-    event_id: i.event.id,
-    quantity: i.quantity
+  const payloadItems = items.value.map(item => ({
+    event_id: item.event.id,
+    quantity: item.quantity
   }));
 
   try {
-    const response = await apiCheckoutCart(payload, checkoutForm);
+    const response = await apiCheckoutCart(payloadItems, checkoutForm);
+    
     if (response.success) {
       showToast(response.message || 'Sikeres rendelés!', 'success');
       clearCart();
@@ -327,8 +390,8 @@ async function processCheckout() {
         showToast(response.message || 'Hiba történt a fizetés során', 'error');
       }
     }
-  } catch (err) {
-    showToast('Hálózati hiba a checkout közben.', 'error');
+  } catch (error) {
+    showToast('Hálózati hiba a rendelés feldolgozása közben.', 'error');
   } finally {
     isCheckingOut.value = false;
   }

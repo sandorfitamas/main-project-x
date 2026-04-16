@@ -144,6 +144,7 @@ class AuthController extends Controller
                 'id'    => $user->id,
                 'name'  => $user->name,
                 'email' => $user->email,
+                'is_admin' => (bool)$user->is_admin,
                 'profile_picture' => $user->profile_picture ? asset('storage/' . $user->profile_picture) : null,
             ],
         ]);

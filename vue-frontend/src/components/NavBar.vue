@@ -73,32 +73,62 @@ const props = defineProps({
   currentUser: { type: Object, default: null },
 });
 
-defineEmits(['show-auth', 'show-all-events', 'show-my-events', 'show-favorites', 'show-community', 'logout', 'create-event', 'show-profile']);
+defineEmits([
+  'show-auth', 
+  'show-all-events', 
+  'show-my-events', 
+  'show-favorites', 
+  'show-community', 
+  'logout', 
+  'create-event', 
+  'show-profile',
+  'show-home',
+  'show-admin'
+]);
 
 const dropdownOpen = ref(false);
 const mobileMenuOpen = ref(false);
 const authBtnRef = ref(null);
 
+/**
+ * Meghatározza a felhasználó monogramját a nevük alapján profilkép hiányában.
+ */
 const initials = computed(() => {
-  return props.currentUser?.name ? String(props.currentUser.name).substring(0, 2).toUpperCase() : '?';
+  return props.currentUser?.name 
+    ? String(props.currentUser.name).substring(0, 2).toUpperCase() 
+    : '?';
 });
 
+/**
+ * Megnyitja vagy bezárja a felhasználói legördülő menüt.
+ */
 function toggleDropdown() {
   dropdownOpen.value = !dropdownOpen.value;
 }
 
-function handleClickOutside(e) {
-  if (dropdownOpen.value && authBtnRef.value && !authBtnRef.value.contains(e.target)) {
-    const dd = document.querySelector('.user-dropdown');
-    if (dd && !dd.contains(e.target)) {
+/**
+ * Zárja a legördülő menüket, ha a külső területre kattint a felhasználó.
+ */
+function handleClickOutside(event) {
+  // Felhasználói profil legördülő figyelése
+  if (dropdownOpen.value && authBtnRef.value && !authBtnRef.value.contains(event.target)) {
+    const dropdownElement = document.querySelector('.user-dropdown');
+    if (dropdownElement && !dropdownElement.contains(event.target)) {
       dropdownOpen.value = false;
     }
   }
-  if (mobileMenuOpen.value && e.target.closest('.d-md-none') === null) {
+  
+  // Mobil menü figyelése
+  if (mobileMenuOpen.value && event.target.closest('.d-md-none') === null) {
     mobileMenuOpen.value = false;
   }
 }
 
-onMounted(() => document.addEventListener('click', handleClickOutside));
-onUnmounted(() => document.removeEventListener('click', handleClickOutside));
+onMounted(() => {
+  document.addEventListener('click', handleClickOutside);
+});
+
+onUnmounted(() => {
+  document.removeEventListener('click', handleClickOutside);
+});
 </script>

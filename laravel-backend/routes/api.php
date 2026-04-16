@@ -1,65 +1,90 @@
 <?php
 
+use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\FavoriteController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\UploadController;
 use App\Http\Controllers\UserController;
-use Illuminate\Support\Facades\Route;
 
-// --- AUTH ---
-Route::post('/auth/register', [AuthController::class, 'register']);
-Route::post('/auth/login',    [AuthController::class, 'login']);
-Route::middleware('auth:sanctum')->group(function () {
-    Route::post('/auth/logout',   [AuthController::class, 'logout']);
-    Route::get('/auth/current',   [AuthController::class, 'current']);
-    Route::put('/auth/profile',   [AuthController::class, 'updateProfile']);
+// =========================
+// Hítelesítés
+// =========================
+Route::prefix('auth')->group(function () {
+    Route::post('/register', [AuthController::class, 'register']);
+    Route::post('/login', [AuthController::class, 'login']);
+    Route::middleware('auth:sanctum')->group(function () {
+        Route::post('/logout', [AuthController::class, 'logout']);
+        Route::get('/current', [AuthController::class, 'current']);
+        Route::put('/profile', [AuthController::class, 'updateProfile']);
+    });
 });
 
-// --- EVENTS (public list) ---
+// =========================
+// Események
+// =========================
+// Publikus esemény lista
 Route::get('/events', [EventController::class, 'index']);
-
-// --- EVENTS (protected) — must come BEFORE the wildcard {id} route ---
-Route::middleware('auth:sanctum')->group(function () {
-    Route::get('/events/user/my',    [EventController::class, 'myEvents']);
-    Route::post('/events',           [EventController::class, 'store']);
-    Route::put('/events/{id}',       [EventController::class, 'update']);
-    Route::delete('/events/{id}',    [EventController::class, 'destroy']);
-    
-    // Attendance routes
-    Route::post('/events/{id}/attend', [EventController::class, 'toggleAttendance']);
-    Route::get('/events/{id}/attend',  [EventController::class, 'checkAttendance']);
-});
-
-// --- COMMUNITY ---
-Route::get('/attendances/recent', [EventController::class, 'recentAttendances']);
-
-// --- TICKETS ---
-Route::middleware('auth:sanctum')->post('/events/{id}/buy', [\App\Http\Controllers\TicketController::class, 'buyTicket']);
-Route::middleware('auth:sanctum')->post('/checkout', [\App\Http\Controllers\CheckoutController::class, 'process']);
-Route::middleware('auth:sanctum')->get('/tickets', [\App\Http\Controllers\TicketController::class, 'getUserTickets']);
-
-// --- EVENTS (public detail) — wildcard last so specific routes match first ---
+// Publikus esemény részletek (mindig utoljára, hogy ne ütközzön más route-tal)
 Route::get('/events/{id}', [EventController::class, 'show']);
 
-// --- REVIEWS ---
+// Védett esemény műveletek
+Route::middleware('auth:sanctum')->group(function () {
+    // Saját események
+    Route::get('/events/user/my', [EventController::class, 'myEvents']);
+    // Létrehozás, módosítás, törlés
+    Route::post('/events', [EventController::class, 'store']);
+    Route::put('/events/{id}', [EventController::class, 'update']);
+    Route::delete('/events/{id}', [EventController::class, 'destroy']);
+    // Részvétel
+    Route::post('/events/{id}/attend', [EventController::class, 'toggleAttendance']);
+    Route::get('/events/{id}/attend', [EventController::class, 'checkAttendance']);
+});
+
+// =========================
+// Közösség
+// =========================
+Route::get('/attendances/recent', [EventController::class, 'recentAttendances']);
+
+// =========================
+// Jegyek
+// =========================
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/events/{id}/buy', [\App\Http\Controllers\TicketController::class, 'buyTicket']);
+    Route::post('/checkout', [\App\Http\Controllers\CheckoutController::class, 'process']);
+    Route::get('/tickets', [\App\Http\Controllers\TicketController::class, 'getUserTickets']);
+});
+
+// =========================
+// Vélemyények/Értékelések
+// =========================
 Route::get('/reviews/recent', [ReviewController::class, 'recent']);
 Route::get('/events/{id}/reviews', [ReviewController::class, 'index']);
 Route::middleware('auth:sanctum')->post('/events/{id}/reviews', [ReviewController::class, 'store']);
 
-// --- FAVORITES (protected) ---
+// =========================
+// Kedvencek
+// =========================
 Route::middleware('auth:sanctum')->group(function () {
-    Route::get('/favorites',              [FavoriteController::class, 'index']);
-    Route::post('/favorites',             [FavoriteController::class, 'store']);
+    Route::get('/favorites', [FavoriteController::class, 'index']);
+    Route::post('/favorites', [FavoriteController::class, 'store']);
     Route::delete('/favorites/{eventId}', [FavoriteController::class, 'destroy']);
 });
 
-// --- UPLOAD (protected) ---
+// =========================
+// Feltöltés
+// =========================
 Route::middleware('auth:sanctum')->post('/upload', [UploadController::class, 'store']);
 
-// --- USERS (public) ---
+// =========================
+// FELHASZNÁLÓK
+// =========================
 Route::get('/users', [UserController::class, 'index']);
+
+// =========================
+// ADMIN (védett, prefix: /admin)
+// =========================
 Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function () {
     Route::get('/dashboard', [\App\Http\Controllers\AdminController::class, 'dashboard']);
     Route::get('/users', [\App\Http\Controllers\AdminController::class, 'users']);

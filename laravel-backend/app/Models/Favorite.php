@@ -4,6 +4,14 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * @property int $id
+ * @property int $user_id
+ * @property int $event_id
+ * @property \App\Models\User $user
+ * @property \App\Models\Event $event
+ */
+
 class Favorite extends Model
 {
     protected $fillable = ['user_id', 'event_id'];

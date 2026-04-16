@@ -6,18 +6,52 @@ use Illuminate\Http\Request;
 use App\Models\Review;
 use App\Models\Event;
 
+/**
+ * Class ReviewController
+ * Esemény értékelések kezeléséért felelős controller.
+ */
+
 class ReviewController extends Controller
 {
+    /**
+     * Egy eseményhez tartozó értékelések listázása.
+     * @param int $eventId
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function index($eventId)
     {
-        return Review::with('user')->where('event_id', $eventId)->latest()->get();
+        $reviews = Review::with('user')
+            ->where('event_id', $eventId)
+            ->latest()
+            ->get();
+        return response()->json([
+            'success' => true,
+            'reviews' => $reviews
+        ]);
     }
 
+    /**
+     * Legutóbbi értékelések lekérdezése.
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function recent()
     {
-        return Review::with(['user', 'event'])->latest()->take(6)->get();
+        $reviews = Review::with(['user', 'event'])
+            ->latest()
+            ->take(6)
+            ->get();
+        return response()->json([
+            'success' => true,
+            'reviews' => $reviews
+        ]);
     }
 
+    /**
+     * Új értékelés létrehozása egy eseményhez.
+     * @param Request $request
+     * @param int $eventId
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function store(Request $request, $eventId)
     {
         $request->validate([
@@ -26,39 +60,46 @@ class ReviewController extends Controller
         ]);
 
         $event = Event::findOrFail($eventId);
-        if ($event->user_id === $request->user()->id) {
-            return response()->json(['success' => false, 'message' => 'A saját eseményedet nem értékelheted!'], 400);
+        $userId = $request->user()->id;
+
+        if ($event->user_id === $userId) {
+            return response()->json([
+                'success' => false,
+                'message' => 'A saját eseményedet nem értékelheted!'
+            ], 400);
         }
 
-        if (Review::where('event_id', $eventId)->where('user_id', $request->user()->id)->exists()) {
-            return response()->json(['success' => false, 'message' => 'Már értékelted ezt a helyszínt!'], 400);
+        if (Review::where('event_id', $eventId)->where('user_id', $userId)->exists()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Már értékelted ezt a helyszínt!'
+            ], 400);
         }
 
         $review = Review::create([
             'event_id' => $eventId,
-            'user_id' => $request->user()->id,
+            'user_id' => $userId,
             'rating' => $request->rating,
             'comment' => $request->comment
         ]);
 
-        $realAvg = Review::where('event_id', $eventId)->avg('rating') ?: 0;
+        $realAverage = Review::where('event_id', $eventId)->avg('rating') ?: 0;
         $realCount = Review::where('event_id', $eventId)->count();
-        
-        $baseRating = $event->base_rating; // Csak a tényleges, seed-ből kapott értéket nézzük (a dinamikussal ne vegyítsük)
-        
-        // Ha az eseménynek nincs kezdeti értékelése (azaz új, null vagy 0), akkor csak a valódi átlagot vesszük
+        $baseRating = $event->base_rating;
+
+        // Ha az eseménynek nincs kezdeti értékelése (új, null vagy 0), akkor csak a valódi átlagot vesszük
         if ($baseRating === null || (float)$baseRating === 0.0) {
-            $averageRating = round($realAvg, 1);
+            $averageRating = round($realAverage, 1);
         } else {
             $baseWeight = 5; // A kezdeti értékelés súlya (5 fiktív ember)
-            $averageRating = (($baseRating * $baseWeight) + ($realAvg * $realCount)) / ($baseWeight + $realCount);
+            $averageRating = (($baseRating * $baseWeight) + ($realAverage * $realCount)) / ($baseWeight + $realCount);
             $averageRating = round($averageRating, 1);
         }
 
         $event->update(['rating' => $averageRating]);
 
         return response()->json([
-            'success' => true, 
+            'success' => true,
             'review' => $review->load('user'),
             'new_average' => $averageRating
         ]);

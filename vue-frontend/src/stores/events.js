@@ -1,71 +1,112 @@
+
 import { reactive, toRefs } from 'vue';
 import { apiFetchEvents, apiFetchMyEvents, apiCreateEvent, apiUpdateEvent, apiDeleteEvent, apiUploadImage } from '../services/api.js';
 
-const state = reactive({
+/**
+ * Globális állapotkezelő az eseményekhez (összes, saját, keresés, kategória).
+ */
+const eventsState = reactive({
   allEvents: [],
   myEvents: [],
   activeCategory: 'all',
   searchQuery: '',
 });
 
+/**
+ * Events store Composition API hook.
+ * @returns {Object} - Események állapota és CRUD műveletek.
+ */
 export function useEvents() {
+  /**
+   * Betölti az összes eseményt az API-ból.
+   */
   async function loadAllEvents() {
-    state.allEvents = await apiFetchEvents();
+    eventsState.allEvents = await apiFetchEvents();
   }
 
+  /**
+   * Betölti a bejelentkezett felhasználó saját eseményeit.
+   */
   async function loadMyEvents() {
-    state.myEvents = await apiFetchMyEvents();
+    eventsState.myEvents = await apiFetchMyEvents();
   }
 
+  /**
+   * Új esemény létrehozása (opcionális képfeltöltéssel).
+   * @param {FormData} formData
+   * @param {File|null} imageFile
+   * @returns {Promise<Object>} API válasz
+   */
   async function createEvent(formData, imageFile) {
     if (imageFile) {
-      const up = await apiUploadImage(imageFile);
-      if (up.success) formData.set('image_url', up.url);
+      const uploadResult = await apiUploadImage(imageFile);
+      if (uploadResult.success) formData.set('image_url', uploadResult.url);
       formData.delete('image');
     }
-    const result = await apiCreateEvent(formData);
-    if (result.success) {
+    const response = await apiCreateEvent(formData);
+    if (response.success) {
       await loadAllEvents();
       await loadMyEvents();
     }
-    return result;
+    return response;
   }
 
+  /**
+   * Esemény szerkesztése (opcionális képfeltöltéssel vagy meglévő kép megtartásával).
+   * @param {number|string} id
+   * @param {FormData} formData
+   * @param {File|null} imageFile
+   * @param {string|null} existingImageUrl
+   * @returns {Promise<Object>} API válasz
+   */
   async function updateEvent(id, formData, imageFile, existingImageUrl) {
     if (imageFile) {
-      const up = await apiUploadImage(imageFile);
-      if (up.success) formData.set('image_url', up.url);
+      const uploadResult = await apiUploadImage(imageFile);
+      if (uploadResult.success) formData.set('image_url', uploadResult.url);
       formData.delete('image');
     } else if (existingImageUrl) {
       formData.set('image_url', existingImageUrl);
     }
-    const result = await apiUpdateEvent(id, formData);
-    if (result.success) {
+    const response = await apiUpdateEvent(id, formData);
+    if (response.success) {
       await loadMyEvents();
       await loadAllEvents();
     }
-    return result;
+    return response;
   }
 
+  /**
+   * Esemény törlése.
+   * @param {number|string} id
+   * @returns {Promise<Object>} API válasz
+   */
   async function deleteEvent(id) {
-    const result = await apiDeleteEvent(id);
-    if (result.success) {
+    const response = await apiDeleteEvent(id);
+    if (response.success) {
       await loadMyEvents();
       await loadAllEvents();
     }
-    return result;
+    return response;
   }
 
-  function setCategory(cat) {
-    state.activeCategory = cat;
+  /**
+   * Aktív kategória beállítása a szűréshez.
+   * @param {string} category
+   */
+  function setCategory(category) {
+    eventsState.activeCategory = category;
   }
 
+  /**
+   * Keresési lekérdezés beállítása.
+   * @param {string} query
+   */
   function setSearch(query) {
-    state.searchQuery = query;
+    eventsState.searchQuery = query;
   }
 
   return {
-    ...toRefs(state),
+    ...toRefs(eventsState),
     loadAllEvents,
     loadMyEvents,
     createEvent,

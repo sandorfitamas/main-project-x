@@ -10,16 +10,41 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
+/**
+ * TicketPurchaseMail – Jegyvásárlás visszaigazoló email.
+ *
+ * @property array $tickets
+ * @property array $customer
+ * @property \App\Models\User|null $user
+ */
+
 class TicketPurchaseMail extends Mailable
 {
     use Queueable, SerializesModels;
 
+    /**
+     * A vásárolt jegyek tömbje.
+     * @var array
+     */
     public $tickets;
+
+    /**
+     * Vásárló adatai.
+     * @var array
+     */
     public $customer;
+
+    /**
+     * Felhasználó modell (opcionális).
+     * @var \App\Models\User|null
+     */
     public $user;
 
     /**
-     * Create a new message instance.
+     * Létrehozza az email példányt.
+     * @param array $tickets
+     * @param array $customer
+     * @param \App\Models\User|null $user
      */
     public function __construct(array $tickets, array $customer = [], \App\Models\User $user = null)
     {
@@ -29,7 +54,8 @@ class TicketPurchaseMail extends Mailable
     }
 
     /**
-     * Get the message envelope.
+     * Email envelope (tárgy, feladó, stb.).
+     * @return Envelope
      */
     public function envelope(): Envelope
     {
@@ -39,7 +65,8 @@ class TicketPurchaseMail extends Mailable
     }
 
     /**
-     * Get the message content definition.
+     * Email tartalom (nézet, változók).
+     * @return Content
      */
     public function content(): Content
     {
@@ -54,8 +81,7 @@ class TicketPurchaseMail extends Mailable
     }
 
     /**
-     * Get the attachments for the message.
-     *
+     * Email csatolmányok.
      * @return array<int, Attachment>
      */
     public function attachments(): array

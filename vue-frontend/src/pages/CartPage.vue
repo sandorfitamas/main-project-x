@@ -73,20 +73,42 @@ const showToast = inject('showToast');
 const { items, cartCount, cartTotal, updateQuantity, removeFromCart } = useCart();
 const isCheckingOut = ref(false);
 
-function formatDate(ds) {
-  if (!ds) return '';
-  return new Date(ds).toLocaleString('hu-HU', {
-    year: 'numeric', month: 'short', day: 'numeric',
-    hour: '2-digit', minute: '2-digit'
+/**
+ * Szebben formázott dátumvisszaadás a felhasználóknak.
+ * 
+ * @param {string} dateString - Az eredeti dátum sztring.
+ * @returns {string} Lokalizált (magyar) pontos dátum.
+ */
+function formatDate(dateString) {
+  if (!dateString) return '';
+  return new Date(dateString).toLocaleString('hu-HU', {
+    year: 'numeric', 
+    month: 'short', 
+    day: 'numeric',
+    hour: '2-digit', 
+    minute: '2-digit'
   });
 }
 
-function getDisplayPrice(priceStr, qty) {
-  if (!priceStr || String(priceStr).toLowerCase().includes('ingyen')) return 'Ingyenes';
-  const match = String(priceStr).replace(/\s/g, '').match(/\d+/);
-  if (match) {
-    return (parseInt(match[0], 10) * qty).toLocaleString() + ' Ft';
+/**
+ * Dinamikusan kiszámítja a kijelzett árat a jegy mennyisége és annak megadott (szöveges/számos) ára alapján.
+ * Kezeli az "Ingyenes" eseteket is.
+ * 
+ * @param {string|number} priceString - Az esemény ára (pl. "5000" vagy "Ingyenes").
+ * @param {number} quantity - A kosárban lévő darabszám.
+ * @returns {string} A formázott összár.
+ */
+function getDisplayPrice(priceString, quantity) {
+  if (!priceString || String(priceString).toLowerCase().includes('ingyen')) {
+    return 'Ingyenes';
   }
+  
+  const numericMatch = String(priceString).replace(/\s/g, '').match(/\d+/);
+  if (numericMatch) {
+    const parsedPrice = parseInt(numericMatch[0], 10);
+    return (parsedPrice * quantity).toLocaleString('hu-HU') + ' Ft';
+  }
+  
   return 'Ismeretlen ár';
 }
 </script>
