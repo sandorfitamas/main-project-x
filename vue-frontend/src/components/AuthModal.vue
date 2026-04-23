@@ -2,9 +2,9 @@
   <Teleport to="body">
     <div class="modal fade modal-dark" :class="{ show: visible }" :style="{ display: visible ? 'block' : 'none' }" tabindex="-1" @click.self="close">
       <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content" style="background:#0f172a;border:1px solid #334155;color:#e2e8f0;border-radius:16px">
+        <div class="modal-content auto-inline-1">
           <div class="modal-header border-0 pb-0">
-            <h5 class="modal-title fw-bold" style="background:linear-gradient(90deg,#a78bfa,#e879f9);-webkit-background-clip:text;-webkit-text-fill-color:transparent">
+            <h5 class="modal-title fw-bold auto-inline-2">
               {{ isLogin ? 'Bejelentkezés' : 'Regisztráció' }}
             </h5>
             <button type="button" class="btn-close btn-close-white" @click="close"></button>
@@ -44,7 +44,7 @@
             </form>
             <div class="text-center mt-3">
               <span class="text-secondary small">{{ isLogin ? 'Nincs még fiókod?' : 'Már van fiókod?' }}</span>
-              <button type="button" class="btn btn-link btn-sm p-0 ms-1 fw-semibold" style="color:#e879f9;text-decoration:none" @click="isLogin = !isLogin">
+              <button type="button" class="btn btn-link btn-sm p-0 ms-1 fw-semibold auto-inline-3" @click="isLogin = !isLogin">
                 {{ isLogin ? 'Regisztrálj most' : 'Bejelentkezés' }}
               </button>
             </div>
@@ -74,8 +74,8 @@ const regEmail = ref('');
 const regPassword = ref('');
 const regPasswordConfirm = ref('');
 
-watch(() => props.visible, (val) => {
-  if (val) {
+watch(() => props.visible, (isVisible) => {
+  if (isVisible) {
     isLogin.value = true;
     loginEmail.value = '';
     loginPassword.value = '';
@@ -84,7 +84,7 @@ watch(() => props.visible, (val) => {
     regPassword.value = '';
     regPasswordConfirm.value = '';
   }
-  document.body.style.overflow = val ? 'hidden' : ''; document.documentElement.style.overflow = val ? 'hidden' : '';
+  document.body.style.overflow = isVisible ? 'hidden' : ''; document.documentElement.style.overflow = isVisible ? 'hidden' : '';
 });
 
 function close() {
@@ -109,8 +109,15 @@ async function handleRegister() {
   if (result.success) {
     emit('register-success', result);
   } else {
-    const msg = result.message || Object.values(result.errors || {})[0]?.[0] || 'Hiba a regisztráció során';
-    showToast(msg, 'error');
+    const errorMessage = result.message || Object.values(result.errors || {})[0]?.[0] || 'Hiba a regisztráció során';
+    showToast(errorMessage, 'error');
   }
 }
 </script>
+
+
+<style scoped>
+.auto-inline-1 { background:#0f172a;border:1px solid #334155;color:#e2e8f0;border-radius:16px; }
+.auto-inline-2 { background:linear-gradient(90deg,#a78bfa,#e879f9);-webkit-background-clip:text;-webkit-text-fill-color:transparent; }
+.auto-inline-3 { color:#e879f9;text-decoration:none; }
+</style>

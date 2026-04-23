@@ -140,10 +140,10 @@ class TicketPurchaseMail extends Mailable
                 ];
             }
 
-            $qty = (int) ($ticket->quantity ?? 1);
+            $quantity = (int) ($ticket->quantity ?? 1);
             $lineAmount = (float) ($ticket->total_price ?? 0);
 
-            $groupedByEvent[$eventId]['quantity'] += $qty;
+            $groupedByEvent[$eventId]['quantity'] += $quantity;
             $groupedByEvent[$eventId]['line_total'] += $lineAmount;
         }
 

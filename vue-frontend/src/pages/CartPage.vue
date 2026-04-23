@@ -2,19 +2,19 @@
   <div class="container py-5 mt-5">
     <div class="row g-4">
       <div class="col-lg-8">
-        <h3 class="mb-4 fw-bold text-white"><i class="bi bi-cart3 me-2" style="color:#d946ef;"></i>Kosár</h3>
+        <h3 class="mb-4 fw-bold text-white"><i class="bi bi-cart3 me-2 auto-inline-1"></i>Kosár</h3>
         <div v-if="items.length === 0" class="text-center py-5">
-          <i class="bi bi-cart-x text-white-50" style="font-size: 4rem;"></i>
+          <i class="bi bi-cart-x text-white-50 auto-inline-2"></i>
           <h5 class="mt-3 text-white-50">A kosarad üres!</h5>
           <button class="btn btn-outline-light mt-3" @click="router.push('/events')">
             Böngéssz az események között
           </button>
         </div>
-        <div v-else class="card border-0 shadow-lg rounded-4 p-4 sticky-top" style="background: rgba(30,41,59,0.6); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.05) !important;">
-          <div v-for="item in items" :key="item.event.id" class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-4 pb-4 border-bottom" style="border-color: rgba(255,255,255,0.1) !important;">
+        <div v-else class="card border-0 shadow-lg rounded-4 p-4 sticky-top auto-inline-3">
+          <div v-for="item in items" :key="item.event.id" class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-4 pb-4 border-bottom auto-inline-4">
             <div class="d-flex align-items-center mb-3 mb-md-0 w-100">
-              <img v-if="item.event.imageUrl" :src="item.event.imageUrl" alt="Esemény kép" class="rounded me-3 object-fit-cover" style="width: 80px; height: 80px;">
-              <div v-else class="rounded me-3 bg-secondary d-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
+              <img v-if="item.event.imageUrl" :src="item.event.imageUrl" alt="Esemény kép" class="rounded me-3 object-fit-cover auto-inline-5">
+              <div v-else class="rounded me-3 bg-secondary d-flex align-items-center justify-content-center auto-inline-5">
                 <i class="bi bi-image text-white"></i>
               </div>
               <div class="flex-grow-1">
@@ -25,12 +25,12 @@
             </div>
             
             <div class="d-flex align-items-center gap-3">
-              <div class="input-group flex-nowrap shadow-sm" style="width: 110px;">
-                <button class="btn text-white ps-3 border" style="background:rgba(255,255,255,0.05);border-color:rgba(255,255,255,0.2)!important;" @click="updateQuantity(item.event.id, item.quantity - 1)" :disabled="item.quantity <= 1">-</button>
-                <input type="text" class="form-control text-center text-white border-top border-bottom border-start-0 border-end-0 fw-bold px-0 bg-transparent" style="border-color:rgba(255,255,255,0.2)!important;" :value="item.quantity" readonly>
-                <button class="btn text-white ps-3 border" style="background:rgba(255,255,255,0.05);border-color:rgba(255,255,255,0.2)!important;" @click="updateQuantity(item.event.id, item.quantity + 1)" :disabled="item.quantity >= 10">+</button>
+              <div class="input-group flex-nowrap shadow-sm auto-inline-6">
+                <button class="btn text-white ps-3 border auto-inline-7" @click="updateQuantity(item.event.id, item.quantity - 1)" :disabled="item.quantity <= 1">-</button>
+                <input type="text" class="form-control text-center text-white border-top border-bottom border-start-0 border-end-0 fw-bold px-0 bg-transparent auto-inline-8" :value="item.quantity" readonly>
+                <button class="btn text-white ps-3 border auto-inline-7" @click="updateQuantity(item.event.id, item.quantity + 1)" :disabled="item.quantity >= 10">+</button>
               </div>
-              <div class="text-end fw-bold text-white fs-5" style="min-width: 90px;">
+              <div class="text-end fw-bold text-white fs-5 auto-inline-9">
                 {{ getDisplayPrice(item.event.price, item.quantity) }}
               </div>
               <button class="btn btn-sm btn-outline-danger" @click="removeFromCart(item.event.id)" title="Törlés">
@@ -43,13 +43,13 @@
 
       <!-- Fizetési összesítő -->
       <div class="col-lg-4" v-if="items.length > 0">
-        <div class="card border-0 shadow-lg rounded-4 p-4 sticky-top" style="background: rgba(30,41,59,0.6); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.05) !important; top: 100px;" >
+        <div class="card border-0 shadow-lg rounded-4 p-4 sticky-top auto-inline-10" >
           <h5 class="fw-bold mb-4 text-white">Rendelés Összesítése</h5>
           <div class="d-flex justify-content-between mb-3">
             <span class="text-white-50">Összes jegy:</span>
             <span class="text-white fw-bold">{{ cartCount }} db</span>
           </div>
-          <div class="d-flex justify-content-between mb-4 border-bottom" style="border-color: rgba(255,255,255,0.1) !important;">
+          <div class="d-flex justify-content-between mb-4 border-bottom auto-inline-4">
             <span class="text-white-50">Fizetendő összeg:</span>
             <span class="fw-bold text-white fs-5">{{ cartTotal.toLocaleString() }} Ft</span>
           </div>
@@ -112,3 +112,17 @@ function getDisplayPrice(priceString, quantity) {
   return 'Ismeretlen ár';
 }
 </script>
+
+
+<style scoped>
+.auto-inline-1 { color:#d946ef;; }
+.auto-inline-2 { font-size: 4rem;; }
+.auto-inline-3 { background: rgba(30,41,59,0.6); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.05) !important;; }
+.auto-inline-4 { border-color: rgba(255,255,255,0.1) !important;; }
+.auto-inline-5 { width: 80px; height: 80px;; }
+.auto-inline-6 { width: 110px;; }
+.auto-inline-7 { background:rgba(255,255,255,0.05);border-color:rgba(255,255,255,0.2)!important;; }
+.auto-inline-8 { border-color:rgba(255,255,255,0.2)!important;; }
+.auto-inline-9 { min-width: 90px;; }
+.auto-inline-10 { background: rgba(30,41,59,0.6); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.05) !important; top: 100px;; }
+</style>

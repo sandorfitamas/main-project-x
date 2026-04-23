@@ -8,19 +8,19 @@
     <div v-else>
       <div class="row g-4 mb-5">
         <div class="col-md-4">
-          <div class="p-4 rounded-4 stat-card" style="background:rgba(30,41,59,.5);border:1px solid rgba(71,85,105,.5)">
+          <div class="p-4 rounded-4 stat-card auto-inline-1">
             <h5 class="text-secondary">Összes felhasználó</h5>
             <h2 class="text-white">{{ stats?.users_count || 0 }}</h2>
           </div>
         </div>
         <div class="col-md-4">
-          <div class="p-4 rounded-4 stat-card" style="background:rgba(30,41,59,.5);border:1px solid rgba(71,85,105,.5)">
+          <div class="p-4 rounded-4 stat-card auto-inline-1">
             <h5 class="text-secondary">Összes esemény</h5>
             <h2 class="text-white">{{ stats?.events_count || 0 }}</h2>
           </div>
         </div>
         <div class="col-md-4">
-          <div class="p-4 rounded-4 stat-card" style="background:rgba(30,41,59,.5);border:1px solid rgba(71,85,105,.5)">
+          <div class="p-4 rounded-4 stat-card auto-inline-1">
             <h5 class="text-secondary">Összes vélemény</h5>
             <h2 class="text-white">{{ stats?.reviews_count || 0 }}</h2>
           </div>
@@ -127,7 +127,7 @@
                     <i class="bi bi-star" v-for="n in 5 - review.rating" :key="n + 5"></i>
                   </span>
                 </td>
-                <td style="max-width: 300px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" :title="review.comment">{{ review.comment }}</td>
+                <td :title="review.comment" class="auto-inline-2">{{ review.comment }}</td>
                 <td>
                   <div class="d-flex flex-column flex-md-row gap-2">
                     <button v-if="!review.user_is_admin" class="btn btn-sm btn-outline-warning" @click="suspendUserByReview(review)">
@@ -355,3 +355,8 @@ async function suspendUserByReview(review) {
   }
 }
 </script>
+
+<style scoped>
+.auto-inline-1 { background:rgba(30,41,59,.5);border:1px solid rgba(71,85,105,.5); }
+.auto-inline-2 { max-width: 300px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;; }
+</style>

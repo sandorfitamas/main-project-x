@@ -1,7 +1,7 @@
 <template>
-  <nav class="navbar-custom sticky-top py-2 px-3 px-md-4" style="z-index: 1060;">
+  <nav class="navbar-custom sticky-top py-2 px-3 px-md-4 auto-inline-1">
     <div class="container-xl d-flex align-items-center justify-content-between">
-      <div class="d-flex align-items-center gap-2" style="cursor:pointer" @click="$router.push('/home')">
+      <div class="d-flex align-items-center gap-2 auto-inline-2" @click="$router.push('/home')">
         <div class="logo-icon"><i class="bi bi-lightning-fill text-white fs-5"></i></div>
         <span class="logo-text">PROJECT X</span>
       </div>
@@ -12,17 +12,17 @@
       </div>
       <div class="position-relative d-flex align-items-center gap-3">
         <!-- Mobile Menu Toggle -->
-        <button class="btn btn-link text-white p-0 d-md-none" @click="mobileMenuOpen = !mobileMenuOpen" style="text-decoration: none;" title="Menü">
+        <button class="btn btn-link text-white p-0 d-md-none auto-inline-3" @click="mobileMenuOpen = !mobileMenuOpen" title="Menü">
           <i class="bi bi-list fs-3"></i>
         </button>
-        <div v-if="mobileMenuOpen" class="user-dropdown d-md-none" style="right: 50px;">
+        <div v-if="mobileMenuOpen" class="user-dropdown d-md-none auto-inline-4">
           <button class="user-dropdown-btn" @click="mobileMenuOpen = false; $emit('show-home')">Kezdőlap</button>
           <button class="user-dropdown-btn" @click="mobileMenuOpen = false; $emit('show-all-events')">Események</button>
           <button class="user-dropdown-btn" @click="mobileMenuOpen = false; $emit('show-community')">Közösség</button>
         </div>
-        <button v-if="currentUser" class="btn btn-link text-white position-relative p-0" @click="$router.push('/cart')" style="text-decoration: none;" title="Kosár">
-          <i class="bi bi-cart3 fs-4" style="color: #e879f9;"></i>
-          <span v-if="cartCount > 0" class="position-absolute top-0 start-100 translate-middle badge rounded-pill shadow-sm" style="font-size: 0.65rem; background: linear-gradient(90deg,#7c3aed,#d946ef);">
+        <button v-if="currentUser" class="btn btn-link text-white position-relative p-0 auto-inline-3" @click="$router.push('/cart')" title="Kosár">
+          <i class="bi bi-cart3 fs-4 auto-inline-5"></i>
+          <span v-if="cartCount > 0" class="position-absolute top-0 start-100 translate-middle badge rounded-pill shadow-sm auto-inline-11">
             {{ cartCount }}
           </span>
         </button>
@@ -31,13 +31,13 @@
         </button>
         <button v-else ref="authBtnRef" class="btn btn-gradient btn-sm px-3 py-2 fw-semibold" @click="toggleDropdown">
           <div class="d-flex align-items-center gap-2">
-            <img v-if="currentUser?.profile_picture" :src="currentUser.profile_picture" alt="Profil" class="rounded-circle shadow-sm object-fit-cover" style="width:32px;height:32px;">
-            <div v-else class="rounded-circle d-flex align-items-center justify-content-center fw-bold text-white"
-                 style="width:32px;height:32px;background:linear-gradient(135deg,#7c3aed,#d946ef);font-size:.75rem">
+            <img v-if="currentUser?.profile_picture" :src="currentUser.profile_picture" alt="Profil" class="rounded-circle shadow-sm object-fit-cover auto-inline-6">
+            <div v-else class="rounded-circle d-flex align-items-center justify-content-center fw-bold text-white auto-inline-7"
+                >
               {{ initials }}
             </div>
-            <span class="d-none d-md-inline" style="font-size:.85rem">{{ currentUser?.name }}</span>
-            <i class="bi bi-chevron-down" style="font-size:.7rem"></i>
+            <span class="d-none d-md-inline auto-inline-8">{{ currentUser?.name }}</span>
+            <i class="bi bi-chevron-down auto-inline-9"></i>
           </div>
         </button>
         <div v-if="dropdownOpen" class="user-dropdown">
@@ -53,7 +53,7 @@
           <button v-if="currentUser?.is_admin" class="user-dropdown-btn text-warning" @click="dropdownOpen = false; $emit('show-admin')">
             <i class="bi bi-shield-lock"></i> Admin Panel
           </button>
-          <hr style="border-color:#334155;margin:.25rem 0">
+          <hr class="auto-inline-10">
           <button class="user-dropdown-btn text-danger" @click="dropdownOpen = false; $emit('logout')">
             <i class="bi bi-box-arrow-right"></i> Kijelentkezés
           </button>
@@ -132,3 +132,18 @@ onUnmounted(() => {
   document.removeEventListener('click', handleClickOutside);
 });
 </script>
+
+
+<style scoped>
+.auto-inline-1 { z-index: 1060;; }
+.auto-inline-2 { cursor:pointer; }
+.auto-inline-3 { text-decoration: none;; }
+.auto-inline-4 { right: 50px;; }
+.auto-inline-5 { color: #e879f9;; }
+.auto-inline-6 { width:32px;height:32px;; }
+.auto-inline-7 { width:32px;height:32px;background:linear-gradient(135deg,#7c3aed,#d946ef);font-size:.75rem; }
+.auto-inline-8 { font-size:.85rem; }
+.auto-inline-9 { font-size:.7rem; }
+.auto-inline-10 { border-color:#334155;margin:.25rem 0; }
+.auto-inline-11 { font-size: 0.65rem; background: linear-gradient(90deg,#7c3aed,#d946ef); }
+</style>

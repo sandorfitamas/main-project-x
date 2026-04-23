@@ -3,19 +3,19 @@
     <div class="row g-4 justify-content-center">
       <!-- Profil Beállítások -->
       <div class="col-12 col-lg-5">
-        <div class="p-4 p-md-5 rounded-4 border border-secondary border-opacity-25 h-100" style="background:rgba(30,41,59,.5)">
+        <div class="p-4 p-md-5 rounded-4 border border-secondary border-opacity-25 h-100 auto-inline-1">
           <h3 class="text-white fw-bold mb-4 text-center">Profil beállítások</h3>
         
         <div v-if="errorMsg" class="alert alert-danger p-3 mb-4">{{ errorMsg }}</div>
-        <div v-if="successMsg" class="alert alert-success p-3 mb-4" style="background-color:rgba(22, 163, 74, 0.2); color:#4ade80; border-color:#22c55e;">
+        <div v-if="successMsg" class="alert alert-success p-3 mb-4 auto-inline-2">
           {{ successMsg }}
         </div>
 
         <form @submit.prevent="submitForm">
           <div class="mb-4 text-center">
             <div class="d-inline-block position-relative">
-              <img :src="profilePicturePreview || (currentUser?.profile_picture && currentUser.profile_picture !== 'null' ? currentUser.profile_picture : `https://ui-avatars.com/api/?name=${encodeURIComponent(currentUser?.name || 'User')}&background=8b5cf6&color=fff&size=150`)" alt="Profilkép" class="rounded-circle object-fit-cover shadow" style="width: 120px; height: 120px; border: 3px solid #8b5cf6;">
-              <label for="profilePicInput" class="position-absolute bottom-0 end-0 bg-primary text-white rounded-circle p-2 cursor-pointer shadow-sm" style="cursor: pointer; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center;">
+              <img :src="profilePicturePreview || (currentUser?.profile_picture && currentUser.profile_picture !== 'null' ? currentUser.profile_picture : `https://ui-avatars.com/api/?name=${encodeURIComponent(currentUser?.name || 'User')}&background=8b5cf6&color=fff&size=150`)" alt="Profilkép" class="rounded-circle object-fit-cover shadow auto-inline-3">
+              <label for="profilePicInput" class="position-absolute bottom-0 end-0 bg-primary text-white rounded-circle p-2 cursor-pointer shadow-sm auto-inline-4">
                 <i class="bi bi-camera-fill"></i>
               </label>
               <input type="file" id="profilePicInput" class="d-none" accept="image/*" @change="handleFileChange">
@@ -24,7 +24,7 @@
 
           <div class="mb-4">
             <label class="form-label text-secondary mb-1">Email cím (nem módosítható)</label>
-            <input v-model="form.email" type="email" class="form-control form-dark px-3 py-2" style="background-color:#0f172a !important; color:#94a3b8 !important; cursor:not-allowed;" disabled />
+            <input v-model="form.email" type="email" class="form-control form-dark px-3 py-2 auto-inline-5" disabled />
           </div>
           
           <div class="mb-4">
@@ -46,7 +46,7 @@
       </div>
       <!-- Saját Jegyek -->
       <div class="col-12 col-lg-7">
-        <div class="p-4 p-md-5 rounded-4 border border-secondary border-opacity-25 h-100" style="background:rgba(30,41,59,.5)">
+        <div class="p-4 p-md-5 rounded-4 border border-secondary border-opacity-25 h-100 auto-inline-1">
           <h3 class="text-white fw-bold mb-4 text-center">Saját Jegyek</h3>
           <div v-if="loadingTickets" class="text-center text-secondary py-4">
             <div class="spinner-border text-primary" role="status"></div>
@@ -58,12 +58,12 @@
             <button class="btn btn-outline-light mt-3" @click="$router.push('/home')">Események böngészése</button>
           </div>
           <div v-else class="d-flex flex-column gap-3">
-            <div v-for="purchase in groupedPurchases" :key="purchase.key" class="rounded-3 overflow-hidden" style="background:rgba(15,23,42,.6);border:1px solid rgba(71,85,105,.5)">
+            <div v-for="purchase in groupedPurchases" :key="purchase.key" class="rounded-3 overflow-hidden auto-inline-6">
               
               <!-- VÁSÁRLÁS FEJLÉC (kattintható) -->
               <div 
-                class="d-flex justify-content-between align-items-center p-3" 
-                style="cursor: pointer; transition: background 0.2s;"
+                class="d-flex justify-content-between align-items-center p-3 auto-inline-7" 
+               
                 @click="togglePurchase(purchase.key)"
                 :style="expandedPurchases[purchase.key] ? 'background:rgba(255,255,255,0.05)' : ''"
               >
@@ -82,13 +82,13 @@
               </div>
 
               <!-- JELEN VÁSÁRLÁS JEGYEI (csak lenyitva látszanak) -->
-              <div v-if="expandedPurchases[purchase.key]" class="p-3 border-top" style="border-color: rgba(71,85,105,.5) !important;">
+              <div v-if="expandedPurchases[purchase.key]" class="p-3 border-top auto-inline-8">
                 <div class="row g-3">
                   <div v-for="ticket in purchase.tickets" :key="ticket.id" class="col-12">
-                    <div class="p-3 rounded-3 d-flex flex-column flex-sm-row gap-3 align-items-sm-center" style="background:rgba(30,41,59,0.8); border:1px solid rgba(255,255,255,0.05);">
+                    <div class="p-3 rounded-3 d-flex flex-column flex-sm-row gap-3 align-items-sm-center auto-inline-9">
                       
                       <!-- QR kód -->
-                      <div class="bg-white p-1 rounded d-flex align-items-center justify-content-center mx-auto mx-sm-0" style="width: 80px; height: 80px; flex-shrink: 0;">
+                      <div class="bg-white p-1 rounded d-flex align-items-center justify-content-center mx-auto mx-sm-0 auto-inline-10">
                         <img :src="`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${ticket.ticket_code}`" alt="QR Kód" class="w-100 h-100 object-fit-contain">
                       </div>
                       
@@ -106,7 +106,7 @@
                           </div>
                         </div>
                         <div class="mt-2 small text-secondary">
-                          Vonalkód: <strong class="text-white user-select-all fs-6" style="letter-spacing: 1px;">{{ ticket.ticket_code }}</strong>
+                          Vonalkód: <strong class="text-white user-select-all fs-6 auto-inline-11">{{ ticket.ticket_code }}</strong>
                         </div>
                       </div>
                       
@@ -302,3 +302,17 @@ async function submitForm() {
   }
 }
 </script>
+
+<style scoped>
+.auto-inline-1 { background:rgba(30,41,59,.5); }
+.auto-inline-2 { background-color:rgba(22, 163, 74, 0.2); color:#4ade80; border-color:#22c55e;; }
+.auto-inline-3 { width: 120px; height: 120px; border: 3px solid #8b5cf6;; }
+.auto-inline-4 { cursor: pointer; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center;; }
+.auto-inline-5 { background-color:#0f172a !important; color:#94a3b8 !important; cursor:not-allowed;; }
+.auto-inline-6 { background:rgba(15,23,42,.6);border:1px solid rgba(71,85,105,.5); }
+.auto-inline-7 { cursor: pointer; transition: background 0.2s;; }
+.auto-inline-8 { border-color: rgba(71,85,105,.5) !important;; }
+.auto-inline-9 { background:rgba(30,41,59,0.8); border:1px solid rgba(255,255,255,0.05);; }
+.auto-inline-10 { width: 80px; height: 80px; flex-shrink: 0;; }
+.auto-inline-11 { letter-spacing: 1px;; }
+</style>

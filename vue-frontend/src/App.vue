@@ -61,7 +61,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, provide } from 'vue';
+import { ref, computed, onMounted, provide, watch } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import NavBar from './components/NavBar.vue';
 import FooterBar from './components/FooterBar.vue';
@@ -106,6 +106,9 @@ const detailEvent = ref(null);
  * Kilistázza és betölti az összes eseményt mielőtt a kezdőlapra váltana.
  */
 async function navigateSection(sectionName) {
+  showCreateModal.value = false;
+  showEditModal.value = false;
+
   if (sectionName === 'home' || !sectionName) {
     await loadAllEvents();
     router.push('/home');
@@ -205,6 +208,14 @@ onMounted(async () => {
   }
   await loadAllEvents();
 });
+
+watch(
+  () => route.fullPath,
+  () => {
+    showCreateModal.value = false;
+    showEditModal.value = false;
+  }
+);
 </script>
 
 <style>

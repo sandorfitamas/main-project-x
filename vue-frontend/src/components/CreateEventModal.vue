@@ -1,10 +1,10 @@
 <template>
   <Teleport to="body">
     <div class="modal fade modal-dark" :class="{ show: visible }" :style="{ display: visible ? 'block' : 'none', overflowY: 'hidden !important' }" tabindex="-1" @click.self="close">
-      <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable" style="max-height: 85vh;">
-        <div class="modal-content" style="background:#0f172a;border:1px solid #334155;color:#e2e8f0;border-radius:16px; max-height: 80vh;">
+      <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable auto-inline-1">
+        <div class="modal-content auto-inline-2">
           <div class="modal-header border-0 pb-0">
-            <h5 class="modal-title fw-bold" style="background:linear-gradient(90deg,#a78bfa,#e879f9);-webkit-background-clip:text;-webkit-text-fill-color:transparent">
+            <h5 class="modal-title fw-bold auto-inline-3">
               Új Buli Létrehozása
             </h5>
             <button type="button" class="btn-close btn-close-white" @click="close"></button>
@@ -33,9 +33,9 @@
                 <div class="col-8 position-relative">
                   <label class="form-label text-secondary small">Város *</label>
                   <input v-model="locationData.city" type="text" class="form-control form-dark custom-arrow" placeholder="pl. Budapest" required @focus="cityDropdownOpen = true" @blur="closeCityDropdown" />
-                  <ul v-if="cityDropdownOpen && filteredCities.length" class="dropdown-menu dropdown-menu-dark show position-absolute w-100 mt-1 shadow" style="max-height: 155px; overflow-y: auto; z-index: 1051; background: #1e293b; border-color: #334155;">
+                  <ul v-if="cityDropdownOpen && filteredCities.length" class="dropdown-menu dropdown-menu-dark show position-absolute w-100 mt-1 shadow auto-inline-4">
                     <li v-for="city in filteredCities" :key="city">
-                      <a class="dropdown-item text-light" style="cursor: pointer;" @click.prevent="selectCity(city)">
+                      <a class="dropdown-item text-light auto-inline-5" @click.prevent="selectCity(city)">
                         {{ city }}
                       </a>
                     </li>
@@ -71,7 +71,7 @@
                   <label class="form-label text-secondary small">Telefonszám</label>
                   <div class="input-group">
                     <span class="input-group-text form-dark border-secondary text-secondary">+36</span>
-                    <select v-model="phoneData.prefix" class="form-select form-dark border-secondary" style="max-width: 80px;">
+                    <select v-model="phoneData.prefix" class="form-select form-dark border-secondary auto-inline-6">
                       <option value="20">20</option>
                       <option value="30">30</option>
                       <option value="70">70</option>
@@ -88,21 +88,21 @@
               </div>
               <div class="mb-3">
                 <label class="form-label text-secondary small">Leírás</label>
-                <textarea v-model="form.description" rows="3" class="form-control form-dark" style="resize: none;" placeholder="Írd le az esemény részleteit..."></textarea>
+                <textarea v-model="form.description" rows="3" class="form-control form-dark auto-inline-7" placeholder="Írd le az esemény részleteit..."></textarea>
               </div>
               <div class="mb-3">
                 <label class="form-label text-secondary small">Címkék (maximum 3 választható)</label>
                 <div class="position-relative">
-                  <div v-if="tagDropdownOpen" class="position-fixed w-100 h-100 top-0 start-0" @click="tagDropdownOpen = false" style="z-index: 1049;"></div>
-                  <div class="form-control form-dark custom-arrow d-flex flex-wrap gap-1 align-items-center" style="min-height:38px;cursor:pointer;position:relative;z-index:1050;" @click="tagDropdownOpen = !tagDropdownOpen">
+                  <div v-if="tagDropdownOpen" class="position-fixed w-100 h-100 top-0 start-0 auto-inline-8" @click="tagDropdownOpen = false"></div>
+                  <div class="form-control form-dark custom-arrow d-flex flex-wrap gap-1 align-items-center auto-inline-9" @click="tagDropdownOpen = !tagDropdownOpen">
                     <span v-if="form.tags.length === 0" class="text-secondary opacity-50">Válassz címkéket...</span>
-                    <span v-for="t in form.tags" :key="t" class="badge rounded-pill" style="background:#d946ef;font-size:0.75rem;" @click.stop="toggleTag(t)">
+                    <span v-for="t in form.tags" :key="t" class="badge rounded-pill auto-inline-10" @click.stop="toggleTag(t)">
                       {{ t }} <i class="bi bi-x-circle ms-1"></i>
                     </span>
                   </div>
-                  <ul v-if="tagDropdownOpen" class="dropdown-menu dropdown-menu-dark show position-absolute w-100 mt-1 shadow" style="max-height:150px;overflow-y:auto;z-index:1051;background:#1e293b;border-color:#334155;">
+                  <ul v-if="tagDropdownOpen" class="dropdown-menu dropdown-menu-dark show position-absolute w-100 mt-1 shadow auto-inline-11">
                     <li v-for="t in availableTags" :key="t">
-                      <a class="dropdown-item text-light d-flex justify-content-between align-items-center" style="cursor:pointer;" @click.stop="toggleTag(t)">
+                      <a class="dropdown-item text-light d-flex justify-content-between align-items-center auto-inline-12" @click.stop="toggleTag(t)">
                         {{ t }}
                         <i v-if="form.tags.includes(t)" class="bi bi-check text-success fs-5"></i>
                       </a>
@@ -112,19 +112,19 @@
               </div>
               <div class="mb-3">
                 <label class="form-label text-secondary small d-block mb-2">Esemény képe</label>
-                <label v-if="!imagePreview" class="upload-area d-flex flex-column align-items-center justify-content-center w-100 py-4" style="cursor:pointer">
+                <label v-if="!imagePreview" class="upload-area d-flex flex-column align-items-center justify-content-center w-100 py-4 auto-inline-13">
                   <div class="text-center">
                     <i class="bi bi-cloud-upload fs-2 text-secondary d-block mb-2"></i>
                     <span class="text-secondary small">Kattints a feltöltéshez</span>
-                    <span class="text-muted d-block" style="font-size:.75rem">PNG, JPG, GIF (max. 5MB)</span>
+                    <span class="text-muted d-block auto-inline-14">PNG, JPG, GIF (max. 5MB)</span>
                   </div>
                   <input type="file" accept="image/*" class="d-none" @change="onFileChange" />
                 </label>
                 <div v-else class="mt-2 position-relative rounded-3 overflow-hidden border border-secondary">
-                  <img :src="imagePreview" alt="Preview" class="w-100" style="height:180px;object-fit:cover" />
-                  <button type="button" class="btn btn-danger btn-sm position-absolute top-0 end-0 m-2 rounded-circle p-1"
-                          style="width:30px;height:30px;display:flex;align-items:center;justify-content:center" @click="removeImage">
-                    <i class="bi bi-x" style="font-size:.8rem"></i>
+                  <img :src="imagePreview" alt="Preview" class="w-100 auto-inline-15" />
+                  <button type="button" class="btn btn-danger btn-sm position-absolute top-0 end-0 m-2 rounded-circle p-1 auto-inline-16"
+                          @click="removeImage">
+                    <i class="bi bi-x auto-inline-17"></i>
                   </button>
                 </div>
               </div>
@@ -144,18 +144,24 @@
 <script setup>
 // Ár mező formázása: automatikusan ' Ft' a végére, ha csak szám van benne
 function formatPrice() {
-  if (!form.price) return;
-  if (form.price.toLowerCase() === 'ingyenes') return;
-  // Ha már tartalmazza az Ft-ot, ne tegyük hozzá újra
-  if (/\d+ ?Ft$/.test(form.price)) return;
-  // Csak számokból áll
-  const numbersOnly = form.price.replace(/\D/g, '');
-  if (numbersOnly.length > 0) {
-    form.price = numbersOnly + ' Ft';
-  }
+  form.price = formatPriceOnBlur(form.price);
 }
 import { ref, reactive, watch, inject, computed } from 'vue';
 import { useEvents } from '../stores/events.js';
+import {
+  countDigits,
+  enforceMaxDigitsWithFallback,
+  stripDigitsAndLimit,
+  normalizePriceInput,
+  formatPriceOnBlur,
+  sanitizePhoneLocalNumber,
+  formatHungarianPhone,
+  sanitizeCity,
+  sanitizeZipCode,
+  sanitizeDistrict,
+  sanitizeStreet,
+  sanitizeHouseNumber,
+} from '../utils/validators.js';
 
 const props = defineProps({ visible: Boolean });
 const emit = defineEmits(['update:visible', 'created']);
@@ -206,97 +212,44 @@ const form = reactive({
  * Ha a bevitelben \d előfordul több mint 4-szer, a régit állítjuk vissza.
  */
 watch(() => form.title, (newValue, oldValue) => {
-  if (newValue) {
-    const digitsInTitle = newValue.match(/\d/g);
-    if (digitsInTitle && digitsInTitle.length > 4) {
-      form.title = oldValue || '';
-    }
-  }
+  const validated = enforceMaxDigitsWithFallback(newValue, oldValue, 4);
+  if (validated !== newValue) form.title = validated;
 });
 
 /**
  * Leírás validáció: Max 100 karakter, és a számokat is vizsgáljuk.
  */
 watch(() => form.description, (newValue, oldValue) => {
-  if (newValue) {
-    let validatedText = newValue.length > 100 ? newValue.substring(0, 100) : newValue;
-    const digitsInDescription = validatedText.match(/\d/g);
-    if (digitsInDescription && digitsInDescription.length > 4) {
-      validatedText = oldValue || '';
-    }
-    if (validatedText !== newValue) {
-      form.description = validatedText;
-    }
-  }
+  const validated = enforceMaxDigitsWithFallback(newValue, oldValue, 4, 100);
+  if (validated !== newValue) form.description = validated;
 });
 
 /** 
  * Szervező validáció: Legyen számmentes és max 15 karakteres.
  */
 watch(() => form.organizer, (newValue) => {
-  if (newValue) {
-    let cleanOrganizer = newValue.replace(/\d/g, '');
-    if (cleanOrganizer.length > 15) {
-      cleanOrganizer = cleanOrganizer.substring(0, 15);
-    }
-    if (cleanOrganizer !== newValue) {
-      form.organizer = cleanOrganizer;
-    }
-  }
+  const cleaned = stripDigitsAndLimit(newValue, 15);
+  if (cleaned !== newValue) form.organizer = cleaned;
 });
 
 /**
  * Ár validáció: Speciális logika az "Ingyenes" kulcsszó engedésére vagy az Ft utótagra.
  */
 watch(() => form.price, (newValue, oldValue) => {
-  if (newValue) {
-    if ((newValue.toLowerCase() === 'i' || newValue.toLowerCase() === 'in') && (!oldValue || newValue.length > oldValue.length)) {
-      form.price = 'Ingyenes';
-      return;
-    }
-    if (newValue === 'Ingyenes' || 'Ingyenes'.startsWith(newValue)) {
-      return;
-    }
-    
-    if (newValue.endsWith(' Ft')) {
-      const numbersOnly = newValue.replace(/\D/g, '');
-      if (numbersOnly.length > 5) {
-        form.price = numbersOnly.substring(0, 5) + ' Ft';
-      }
-      return;
-    }
-    
-    let cleanPrice = newValue.replace(/\D/g, '');
-    if (cleanPrice.length > 5) {
-      cleanPrice = cleanPrice.substring(0, 5);
-    }
-    
-    if (cleanPrice !== newValue) {
-      form.price = cleanPrice;
-    }
-  }
+  const normalized = normalizePriceInput(newValue, oldValue, 5);
+  if (normalized !== newValue) form.price = normalized;
 });
 
 /** Telefonszám blokk kezelése */
 const phoneData = reactive({ prefix: '30', number: '' });
 
 watch(() => phoneData.number, (newValue) => {
-  if (newValue) {
-    let cleanedNumber = newValue.replace(/\D/g, '');
-    if (cleanedNumber.length > 7) cleanedNumber = cleanedNumber.substring(0, 7);
-    if (cleanedNumber !== newValue) {
-      phoneData.number = cleanedNumber;
-    }
-  }
+  const cleanedNumber = sanitizePhoneLocalNumber(newValue, 7);
+  if (cleanedNumber !== newValue) phoneData.number = cleanedNumber;
 });
 
 watch(phoneData, (newValue) => {
-  if (newValue.number && newValue.number.trim() !== '') {
-    const formattedNumber = newValue.number.trim().replace(/\s/g, '').replace(/(\d{3})(\d{0,4})/, '$1 $2').trim();
-    form.contact_phone = `+36 ${newValue.prefix} ${formattedNumber}`;
-  } else {
-    form.contact_phone = '';
-  }
+  form.contact_phone = formatHungarianPhone(newValue.prefix, newValue.number);
 }, { deep: true });
 
 /** Helyszín adatok szétbontva a pontosabb validáláshoz */
@@ -348,54 +301,26 @@ const closeCityDropdown = () => {
 
 /** Település mező validáció (tiltott számok, max 15 karakter) */
 watch(() => locationData.city, (newValue) => {
-  if (newValue) {
-    let cleanCity = newValue.replace(/\d/g, ''); 
-    if (cleanCity.length > 15) {
-      cleanCity = cleanCity.substring(0, 15); 
-    }
-    if (cleanCity !== newValue) {
-      locationData.city = cleanCity;
-    }
-  }
+  const cleanCity = sanitizeCity(newValue, 15);
+  if (cleanCity !== newValue) locationData.city = cleanCity;
 });
 
 /** Irányítószám validáció (csak szám, max 4 karakter) */
 watch(() => locationData.zipCode, (newValue) => {
-  if (newValue) {
-    let cleanZip = newValue.replace(/\D/g, ''); 
-    if (cleanZip.length > 4) {
-      cleanZip = cleanZip.substring(0, 4); 
-    }
-    if (cleanZip !== newValue) {
-      locationData.zipCode = cleanZip;
-    }
-  }
+  const cleanZip = sanitizeZipCode(newValue, 4);
+  if (cleanZip !== newValue) locationData.zipCode = cleanZip;
 });
 
 /** Kerület validáció (csak római szám I, X, V karakterekből, max 5 hossz) */
 watch(() => locationData.district, (newValue) => {
-  if (newValue) {
-    let cleanDistrict = newValue.toUpperCase().replace(/[^IXV]/g, '');
-    if (cleanDistrict.length > 5) {
-      cleanDistrict = cleanDistrict.substring(0, 5);
-    }
-    if (cleanDistrict !== newValue) {
-      locationData.district = cleanDistrict;
-    }
-  }
+  const cleanDistrict = sanitizeDistrict(newValue, 5);
+  if (cleanDistrict !== newValue) locationData.district = cleanDistrict;
 });
 
 /** Utca név validáció: Tiltott számok, max 25 karakter */
 watch(() => locationData.street, (newValue) => {
-  if (newValue) {
-    let cleanStreet = newValue.replace(/\d/g, ''); 
-    if (cleanStreet.length > 25) {
-      cleanStreet = cleanStreet.substring(0, 25);
-    }
-    if (cleanStreet !== newValue) {
-      locationData.street = cleanStreet;
-    }
-  }
+  const cleanStreet = sanitizeStreet(newValue, 25);
+  if (cleanStreet !== newValue) locationData.street = cleanStreet;
 });
 
 /** 
@@ -403,38 +328,8 @@ watch(() => locationData.street, (newValue) => {
  * Max 3 számjegy, max 1 betű és max 1 perjel, a teljes hossz max 5.
  */
 watch(() => locationData.houseNumber, (newValue) => {
-  if (newValue) {
-    let result = '';
-    let digits = 0;
-    let letters = 0;
-    let slashes = 0;
-
-    for (let i = 0; i < newValue.length; i++) {
-      const char = newValue[i];
-      if (result.length >= 5) break;
-
-      if (/[0-9]/.test(char)) {
-        if (digits < 3) {
-          result += char;
-          digits++;
-        }
-      } else if (/[a-zA-ZáéíóöőúüűÁÉÍÓÖŐÚÜŰ]/.test(char)) {
-        if (letters < 1) {
-          result += char;
-          letters++;
-        }
-      } else if (char === '/') {
-        if (slashes < 1) {
-          result += char;
-          slashes++;
-        }
-      }
-    }
-
-    if (result !== newValue) {
-      locationData.houseNumber = result;
-    }
-  }
+  const result = sanitizeHouseNumber(newValue, 5, 3, 1, 1);
+  if (result !== newValue) locationData.houseNumber = result;
 });
 
 /**
@@ -546,8 +441,7 @@ function removeImage() {
  */
 async function handleSubmit() {
   // Extra cím ellenőrzés biztonsági okokból a beküldés előtt
-  const digitsInTitle = form.title.match(/\d/g);
-  if (digitsInTitle && digitsInTitle.length > 4) {
+  if (countDigits(form.title) > 4) {
     showToast('Az esemény címében maximum 4 számjegy szerepelhet!', 'error');
     return;
   }
@@ -594,4 +488,21 @@ div.custom-arrow {
   background-size: 16px 12px !important;
   padding-right: 2.25rem !important;
 }
+.auto-inline-1 { max-height: 85vh;; }
+.auto-inline-2 { background:#0f172a;border:1px solid #334155;color:#e2e8f0;border-radius:16px; max-height: 80vh;; }
+.auto-inline-3 { background:linear-gradient(90deg,#a78bfa,#e879f9);-webkit-background-clip:text;-webkit-text-fill-color:transparent; }
+.auto-inline-4 { max-height: 155px; overflow-y: auto; z-index: 1051; background: #1e293b; border-color: #334155;; }
+.auto-inline-5 { cursor: pointer;; }
+.auto-inline-6 { max-width: 80px;; }
+.auto-inline-7 { resize: none;; }
+.auto-inline-8 { z-index: 1049;; }
+.auto-inline-9 { min-height:38px;cursor:pointer;position:relative;z-index:1050;; }
+.auto-inline-10 { background:#d946ef;font-size:0.75rem;; }
+.auto-inline-11 { max-height:150px;overflow-y:auto;z-index:1051;background:#1e293b;border-color:#334155;; }
+.auto-inline-12 { cursor:pointer;; }
+.auto-inline-13 { cursor:pointer; }
+.auto-inline-14 { font-size:.75rem; }
+.auto-inline-15 { height:180px;object-fit:cover; }
+.auto-inline-16 { width:30px;height:30px;display:flex;align-items:center;justify-content:center; }
+.auto-inline-17 { font-size:.8rem; }
 </style>

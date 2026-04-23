@@ -1,6 +1,6 @@
 <template>
   <div class="col">
-    <div class="event-card h-100" :data-event-id="event.id" @click="$emit('details', event)" style="cursor: pointer;">
+    <div class="event-card h-100 auto-inline-1" :data-event-id="event.id" @click="$emit('details', event)">
       <div class="event-card-img">
         <img :src="imgSrc" :alt="event.title || ''" loading="lazy" @error="onImgError" />
         <div class="card-img-gradient"></div>
@@ -16,19 +16,19 @@
       </div>
       <div class="event-card-body">
         <div class="d-flex align-items-start justify-content-between gap-2 mb-2">
-          <h5 class="text-white fw-bold mb-0 lh-sm" style="font-size:1.05rem">{{ event.title || '' }}</h5>
+          <h5 class="text-white fw-bold mb-0 lh-sm auto-inline-2">{{ event.title || '' }}</h5>
           <div v-if="rating > 0" class="d-flex align-items-center text-warning fs-6 gap-1 flex-shrink-0">
             <div class="d-flex">
-              <i v-for="i in 5" :key="i" class="bi" :class="getStarClass(i, rating)" style="font-size: 0.8rem"></i>
+              <i v-for="i in 5" :key="i" class="bi auto-inline-3" :class="getStarClass(i, rating)"></i>
             </div>
             <span class="small fw-bold">{{ rating.toFixed(1) }}</span>
           </div>
         </div>
-        <div class="d-flex align-items-center gap-1 text-secondary mb-1" style="font-size:.8rem">
-          <i class="bi bi-geo-alt-fill" style="color:#d946ef"></i>
+        <div class="d-flex align-items-center gap-1 text-secondary mb-1 auto-inline-4">
+          <i class="bi bi-geo-alt-fill auto-inline-5"></i>
           <span>{{ event.location || '' }}</span>
         </div>
-        <div class="d-flex align-items-center gap-3 text-secondary mb-3" style="font-size:.8rem">
+        <div class="d-flex align-items-center gap-3 text-secondary mb-3 auto-inline-4">
           <span><i class="bi bi-calendar3 me-1"></i>{{ formattedDate }}</span>
           <span><i class="bi bi-clock me-1"></i>{{ formattedTime }}</span>
         </div>
@@ -41,8 +41,8 @@
           </button>
           <button
             v-if="isMine"
-            class="btn btn-sm btn-outline-light ms-auto"
-            style="font-size:.75rem;padding:3px 10px"
+            class="btn btn-sm btn-outline-light ms-auto auto-inline-6"
+           
             @click.stop="$emit('edit', event)"
           >
             <i class="bi bi-pencil me-1"></i>Szerkesztés
@@ -154,3 +154,13 @@ async function onFavoriteClick() {
   }
 }
 </script>
+
+
+<style scoped>
+.auto-inline-1 { cursor: pointer;; }
+.auto-inline-2 { font-size:1.05rem; }
+.auto-inline-3 { font-size: 0.8rem; }
+.auto-inline-4 { font-size:.8rem; }
+.auto-inline-5 { color:#d946ef; }
+.auto-inline-6 { font-size:.75rem;padding:3px 10px; }
+</style>

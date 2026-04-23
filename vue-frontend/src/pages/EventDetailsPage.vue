@@ -1,12 +1,12 @@
 <template>
   <div>
-    <div v-if="loading" class="flex-grow-1 d-flex align-items-center justify-content-center" style="min-height:60vh">
+    <div v-if="loading" class="flex-grow-1 d-flex align-items-center justify-content-center auto-inline-1">
       <div class="text-center">
-        <div class="spinner-border mb-3" style="color:#d946ef;width:3rem;height:3rem" role="status"></div>
+        <div class="spinner-border mb-3 auto-inline-2" role="status"></div>
         <p class="text-secondary">Betöltés...</p>
       </div>
     </div>
-    <div v-else-if="error" class="flex-grow-1 d-flex align-items-center justify-content-center" style="min-height:60vh">
+    <div v-else-if="error" class="flex-grow-1 d-flex align-items-center justify-content-center auto-inline-1">
       <div class="text-center">
         <i class="bi bi-exclamation-triangle display-3 text-secondary d-block mb-3"></i>
         <h4 class="text-white mb-2">Esemény nem található</h4>
@@ -17,28 +17,28 @@
     <main v-else class="flex-grow-1 container-xl px-3 px-md-4 py-5">
       <div class="row g-5">
         <div class="col-lg-7">
-          <div class="position-relative rounded-4 overflow-hidden border border-secondary mb-4" style="max-height:450px">
-            <img :src="eventDetails.imageUrl || placeholder" :alt="eventDetails.title" class="w-100" style="object-fit:cover;max-height:450px" />
+          <div class="position-relative rounded-4 overflow-hidden border border-secondary mb-4 auto-inline-3">
+            <img :src="eventDetails.imageUrl || placeholder" :alt="eventDetails.title" class="w-100 auto-inline-4" />
             <span class="position-absolute top-0 end-0 m-3 badge badge-cat px-3 py-2">{{ eventDetails.category || 'Egyéb' }}</span>
           </div>
-          <div class="p-4 rounded-4 border border-secondary border-opacity-25 mb-4" style="background:rgba(30,41,59,.5)">
-            <h5 class="text-white fw-bold mb-3"><i class="bi bi-file-text me-2" style="color:#d946ef"></i>Leírás</h5>
+          <div class="p-4 rounded-4 border border-secondary border-opacity-25 mb-4 auto-inline-5">
+            <h5 class="text-white fw-bold mb-3"><i class="bi bi-file-text me-2 auto-inline-6"></i>Leírás</h5>
             <p class="text-light lh-lg mb-0">{{ eventDetails.description || 'Nincs leírás.' }}</p>
           </div>
           <div v-if="tags.length" class="mb-4">
-            <h6 class="text-secondary mb-2"><i class="bi bi-tags me-1" style="color:#d946ef"></i>Címkék</h6>
+            <h6 class="text-secondary mb-2"><i class="bi bi-tags me-1 auto-inline-6"></i>Címkék</h6>
             <div class="d-flex flex-wrap gap-2"><span v-for="t in tags" :key="t" class="tag-pill">{{ t }}</span></div>
           </div>
 
           <div class="mt-5 border-top border-secondary pt-4">
             <h5 class="text-white fw-bold mb-4"><i class="bi bi-star me-2 text-warning"></i>Vélemények</h5>
 
-            <div v-if="currentUser && !isOwnEvent && !hasReviewed" class="p-4 rounded-4 border border-secondary border-opacity-25 mb-4" style="background:rgba(30,41,59,.5)">
-              <h6 class="text-white mb-3 fw-bold"><i class="bi bi-pencil-square me-2" style="color:#d946ef"></i>Írj értékelést</h6>
+            <div v-if="currentUser && !isOwnEvent && !hasReviewed" class="p-4 rounded-4 border border-secondary border-opacity-25 mb-4 auto-inline-5">
+              <h6 class="text-white mb-3 fw-bold"><i class="bi bi-pencil-square me-2 auto-inline-6"></i>Írj értékelést</h6>
               <div class="mb-3 d-flex gap-2">
                 <i v-for="i in 5" :key="i" class="bi fs-4 cursor-pointer" :class="reviewRating >= i ? 'bi-star-fill text-warning' : 'bi-star text-secondary opacity-50'" @click="reviewRating = i"></i>
               </div>
-                <textarea v-model="reviewComment" class="form-control review-textarea text-white border-secondary border-opacity-25 mb-4 p-3 shadow-none" style="background:rgba(15,23,42,.6); border-radius: 0.75rem; resize: none;" rows="3" placeholder="Oszd meg a tapasztalataidat..."></textarea>
+                <textarea v-model="reviewComment" class="form-control review-textarea text-white border-secondary border-opacity-25 mb-4 p-3 shadow-none auto-inline-7" rows="3" placeholder="Oszd meg a tapasztalataidat..."></textarea>
               <div class="d-flex justify-content-end">
                 <button class="btn btn-gradient px-4 py-2 fw-semibold rounded-pill" @click="submitReview" :disabled="!reviewRating || !reviewComment.trim() || isSubmittingReview">
                   <i class="bi bi-send me-2"></i>{{ isSubmittingReview ? 'Küldés...' : 'Értékelés beküldése' }}
@@ -46,7 +46,7 @@
               </div>
             </div>
             
-            <div v-else-if="currentUser && !isOwnEvent && hasReviewed" class="p-4 rounded-4 border border-secondary border-opacity-25 mb-4 text-center text-light" style="background:rgba(30,41,59,.5)">
+            <div v-else-if="currentUser && !isOwnEvent && hasReviewed" class="p-4 rounded-4 border border-secondary border-opacity-25 mb-4 text-center text-light auto-inline-5">
               <i class="bi bi-check-circle text-success fs-1 mb-2 d-block"></i>
               <p class="mb-0">Már értékelted ezt a helyszínt. Köszönjük a visszajelzést!</p>
             </div>
@@ -56,7 +56,7 @@
               Még nincsenek értékelések.
             </div>
             <div v-else class="d-flex flex-column gap-3">
-              <div v-for="r in reviews" :key="r.id" class="p-3 rounded-3 border border-secondary border-opacity-25" style="background:rgba(30,41,59,.3)">
+              <div v-for="r in reviews" :key="r.id" class="p-3 rounded-3 border border-secondary border-opacity-25 auto-inline-8">
                 <div class="d-flex justify-content-between mb-2">
                   <span class="text-white fw-bold">{{ r.user?.name || 'Ismeretlen' }}</span>
                   <div class="text-warning">
@@ -70,7 +70,7 @@
           </div>
         </div>
         <div class="col-lg-5">
-          <div class="sticky-top" style="top:5rem">
+          <div class="sticky-top auto-inline-9">
             <div class="d-flex align-items-start justify-content-between gap-2 mb-3">
               <h1 class="h2 text-white fw-bold mb-0">{{ eventDetails.title }}</h1>
               <div v-if="ratingNum > 0" class="text-warning fw-bold white-space-nowrap d-flex align-items-center gap-1">
@@ -80,21 +80,21 @@
                 <span class="ms-1 pt-1">{{ ratingNum.toFixed(1) }}</span>
               </div>
             </div>
-            <p class="text-secondary mb-4"><i class="bi bi-person me-1" style="color:#d946ef"></i>Szervező: <span class="text-white fw-semibold">{{ eventDetails.organizer || 'Ismeretlen' }}</span></p>
+            <p class="text-secondary mb-4"><i class="bi bi-person me-1 auto-inline-6"></i>Szervező: <span class="text-white fw-semibold">{{ eventDetails.organizer || 'Ismeretlen' }}</span></p>
             <div class="d-flex flex-column gap-3 mb-4">
-              <div class="d-flex align-items-center gap-3 p-3 rounded-3" style="background:rgba(124,58,237,.15);border:1px solid rgba(124,58,237,.3)"><i class="bi bi-calendar3 fs-5 flex-shrink-0" style="color:#a78bfa"></i><div><div class="text-light opacity-75 small">Dátum</div><div class="text-white fw-bold fs-5">{{ formattedDate }}</div></div></div>
-              <div class="d-flex align-items-center gap-3 p-3 rounded-3" style="background:rgba(217,70,239,.15);border:1px solid rgba(217,70,239,.3)"><i class="bi bi-clock fs-5 flex-shrink-0" style="color:#e879f9"></i><div><div class="text-light opacity-75 small">Időpont</div><div class="text-white fw-bold fs-5">{{ formattedTime }}</div></div></div>
-              <div class="d-flex align-items-center gap-3 p-3 rounded-3" style="background:rgba(236,72,153,.15);border:1px solid rgba(236,72,153,.3)"><i class="bi bi-geo-alt fs-5 flex-shrink-0" style="color:#f9a8d4"></i><div><div class="text-light opacity-75 small">Helyszín</div><div class="text-white fw-bold fs-5">{{ eventDetails.location || 'Helyszín TBD' }}</div></div></div>
-              <div class="d-flex align-items-center gap-3 p-3 rounded-3" style="background:rgba(16,185,129,.15);border:1px solid rgba(16,185,129,.3)"><i class="bi bi-ticket-perforated fs-5 flex-shrink-0" style="color:#6ee7b7"></i><div><div class="text-light opacity-75 small">Belépő</div><div class="text-white fw-bold fs-5">{{ eventDetails.price || 'Ingyenes' }}</div></div></div>
-              <div v-if="eventDetails.contact_phone" class="d-flex align-items-center gap-3 p-3 rounded-3" style="background:rgba(6,182,212,.15);border:1px solid rgba(6,182,212,.3)"><i class="bi bi-telephone fs-5 flex-shrink-0" style="color:#67e8f9"></i><div><div class="text-light opacity-75 small">Kapcsolat</div><div class="text-white fw-bold fs-5">{{ eventDetails.contact_phone }}</div></div></div>
+              <div class="d-flex align-items-center gap-3 p-3 rounded-3 auto-inline-10"><i class="bi bi-calendar3 fs-5 flex-shrink-0 auto-inline-11"></i><div><div class="text-light opacity-75 small">Dátum</div><div class="text-white fw-bold fs-5">{{ formattedDate }}</div></div></div>
+              <div class="d-flex align-items-center gap-3 p-3 rounded-3 auto-inline-12"><i class="bi bi-clock fs-5 flex-shrink-0 auto-inline-13"></i><div><div class="text-light opacity-75 small">Időpont</div><div class="text-white fw-bold fs-5">{{ formattedTime }}</div></div></div>
+              <div class="d-flex align-items-center gap-3 p-3 rounded-3 auto-inline-14"><i class="bi bi-geo-alt fs-5 flex-shrink-0 auto-inline-15"></i><div><div class="text-light opacity-75 small">Helyszín</div><div class="text-white fw-bold fs-5">{{ eventDetails.location || 'Helyszín TBD' }}</div></div></div>
+              <div class="d-flex align-items-center gap-3 p-3 rounded-3 auto-inline-16"><i class="bi bi-ticket-perforated fs-5 flex-shrink-0 auto-inline-17"></i><div><div class="text-light opacity-75 small">Belépő</div><div class="text-white fw-bold fs-5">{{ eventDetails.price || 'Ingyenes' }}</div></div></div>
+              <div v-if="eventDetails.contact_phone" class="d-flex align-items-center gap-3 p-3 rounded-3 auto-inline-18"><i class="bi bi-telephone fs-5 flex-shrink-0 auto-inline-19"></i><div><div class="text-light opacity-75 small">Kapcsolat</div><div class="text-white fw-bold fs-5">{{ eventDetails.contact_phone }}</div></div></div>
             </div>
               <button class="btn btn-gradient w-100 py-3 fw-semibold" @click="shareEvent"><i class="bi bi-share me-2"></i> Esemény Megosztása</button>
               
               <div v-if="currentUser && !isOwnEvent" class="d-flex align-items-center gap-3 mt-3">
-                <div class="input-group flex-nowrap shadow-sm" style="width: 140px;">
-                  <button class="btn text-white ps-3 border-0" style="background: rgba(255,255,255,0.1);" type="button" @click="ticketQty > 1 ? ticketQty-- : null" :disabled="ticketQty <= 1"><i class="bi bi-dash-lg"></i></button>
-                  <input type="text" class="form-control text-center text-white border-0 fw-bold px-0 fs-5" style="background: rgba(255,255,255,0.05);" :value="ticketQty" readonly>
-                  <button class="btn text-white pe-3 border-0" style="background: rgba(255,255,255,0.1);" type="button" @click="ticketQty < 10 ? ticketQty++ : null" :disabled="ticketQty >= 10"><i class="bi bi-plus-lg"></i></button>
+                <div class="input-group flex-nowrap shadow-sm auto-inline-20">
+                  <button class="btn text-white ps-3 border-0 auto-inline-21" type="button" @click="ticketQty > 1 ? ticketQty-- : null" :disabled="ticketQty <= 1"><i class="bi bi-dash-lg"></i></button>
+                  <input type="text" class="form-control text-center text-white border-0 fw-bold px-0 fs-5 auto-inline-22" :value="ticketQty" readonly>
+                  <button class="btn text-white pe-3 border-0 auto-inline-21" type="button" @click="ticketQty < 10 ? ticketQty++ : null" :disabled="ticketQty >= 10"><i class="bi bi-plus-lg"></i></button>
                 </div>
                 <button class="btn btn-warning flex-grow-1 py-3 fw-bold text-dark shadow-sm fs-5 rounded-3 d-flex justify-content-center align-items-center gap-2" @click="handleAddToCart">
                   <i class="bi bi-bag-plus-fill"></i> Kosárba
@@ -126,6 +126,7 @@ import {
 } from '../services/api.js';
 import { useAuth } from '../stores/auth.js';
 import { useCart } from '../stores/cart.js';
+import { enforceMaxDigitsWithFallback } from '../utils/validators.js';
 
 const route = useRoute();
 const showToast = inject('showToast');
@@ -151,21 +152,7 @@ const isSubmittingReview = ref(false);
  */
 watch(reviewComment, (newValue, oldValue) => {
   if (!newValue) return;
-  
-  let validValue = newValue;
-  
-  // Maximum hossz korlátozás
-  if (validValue.length > 50) {
-    validValue = validValue.substring(0, 50);
-  }
-  
-  // Maximum számjegy korlátozás
-  const digitMatches = validValue.match(/\d/g);
-  if (digitMatches && digitMatches.length > 2) {
-    validValue = oldValue || '';
-  }
-  
-  // Ha változott az ellenőrzések során, frissítjük az értéket
+  const validValue = enforceMaxDigitsWithFallback(newValue, oldValue, 2, 50);
   if (validValue !== newValue) {
     reviewComment.value = validValue;
   }
@@ -387,6 +374,28 @@ onMounted(async () => {
 .review-textarea::placeholder {
   color: rgba(255, 255, 255, 0.6) !important;
 }
+.auto-inline-1 { min-height:60vh; }
+.auto-inline-2 { color:#d946ef;width:3rem;height:3rem; }
+.auto-inline-3 { max-height:450px; }
+.auto-inline-4 { object-fit:cover;max-height:450px; }
+.auto-inline-5 { background:rgba(30,41,59,.5); }
+.auto-inline-6 { color:#d946ef; }
+.auto-inline-7 { background:rgba(15,23,42,.6); border-radius: 0.75rem; resize: none;; }
+.auto-inline-8 { background:rgba(30,41,59,.3); }
+.auto-inline-9 { top:5rem; }
+.auto-inline-10 { background:rgba(124,58,237,.15);border:1px solid rgba(124,58,237,.3); }
+.auto-inline-11 { color:#a78bfa; }
+.auto-inline-12 { background:rgba(217,70,239,.15);border:1px solid rgba(217,70,239,.3); }
+.auto-inline-13 { color:#e879f9; }
+.auto-inline-14 { background:rgba(236,72,153,.15);border:1px solid rgba(236,72,153,.3); }
+.auto-inline-15 { color:#f9a8d4; }
+.auto-inline-16 { background:rgba(16,185,129,.15);border:1px solid rgba(16,185,129,.3); }
+.auto-inline-17 { color:#6ee7b7; }
+.auto-inline-18 { background:rgba(6,182,212,.15);border:1px solid rgba(6,182,212,.3); }
+.auto-inline-19 { color:#67e8f9; }
+.auto-inline-20 { width: 140px;; }
+.auto-inline-21 { background: rgba(255,255,255,0.1);; }
+.auto-inline-22 { background: rgba(255,255,255,0.05);; }
 </style>
 
 

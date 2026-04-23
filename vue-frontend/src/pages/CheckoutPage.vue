@@ -2,42 +2,42 @@
   <div class="container py-5 mt-5">
     <div class="row g-4">
       <div class="col-lg-8">
-        <h3 class="mb-4 fw-bold text-white"><i class="bi bi-shield-lock me-2" style="color:#d946ef;"></i>Fizetés és Megrendelés</h3>
+        <h3 class="mb-4 fw-bold text-white"><i class="bi bi-shield-lock me-2 auto-inline-1"></i>Fizetés és Megrendelés</h3>
         
-        <div class="card border-0 shadow-lg rounded-4 p-4 mb-4" style="background: rgba(30,41,59,0.6); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.05) !important;">
+        <div class="card border-0 shadow-lg rounded-4 p-4 mb-4 auto-inline-2">
           <h5 class="fw-bold mb-3 text-white">Fizetési Mód</h5>
           <div class="row g-3">
             <div class="col-md-6">
-              <label class="payment-method-card w-100 p-3 rounded-3" :class="{'active': checkoutForm.paymentMethod === 'card'}" style="cursor: pointer; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.05);">
+              <label class="payment-method-card w-100 p-3 rounded-3 auto-inline-3" :class="{'active': checkoutForm.paymentMethod === 'card'}">
                 <div class="d-flex align-items-center gap-3">
-                  <input type="radio" v-model="checkoutForm.paymentMethod" value="card" class="form-check-input mt-0" style="width: 20px; height: 20px;">
+                  <input type="radio" v-model="checkoutForm.paymentMethod" value="card" class="form-check-input mt-0 auto-inline-4">
                   <i class="bi bi-credit-card-fill fs-4 text-primary"></i>
                   <span class="text-white fw-bold">Bankkártya</span>
                 </div>
               </label>
             </div>
             <div class="col-md-6">
-              <label class="payment-method-card w-100 p-3 rounded-3" :class="{'active': checkoutForm.paymentMethod === 'apple'}" style="cursor: pointer; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.05);">
+              <label class="payment-method-card w-100 p-3 rounded-3 auto-inline-3" :class="{'active': checkoutForm.paymentMethod === 'apple'}">
                 <div class="d-flex align-items-center gap-3">
-                  <input type="radio" v-model="checkoutForm.paymentMethod" value="apple" class="form-check-input mt-0" style="width: 20px; height: 20px;">
+                  <input type="radio" v-model="checkoutForm.paymentMethod" value="apple" class="form-check-input mt-0 auto-inline-4">
                   <i class="bi bi-apple fs-4 text-light"></i>
                   <span class="text-white fw-bold">Apple Pay</span>
                 </div>
               </label>
             </div>
             <div class="col-md-6">
-              <label class="payment-method-card w-100 p-3 rounded-3" :class="{'active': checkoutForm.paymentMethod === 'google'}" style="cursor: pointer; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.05);">
+              <label class="payment-method-card w-100 p-3 rounded-3 auto-inline-3" :class="{'active': checkoutForm.paymentMethod === 'google'}">
                 <div class="d-flex align-items-center gap-3">
-                  <input type="radio" v-model="checkoutForm.paymentMethod" value="google" class="form-check-input mt-0" style="width: 20px; height: 20px;">
+                  <input type="radio" v-model="checkoutForm.paymentMethod" value="google" class="form-check-input mt-0 auto-inline-4">
                   <i class="bi bi-google fs-4 text-success"></i>
                   <span class="text-white fw-bold">Google Pay</span>
                 </div>
               </label>
             </div>
             <div class="col-md-6">
-              <label class="payment-method-card w-100 p-3 rounded-3" :class="{'active': checkoutForm.paymentMethod === 'paypal'}" style="cursor: pointer; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.05);">
+              <label class="payment-method-card w-100 p-3 rounded-3 auto-inline-3" :class="{'active': checkoutForm.paymentMethod === 'paypal'}">
                 <div class="d-flex align-items-center gap-3">
-                  <input type="radio" v-model="checkoutForm.paymentMethod" value="paypal" class="form-check-input mt-0" style="width: 20px; height: 20px;">
+                  <input type="radio" v-model="checkoutForm.paymentMethod" value="paypal" class="form-check-input mt-0 auto-inline-4">
                   <i class="bi bi-paypal fs-4 text-info"></i>
                   <span class="text-white fw-bold">PayPal</span>
                 </div>
@@ -46,75 +46,75 @@
           </div>
 
           <!-- Kártya adatok (csak ha kártyás fizetés van kiválasztva) -->
-          <div v-if="checkoutForm.paymentMethod === 'card'" class="row g-3 mt-3 pt-3 border-top" style="border-color: rgba(255,255,255,0.1) !important;">
+          <div v-if="checkoutForm.paymentMethod === 'card'" class="row g-3 mt-3 pt-3 border-top auto-inline-5">
             <h6 class="text-white-50 mb-2">Bankkártya adatok</h6>
             <div class="col-12">
               <label class="form-label text-light small">A kártyatulajdonos teljes neve *</label>
-              <input type="text" class="form-control text-white bg-transparent py-2" style="border-color: rgba(255,255,255,0.2) !important;" v-model="checkoutForm.cardName" required placeholder="Pl.: Teszt Elek" maxlength="25" @input="checkoutForm.cardName = checkoutForm.cardName.replace(/[^a-zA-ZáéíóöőúüűÁÉÍÓÖŐÚÜŰ\s\-]/g, '')">
+              <input type="text" class="form-control text-white bg-transparent py-2 auto-inline-6" v-model="checkoutForm.cardName" required placeholder="Pl.: Teszt Elek" maxlength="25" @input="onCardNameInput">
             </div>
             <div class="col-12">
               <label class="form-label text-light small">Bankkártya szám *</label>
-              <input type="text" class="form-control text-white bg-transparent py-2" style="border-color: rgba(255,255,255,0.2) !important;" v-model="checkoutForm.cardNumber" required placeholder="0000 0000 0000 0000" maxlength="19" @input="checkoutForm.cardNumber = checkoutForm.cardNumber.replace(/\D/g, '').substring(0, 16).replace(/(\d{4})(?=\d)/g, '$1 ')">
+              <input type="text" class="form-control text-white bg-transparent py-2 auto-inline-6" v-model="checkoutForm.cardNumber" required placeholder="0000 0000 0000 0000" maxlength="19" @input="checkoutForm.cardNumber = checkoutForm.cardNumber.replace(/\D/g, '').substring(0, 16).replace(/(\d{4})(?=\d)/g, '$1 ')">
             </div>
             <div class="col-6">
               <label class="form-label text-light small">Kártya lejárati dátuma *</label>
-              <input type="text" class="form-control text-white bg-transparent py-2" style="border-color: rgba(255,255,255,0.2) !important;" v-model="checkoutForm.cardExpiry" required placeholder="HH/ÉÉ" maxlength="5" @input="checkoutForm.cardExpiry = checkoutForm.cardExpiry.replace(/\D/g, '').replace(/^(\d{2})(\d)/, '$1/$2').substring(0, 5)">
+              <input type="text" class="form-control text-white bg-transparent py-2 auto-inline-6" v-model="checkoutForm.cardExpiry" required placeholder="HH/ÉÉ" maxlength="5" @input="checkoutForm.cardExpiry = checkoutForm.cardExpiry.replace(/\D/g, '').replace(/^(\d{2})(\d)/, '$1/$2').substring(0, 5)">
             </div>
             <div class="col-6">
               <label class="form-label text-light small">CVV *</label>
-              <input type="password" class="form-control text-white bg-transparent py-2" style="border-color: rgba(255,255,255,0.2) !important; letter-spacing: 2px;" v-model="checkoutForm.cardCvv" required placeholder="***" maxlength="3" @input="checkoutForm.cardCvv = checkoutForm.cardCvv.replace(/\D/g, '').substring(0, 3)">
+              <input type="password" class="form-control text-white bg-transparent py-2 auto-inline-7" v-model="checkoutForm.cardCvv" required placeholder="***" maxlength="3" @input="checkoutForm.cardCvv = checkoutForm.cardCvv.replace(/\D/g, '').substring(0, 3)">
             </div>
           </div>
         </div>
 
         <form @submit.prevent="processCheckout">
-          <div class="card border-0 shadow-lg rounded-4 p-4 mb-4" style="background: rgba(30,41,59,0.6); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.05) !important;">
+          <div class="card border-0 shadow-lg rounded-4 p-4 mb-4 auto-inline-2">
             <h5 class="fw-bold mb-4 text-white">Személyes és Számlázási Adatok</h5>
             <div class="row g-4 mb-4">
               <div class="col-md-6">
                 <label class="form-label text-light small">Teljes név *</label>
-                <input type="text" class="form-control text-white bg-transparent py-2" style="border-color: rgba(255,255,255,0.2) !important;" v-model="checkoutForm.name" required placeholder="Pl.: Teszt Elek" maxlength="25" @input="checkoutForm.name = checkoutForm.name.replace(/[^a-zA-ZáéíóöőúüűÁÉÍÓÖŐÚÜŰ\s\-]/g, '')">
+                <input type="text" class="form-control text-white bg-transparent py-2 auto-inline-6" v-model="checkoutForm.name" required placeholder="Pl.: Teszt Elek" maxlength="25" @input="onNameInput">
               </div>
               <div class="col-md-6">
                 <label class="form-label text-light small">Telefonszám *</label>
                 <div class="input-group">
-                  <span class="input-group-text text-light bg-transparent py-2" style="border-color: rgba(255,255,255,0.2) !important;">+36</span>
-                  <select v-model="phoneData.prefix" class="form-select bg-transparent text-light py-2" style="max-width: 80px; border-color: rgba(255,255,255,0.2) !important;">
-                    <option value="20" style="background-color: #1e293b; color: white;">20</option>
-                    <option value="30" style="background-color: #1e293b; color: white;">30</option>
-                    <option value="70" style="background-color: #1e293b; color: white;">70</option>
+                  <span class="input-group-text text-light bg-transparent py-2 auto-inline-6">+36</span>
+                  <select v-model="phoneData.prefix" class="form-select bg-transparent text-light py-2 auto-inline-8">
+                    <option value="20" class="auto-inline-9">20</option>
+                    <option value="30" class="auto-inline-9">30</option>
+                    <option value="70" class="auto-inline-9">70</option>
                   </select>
-                  <input v-model="phoneData.number" type="tel" class="form-control text-white bg-transparent py-2" style="border-color: rgba(255,255,255,0.2) !important;" placeholder="123 4567" maxlength="7" required>
+                  <input v-model="phoneData.number" type="tel" class="form-control text-white bg-transparent py-2 auto-inline-6" placeholder="123 4567" maxlength="7" required>
                 </div>
               </div>
               <div class="col-12">
                 <label class="form-label text-light small">E-mail cím *</label>
-                <input type="email" class="form-control text-white bg-transparent py-2" style="border-color: rgba(255,255,255,0.2) !important;" v-model="checkoutForm.email" placeholder="pelda@email.com" required maxlength="30" @input="checkoutForm.email = checkoutForm.email.replace(/\d/g, (m, offset, str) => (str.substring(0, offset).match(/\d/g) || []).length < 3 ? m : '')">
+                <input type="email" class="form-control text-white bg-transparent py-2 auto-inline-6" v-model="checkoutForm.email" placeholder="pelda@email.com" required maxlength="30" @input="onEmailInput">
               </div>
             </div>
 
-            <h6 class="text-white-50 mb-3 border-top pt-4" style="border-color: rgba(255,255,255,0.1) !important;">Cím Adatok</h6>
+            <h6 class="text-white-50 mb-3 border-top pt-4 auto-inline-5">Cím Adatok</h6>
             <div class="row g-4">
               <div class="col-md-4">
                 <label class="form-label text-light small">Irányítószám *</label>
-                <input type="text" class="form-control text-white bg-transparent py-2" style="border-color: rgba(255,255,255,0.2) !important;" v-model="checkoutForm.zip" required placeholder="1234" maxlength="4" @input="checkoutForm.zip = checkoutForm.zip.replace(/\D/g, '')">
+                <input type="text" class="form-control text-white bg-transparent py-2 auto-inline-6" v-model="checkoutForm.zip" required placeholder="1234" maxlength="4" @input="onZipInput">
               </div>
               <div class="col-md-8 position-relative">
                 <label class="form-label text-light small">Település *</label>
-                <input type="text" class="form-control text-white bg-transparent py-2 custom-arrow" style="border-color: rgba(255,255,255,0.2) !important;" v-model="checkoutForm.city" placeholder="Budapest" required maxlength="15" @input="checkoutForm.city = checkoutForm.city.replace(/[^a-zA-ZáéíóöőúüűÁÉÍÓÖŐÚÜŰ\s\-]/g, '')" @focus="cityDropdownOpen = true" @blur="closeCityDropdown">
-                <ul v-if="cityDropdownOpen && filteredCities.length" class="dropdown-menu show w-100 mt-1 shadow border-0" style="max-height: 155px; overflow-y: auto; z-index: 1051; background: rgba(30,41,59,0.95); backdrop-filter: blur(10px);">
+                <input type="text" class="form-control text-white bg-transparent py-2 custom-arrow auto-inline-6" v-model="checkoutForm.city" placeholder="Budapest" required maxlength="15" @input="onCityInput" @focus="cityDropdownOpen = true" @blur="closeCityDropdown">
+                <ul v-if="cityDropdownOpen && filteredCities.length" class="dropdown-menu show w-100 mt-1 shadow border-0 auto-inline-10">
                   <li v-for="city in filteredCities" :key="city">
-                    <a class="dropdown-item text-light city-item" style="cursor: pointer;" @click.prevent="selectCity(city)">{{ city }}</a>
+                    <a class="dropdown-item text-light city-item auto-inline-11" @click.prevent="selectCity(city)">{{ city }}</a>
                   </li>
                 </ul>
               </div>
               <div class="col-md-6">
                 <label class="form-label text-light small">Utca, házszám *</label>
-                <input type="text" class="form-control text-white bg-transparent py-2" style="border-color: rgba(255,255,255,0.2) !important;" v-model="checkoutForm.address" placeholder="Kossuth Lajos u. 1." required maxlength="25" @input="checkoutForm.address = checkoutForm.address.replace(/\d/g, (m, offset, str) => (str.substring(0, offset).match(/\d/g) || []).length < 3 ? m : '')">
+                <input type="text" class="form-control text-white bg-transparent py-2 auto-inline-6" v-model="checkoutForm.address" placeholder="Kossuth Lajos u. 1." required maxlength="25" @input="onAddressInput">
               </div>
               <div class="col-md-6">
                 <label class="form-label text-light small">Egyéb (lépcsőház, emelet, ajtó, kapucsengő)</label>
-                <input type="text" class="form-control text-white bg-transparent py-2" style="border-color: rgba(255,255,255,0.2) !important;" v-model="checkoutForm.other" placeholder="2. emelet 4. ajtó" @input="checkoutForm.other = checkoutForm.other.replace(/\d/g, (m, offset, str) => (str.substring(0, offset).match(/\d/g) || []).length < 6 ? m : '')">
+                <input type="text" class="form-control text-white bg-transparent py-2 auto-inline-6" v-model="checkoutForm.other" placeholder="2. emelet 4. ajtó" @input="onOtherInput">
               </div>
             </div>
           </div>
@@ -123,14 +123,14 @@
 
       <!-- Összesítő oszlop -->
       <div class="col-lg-4">
-        <div class="card border-0 shadow-lg rounded-4 p-4 sticky-top" style="background: rgba(30,41,59,0.6); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.05) !important; top: 100px;">
+        <div class="card border-0 shadow-lg rounded-4 p-4 sticky-top auto-inline-12">
           <h5 class="fw-bold mb-4 text-white">Rendelés Összesítése</h5>
           
           <!-- Lista a tételekkel -->
           <div class="mb-4">
-            <div v-for="item in items" :key="item.event.id" class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom" style="border-color: rgba(255,255,255,0.05) !important;">
+            <div v-for="item in items" :key="item.event.id" class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom auto-inline-13">
               <div class="pe-3">
-                <div class="text-white small fw-bold text-truncate" style="max-width: 170px;">{{ item.event.title }}</div>
+                <div class="text-white small fw-bold text-truncate auto-inline-14">{{ item.event.title }}</div>
                 <div class="text-white-50 small">{{ item.quantity }} db</div>
               </div>
               <div class="text-white small fw-bold">{{ getDisplayPrice(item.event.price, item.quantity) }}</div>
@@ -141,7 +141,7 @@
             <span class="text-white-50">Összes jegy:</span>
             <span class="text-white fw-bold">{{ cartCount }} db</span>
           </div>
-          <div class="d-flex justify-content-between align-items-center pt-3 border-top mb-4" style="border-color: rgba(255,255,255,0.1) !important;">
+          <div class="d-flex justify-content-between align-items-center pt-3 border-top mb-4 auto-inline-5">
             <span class="text-white-50">Fizetendő összeg:</span>
             <span class="fw-bold text-white fs-4">{{ cartTotal.toLocaleString() }} Ft</span>
           </div>
@@ -152,7 +152,7 @@
             {{ isCheckingOut ? 'Feldolgozás...' : 'Rendelés Véglegesítése' }}
           </button>
           
-          <button class="btn btn-outline-light w-100 py-2 mt-3" style="border-color: rgba(255,255,255,0.2) !important;" @click="router.push('/cart')" :disabled="isCheckingOut">
+          <button class="btn btn-outline-light w-100 py-2 mt-3 auto-inline-6" @click="router.push('/cart')" :disabled="isCheckingOut">
             Vissza a kosárhoz
           </button>
         </div>
@@ -166,6 +166,13 @@ import { ref, reactive, inject, onMounted, computed, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { useCart } from '../stores/cart.js';
 import { apiCheckoutCart } from '../services/api.js';
+import {
+  sanitizeAlphaWithAccents,
+  sanitizePhoneLocalNumber,
+  formatHungarianPhone,
+  sanitizeZipCode,
+  limitDigitOccurrences,
+} from '../utils/validators.js';
 
 const router = useRouter();
 const showToast = inject('showToast');
@@ -206,23 +213,44 @@ const phoneData = reactive({ prefix: '30', number: '' });
 
 /** Figyeli a telefonszám bevitelt, és csak a számokat hagyja meg */
 watch(() => phoneData.number, (newValue) => {
-  if (newValue) {
-    const cleanedValue = newValue.replace(/\D/g, '');
-    if (cleanedValue !== newValue) {
-      phoneData.number = cleanedValue;
-    }
+  const cleanedValue = sanitizePhoneLocalNumber(newValue, 7);
+  if (cleanedValue !== newValue) {
+    phoneData.number = cleanedValue;
   }
 });
 
 /** Figyeli a telefonszám objektumot és összerakja a nemzetközi formátumot */
 watch(phoneData, (newValue) => {
-  if (newValue.number && newValue.number.trim() !== '') {
-    const formattedNumber = newValue.number.trim().replace(/\s/g, '').replace(/(\d{3})(\d{0,4})/, '$1 $2').trim();
-    checkoutForm.phone = `+36 ${newValue.prefix} ${formattedNumber}`;
-  } else {
-    checkoutForm.phone = '';
-  }
+  checkoutForm.phone = formatHungarianPhone(newValue.prefix, newValue.number);
 }, { deep: true });
+
+function onCardNameInput() {
+  checkoutForm.cardName = sanitizeAlphaWithAccents(checkoutForm.cardName, 25);
+}
+
+function onNameInput() {
+  checkoutForm.name = sanitizeAlphaWithAccents(checkoutForm.name, 25);
+}
+
+function onEmailInput() {
+  checkoutForm.email = limitDigitOccurrences(checkoutForm.email, 3).substring(0, 30);
+}
+
+function onZipInput() {
+  checkoutForm.zip = sanitizeZipCode(checkoutForm.zip, 4);
+}
+
+function onCityInput() {
+  checkoutForm.city = sanitizeAlphaWithAccents(checkoutForm.city, 15);
+}
+
+function onAddressInput() {
+  checkoutForm.address = limitDigitOccurrences(checkoutForm.address, 3).substring(0, 25);
+}
+
+function onOtherInput() {
+  checkoutForm.other = limitDigitOccurrences(checkoutForm.other, 6);
+}
 
 /** Keresés alapján szűri a népszerű településeket az autocomplethez */
 const filteredCities = computed(() => {
@@ -423,4 +451,18 @@ async function processCheckout() {
 .city-item:hover {
   background-color: rgba(255,255,255,0.1);
 }
+.auto-inline-1 { color:#d946ef;; }
+.auto-inline-2 { background: rgba(30,41,59,0.6); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.05) !important;; }
+.auto-inline-3 { cursor: pointer; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.05);; }
+.auto-inline-4 { width: 20px; height: 20px;; }
+.auto-inline-5 { border-color: rgba(255,255,255,0.1) !important;; }
+.auto-inline-6 { border-color: rgba(255,255,255,0.2) !important;; }
+.auto-inline-7 { border-color: rgba(255,255,255,0.2) !important; letter-spacing: 2px;; }
+.auto-inline-8 { max-width: 80px; border-color: rgba(255,255,255,0.2) !important;; }
+.auto-inline-9 { background-color: #1e293b; color: white;; }
+.auto-inline-10 { max-height: 155px; overflow-y: auto; z-index: 1051; background: rgba(30,41,59,0.95); backdrop-filter: blur(10px);; }
+.auto-inline-11 { cursor: pointer;; }
+.auto-inline-12 { background: rgba(30,41,59,0.6); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.05) !important; top: 100px;; }
+.auto-inline-13 { border-color: rgba(255,255,255,0.05) !important;; }
+.auto-inline-14 { max-width: 170px;; }
 </style>
