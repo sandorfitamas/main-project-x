@@ -101,12 +101,13 @@ class EventController extends Controller
     {
         $request->validate([
             'title'    => 'required|string|max:25',
-            'date'     => 'required|date',
+            'date'     => 'required|date|after_or_equal:today',
             'time'     => 'required',
             'location' => 'required|string|max:255',
         ], [
             'title.required'    => 'Az esemény neve kötelező',
             'date.required'     => 'A dátum megadása kötelező',
+            'date.after_or_equal' => 'A dátum nem lehet múltbeli!',
             'time.required'     => 'Az időpont megadása kötelező',
             'location.required' => 'A helyszín megadása kötelező',
         ]);
@@ -149,9 +150,15 @@ class EventController extends Controller
 
         $request->validate([
             'title'    => 'required|string|max:25',
-            'date'     => 'required|date',
+            'date'     => 'required|date|after_or_equal:today',
             'time'     => 'required',
             'location' => 'required|string|max:255',
+        ], [
+            'title.required'    => 'Az esemény neve kötelező',
+            'date.required'     => 'A dátum megadása kötelező',
+            'date.after_or_equal' => 'A dátum nem lehet múltbeli!',
+            'time.required'     => 'Az időpont megadása kötelező',
+            'location.required' => 'A helyszín megadása kötelező',
         ]);
 
         $tags = $request->input('tags', []);

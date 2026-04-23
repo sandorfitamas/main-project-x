@@ -142,6 +142,18 @@
 </template>
 
 <script setup>
+// Ár mező formázása: automatikusan ' Ft' a végére, ha csak szám van benne
+function formatPrice() {
+  if (!form.price) return;
+  if (form.price.toLowerCase() === 'ingyenes') return;
+  // Ha már tartalmazza az Ft-ot, ne tegyük hozzá újra
+  if (/\d+ ?Ft$/.test(form.price)) return;
+  // Csak számokból áll
+  const numbersOnly = form.price.replace(/\D/g, '');
+  if (numbersOnly.length > 0) {
+    form.price = numbersOnly + ' Ft';
+  }
+}
 import { ref, reactive, watch, inject, computed } from 'vue';
 import { useEvents } from '../stores/events.js';
 

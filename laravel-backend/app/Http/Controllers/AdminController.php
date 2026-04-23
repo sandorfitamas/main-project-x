@@ -161,7 +161,25 @@ class AdminController extends Controller
     public function deleteReview($id)
     {
         $review = Review::findOrFail($id);
+        $eventId = $review->event_id;
         $review->delete();
+
+        // Friss esemény lekérése a törlés után
+        $event = \App\Models\Event::find($eventId);
+        if ($event) {
+            $realAverage = $event->reviews()->avg('rating') ?: 0;
+            $baseRating = property_exists($event, 'base_rating') ? $event->base_rating : null;
+            $realCount = $event->reviews()->count();
+            if ($baseRating === null || (float)$baseRating === 0.0) {
+                $averageRating = round($realAverage, 1);
+            } else {
+                $baseWeight = 5;
+                $averageRating = (($baseRating * $baseWeight) + ($realAverage * $realCount)) / ($baseWeight + $realCount);
+                $averageRating = round($averageRating, 1);
+            }
+            $event->update(['rating' => $averageRating]);
+        }
+
         return response()->json(['success' => true]);
     }
 }

@@ -27,6 +27,14 @@ use Illuminate\Database\Eloquent\Model;
 class Event extends Model
 {
     /**
+     * Az eseményhez tartozó értékelések (review-k).
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function reviews()
+    {
+        return $this->hasMany(\App\Models\Review::class);
+    }
+    /**
      * A tömegesen kitölthető attribútumok.
      * @var array
      */
