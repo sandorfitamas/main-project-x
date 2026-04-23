@@ -2,8 +2,8 @@
 
 namespace App\Mail;
 
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Attachment;
 use Illuminate\Mail\Mailables\Content;
@@ -41,6 +41,18 @@ class TicketPurchaseMail extends Mailable
     public $user;
 
     /**
+     * Számlához csoportosított tételek.
+     * @var array<int, array<string, mixed>>
+     */
+    public $invoiceItems = [];
+
+    /**
+     * Számla végösszeg.
+     * @var float
+     */
+    public $invoiceTotal = 0.0;
+
+    /**
      * Létrehozza az email példányt.
      * @param array $tickets
      * @param array $customer
@@ -51,6 +63,7 @@ class TicketPurchaseMail extends Mailable
         $this->tickets = $tickets;
         $this->customer = $customer;
         $this->user = $user;
+        $this->prepareInvoiceItems();
     }
 
     /**
@@ -86,6 +99,80 @@ class TicketPurchaseMail extends Mailable
      */
     public function attachments(): array
     {
-        return [];
+        $invoiceFileName = 'szamla-' . now()->format('Ymd-His') . '.pdf';
+        $pdfBinary = Pdf::loadView('pdf.invoice', [
+            'invoiceNumber' => 'PX-' . now()->format('YmdHis'),
+            'issuedAt' => now(),
+            'invoiceItems' => $this->invoiceItems,
+            'invoiceTotal' => $this->invoiceTotal,
+            'buyerName' => $this->customer['name'] ?? ($this->user->name ?? '-'),
+            'buyerEmail' => $this->customer['email'] ?? ($this->user->email ?? '-'),
+            'buyerPhone' => $this->customer['phone'] ?? '-',
+            'buyerAddress' => $this->buildBuyerAddress(),
+        ])->output();
+
+        return [
+            Attachment::fromData(fn () => $pdfBinary, $invoiceFileName)
+                ->withMime('application/pdf'),
+        ];
+    }
+
+    /**
+     * Számla tételek előkészítése eseményenként csoportosítva.
+     * @return void
+     */
+    private function prepareInvoiceItems(): void
+    {
+        $groupedByEvent = [];
+
+        foreach ($this->tickets as $ticket) {
+            $eventId = $ticket->event_id ?? ($ticket->event->id ?? null);
+            if (!$eventId) {
+                continue;
+            }
+
+            if (!isset($groupedByEvent[$eventId])) {
+                $groupedByEvent[$eventId] = [
+                    'event_title' => $ticket->event->title ?? 'Ismeretlen esemény',
+                    'quantity' => 0,
+                    'unit_price' => (float) ($ticket->total_price ?? 0),
+                    'line_total' => 0.0,
+                ];
+            }
+
+            $qty = (int) ($ticket->quantity ?? 1);
+            $lineAmount = (float) ($ticket->total_price ?? 0);
+
+            $groupedByEvent[$eventId]['quantity'] += $qty;
+            $groupedByEvent[$eventId]['line_total'] += $lineAmount;
+        }
+
+        $this->invoiceItems = array_values($groupedByEvent);
+        $this->invoiceTotal = array_reduce(
+            $this->invoiceItems,
+            fn (float $carry, array $item) => $carry + (float) $item['line_total'],
+            0.0
+        );
+    }
+
+    /**
+     * Számlázási cím összeállítása checkout adatokból.
+     * @return string
+     */
+    private function buildBuyerAddress(): string
+    {
+        $zip = trim((string) ($this->customer['zip'] ?? ''));
+        $city = trim((string) ($this->customer['city'] ?? ''));
+        $address = trim((string) ($this->customer['address'] ?? ''));
+        $other = trim((string) ($this->customer['other'] ?? ''));
+
+        $mainPart = trim($zip . ' ' . $city);
+        $fullAddress = trim($mainPart . ', ' . $address, ' ,');
+
+        if ($other !== '') {
+            $fullAddress .= ' (' . $other . ')';
+        }
+
+        return $fullAddress !== '' ? $fullAddress : '-';
     }
 }
