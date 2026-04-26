@@ -1,0 +1,83 @@
+MAIN-PROJECT-X TELEPÍTÉS
+========================
+
+1) Követelmények
+----------------
+- Git
+- PHP 8.2+
+- Composer 2+
+- Node.js 18+ (npm)
+- MySQL (or MariaDB)
+
+2) Repository klónozása
+-----------------------
+git clone <https://github.com/sandorfitamas/main-project-x.git>
+cd main-project-x
+
+3) Backend beállítás (Laravel)
+------------------------------
+cd laravel-backend
+composer install
+
+
+Adatbázis beállítása a `.env` fájlban (példa):
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=project_x
+DB_USERNAME=root
+DB_PASSWORD=
+
+Email beállítás a `.env` fájlban:
+MAIL_MAILER=smtp
+MAIL_SCHEME=null
+MAIL_HOST=smtp.gmail.com
+MAIL_PORT=587
+MAIL_USERNAME="projectx.jegyek@gmail.com"
+MAIL_PASSWORD="eqwphifvaxxxdhcx"
+MAIL_ENCRYPTION=tls
+MAIL_FROM_ADDRESS="projectx.jegyek@gmail.com"
+MAIL_FROM_NAME="ProjectX Jegyek"
+
+Backend inicializálás futtatása:
+php artisan key:generate
+php artisan migrate --seed
+
+Backend indítása:
+php artisan serve
+
+Backend URL: http://localhost:8000
+
+4) Frontend beállítás (Vue + Vite)
+----------------------------------
+Új terminál:
+cd main-project-x/vue-frontend
+npm install
+npm run dev
+
+Frontend URL: http://localhost:5173
+
+5) Seedelt teszt felhasználók
+-----------------------------
+Admin felhasználó:
+- email: admin@gmail.com
+- password: Admin123!
+
+Alap felhasználó:
+- email: user@gmail.com
+- password: User123!
+
+6) Megjegyzések
+---------------
+- A frontend `/api` kérései a `http://localhost:8000` cimre vannak proxizva.
+- Ha a backend nem fut, a frontend API hívások `ECONNREFUSED` hibával leállnak.
+- A mailer alapértelmezett módja `log` (nem küld valós emailt).
+- Valós email küldéshez SMTP beállítás kell a `laravel-backend/.env` fájlban.
+
+7) Hasznos parancsok
+--------------------
+Csak a seederek újrafuttatása (teljes adatbázis reset nélkül):
+php artisan db:seed --class=AdminSeeder
+
+Teljes reset es újra seedelés:
+php artisan migrate:fresh --seed

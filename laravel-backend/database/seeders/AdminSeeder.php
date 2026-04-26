@@ -20,5 +20,14 @@ class AdminSeeder extends Seeder
                 'is_admin' => true,
             ]
         );
+
+        \App\Models\User::updateOrCreate(
+            ['email' => 'teszt@gmail.com'],
+            [
+                'name' => 'Teszt User',
+                'password' => \Illuminate\Support\Facades\Hash::make('Teszt123'),
+                'is_admin' => false,
+            ]
+        );
     }
 }

@@ -111,8 +111,17 @@ class TicketPurchaseMail extends Mailable
             'buyerAddress' => $this->buildBuyerAddress(),
         ])->output();
 
+        $tempPdfPath = storage_path('app/invoices/' . uniqid('invoice_', true) . '.pdf');
+
+        if (!is_dir(dirname($tempPdfPath))) {
+            mkdir(dirname($tempPdfPath), 0755, true);
+        }
+
+        file_put_contents($tempPdfPath, $pdfBinary);
+
         return [
-            Attachment::fromData(fn () => $pdfBinary, $invoiceFileName)
+            Attachment::fromPath($tempPdfPath)
+                ->as($invoiceFileName)
                 ->withMime('application/pdf'),
         ];
     }
